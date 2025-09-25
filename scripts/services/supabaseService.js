@@ -3,7 +3,22 @@
 // localStorage.setItem('fruvi_supabase_url', 'https://<project>.supabase.co');
 // localStorage.setItem('fruvi_supabase_anon', '<anon-key>');
 
-function getUrl() { return localStorage.getItem('fruvi_supabase_url') || 'https://ipjkpgmptexkhilrjnsl.supabase.co'; }
+// Environment variables for GitHub Pages
+const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtQZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY4NzY4MDAsImV4cCI6MjA0MjQ1MjgwMH0.placeholder';
+
+function getAnon() { return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY; }
+
+// Initialize Supabase client
+let supabaseClient = null;
+
+try {
+  if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'https://your-project.supabase.co') {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (error) {
+  console.warn('Supabase not configured - using localStorage fallback');
+}
 
 // Upload avatar to Supabase Storage (bucket: 'avatars'). Returns public URL.
 export async function uploadAvatar(file) {
@@ -50,16 +65,8 @@ export async function uploadAvatar(file) {
     throw error;
   }
 }
-function getAnon() { return localStorage.getItem('fruvi_supabase_anon') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MzQxOTQsImV4cCI6MjA3NDMxMDE5NH0.IxY5mC4SxyTzj1Vnns5kDu14wqkcVDksi3FvNEJ1F1o'; }
 
-let supabaseClient = null;
-try {
-  if (window.supabase) {
-    supabaseClient = window.supabase.createClient(getUrl(), getAnon());
-  }
-} catch (e) {
-  console.warn('No se pudo inicializar Supabase.', e);
-}
+function getAnon() { return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY; }
 
 // Auth
 export async function signUpWithEmail({ email, password, metadata = {} }) {
