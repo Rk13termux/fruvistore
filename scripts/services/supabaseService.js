@@ -4,8 +4,8 @@
 // localStorage.setItem('fruvi_supabase_anon', '<anon-key>');
 
 // Environment variables for GitHub Pages
-const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtQZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjY4NzY4MDAsImV4cCI6MjA0MjQ1MjgwMH0.placeholder';
+const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || 'VITE_SUPABASE_URL';
+const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'VITE_SUPABASE_ANON_KEY';
 
 function getAnon() { return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY; }
 
