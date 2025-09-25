@@ -1,6 +1,6 @@
-// Supabase Configuration
-const SUPABASE_URL = 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key';
+// Supabase Configuration - Using Environment Variables
+const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Initialize Supabase
 let supabase;
@@ -10,11 +10,10 @@ try {
     console.warn('Supabase no está configurado. Por favor, configura tus credenciales de Supabase.');
 }
 
-// Groq Configuration (preconfigured)
+// Groq Configuration - Using Environment Variables
 const GROQ_API_BASE = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_DEFAULT_MODEL = 'llama3-8b-8192'; // rápido y económico
-// ATENCIÓN: esta clave está embebida a petición del cliente. No la subas a repos públicos.
-const GROQ_API_KEY = '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';
+const GROQ_DEFAULT_MODEL = 'llama3-8b-8192';
+const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages';
 
 // Global Variables
 let currentStep = 1;
