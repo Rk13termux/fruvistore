@@ -8,7 +8,7 @@
 
 ![Fruvi Preview](https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=1200&h=600&fit=crop)
 
-## 🌟 Características Principales
+## 🌟 Características Principales.
 
 ### 🛍️ Tienda Profesional
 - **15 productos premium** con imágenes reales de alta calidad de Unsplash
