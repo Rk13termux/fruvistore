@@ -5,7 +5,7 @@ const DEFAULT_GROQ_API_BASE = 'https://api.groq.com/openai/v1/chat/completions';
 const DEFAULT_GROQ_MODEL = 'openai/gpt-oss-20b';
 
 // Environment variables for GitHub Pages
-const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages';
+const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || window.__ENV__?.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages';
 
 function getGroqBase() {
   return localStorage.getItem('fruvi_groq_base') || DEFAULT_GROQ_API_BASE;

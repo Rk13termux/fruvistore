@@ -1,6 +1,6 @@
 // Supabase Configuration - Using Environment Variables
-const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Initialize Supabase
 let supabase;
@@ -13,7 +13,7 @@ try {
 // Groq Configuration - Using Environment Variables
 const GROQ_API_BASE = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_DEFAULT_MODEL = 'llama3-8b-8192';
-const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages';
+const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || window.__ENV__?.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages';
 
 // Global Variables
 let currentStep = 1;
