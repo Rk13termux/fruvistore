@@ -9,6 +9,7 @@ import { renderLoginPage } from './pages/login.js';
 import { renderProfilePage } from './pages/profile.js';
 import { initChatWidget } from './components/chatWidget.js';
 import { getUser, signOut } from './services/supabaseService.js';
+import { checkoutModal } from './components/checkoutModal.js';
 
 function showSPA(renderFn) {
   const root = document.getElementById('app-root');
@@ -174,3 +175,6 @@ if (document.readyState === 'loading') {
 } else {
   initChatWidget();
 }
+
+// Make checkout modal globally available
+window.checkoutModal = checkoutModal;
