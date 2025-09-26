@@ -1,11 +1,13 @@
 // Store Page - Professional Fruit Store
 export function renderStorePage(root) {
   const categories = ['Todas', 'Cítricas', 'Tropicales', 'Bayas', 'Manzanas', 'Uvas'];
+
+  const products = [
     // Cítricas
     {
       id: 1,
       category: 'Cítricas',
-      img: './images/products/naranja-valencia.png
+      img: './images/products/naranja-valencia.jpg',
       name: 'Naranja Valencia',
       desc: 'Jugosa, dulce y rica en vitamina C. Perfecta para jugos y postres.',
       priceKg: 2.50,
@@ -177,7 +179,7 @@ export function renderStorePage(root) {
     }
   ];
 
-  root.innerHTML = `
+  root.innerHTML = \`
     <section class="store">
       <div class="container">
         <!-- Header -->
@@ -191,7 +193,7 @@ export function renderStorePage(root) {
           <div class="filter-group">
             <label>Categoría:</label>
             <select id="categoryFilter">
-              ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+              \${categories.map(cat => \`<option value="\${cat}">\${cat}</option>\`).join('')}
             </select>
           </div>
           <div class="filter-group">
@@ -212,29 +214,29 @@ export function renderStorePage(root) {
 
         <!-- Products Grid -->
         <div class="products-grid" id="productsGrid">
-          ${products.map(product => `
-            <div class="product-card glass fade-in-up" data-category="${product.category}" data-organic="${product.organic}" data-price="${product.priceKg}" data-rating="${product.rating}">
-              <div class="product-badge ${product.organic ? 'organic' : ''}">
-                ${product.organic ? 'Orgánica' : 'Convencional'}
+          \${products.map(product => \`
+            <div class="product-card glass fade-in-up" data-category="\${product.category}" data-organic="\${product.organic}" data-price="\${product.priceKg}" data-rating="\${product.rating}">
+              <div class="product-badge \${product.organic ? 'organic' : ''}">
+                \${product.organic ? 'Orgánica' : 'Convencional'}
               </div>
               <div class="product-image">
-                <img src="${product.img}" alt="${product.name}" loading="lazy">
+                <img src="\${product.img}" alt="\${product.name}" loading="lazy">
               </div>
               <div class="product-info">
-                <h3 class="product-name">${product.name}</h3>
+                <h3 class="product-name">\${product.name}</h3>
                 <div class="product-rating">
                   <div class="stars">
-                    ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}
+                    \${'★'.repeat(Math.floor(product.rating))}\${'☆'.repeat(5-Math.floor(product.rating))}
                   </div>
-                  <span class="rating-score">${product.rating}</span>
+                  <span class="rating-score">\${product.rating}</span>
                 </div>
-                <p class="product-desc">${product.desc}</p>
+                <p class="product-desc">\${product.desc}</p>
                 <div class="product-origin">
                   <i class="fas fa-map-marker-alt"></i>
-                  <span>${product.origin}</span>
+                  <span>\${product.origin}</span>
                 </div>
                 <div class="product-price">
-                  <span class="price-main">$${product.priceKg.toFixed(2)}</span>
+                  <span class="price-main">\$\$\{product.priceKg.toFixed(2)}</span>
                   <span class="price-unit">/kg</span>
                 </div>
               </div>
@@ -245,15 +247,15 @@ export function renderStorePage(root) {
                   <button class="qty-btn plus" aria-label="Aumentar cantidad">+</button>
                 </div>
                 <div class="total-price" aria-live="polite">
-                  Total: $${(product.priceKg*1).toFixed(2)}
+                  Total: \$\$\{(product.priceKg*1).toFixed(2)}
                 </div>
-                <button class="btn-primary add-to-cart" data-product-id="${product.id}">
+                <button class="btn-primary add-to-cart" data-product-id="\${product.id}">
                   <i class="fas fa-shopping-cart"></i>
                   Agregar
                 </button>
               </div>
             </div>
-          `).join('')}
+          \`).join('')}
         </div>
 
         <!-- Cart Summary (floating) -->
@@ -273,7 +275,7 @@ export function renderStorePage(root) {
         </div>
       </div>
     </section>
-  `;
+  \`;
 
   // Wire interactions
   setupFilters(products);
@@ -315,29 +317,29 @@ function setupFilters(products) {
     });
 
     // Re-render grid
-    grid.innerHTML = filtered.map(product => `
-      <div class="product-card glass fade-in-up" data-category="${product.category}" data-organic="${product.organic}" data-price="${product.priceKg}" data-rating="${product.rating}">
-        <div class="product-badge ${product.organic ? 'organic' : ''}">
-          ${product.organic ? 'Orgánica' : 'Convencional'}
+    grid.innerHTML = filtered.map(product => \`
+      <div class="product-card glass fade-in-up" data-category="\${product.category}" data-organic="\${product.organic}" data-price="\${product.priceKg}" data-rating="\${product.rating}">
+        <div class="product-badge \${product.organic ? 'organic' : ''}">
+          \${product.organic ? 'Orgánica' : 'Convencional'}
         </div>
         <div class="product-image">
-          <img src="${product.img}" alt="${product.name}" loading="lazy">
+          <img src="\${product.img}" alt="\${product.name}" loading="lazy">
         </div>
         <div class="product-info">
-          <h3 class="product-name">${product.name}</h3>
+          <h3 class="product-name">\${product.name}</h3>
           <div class="product-rating">
             <div class="stars">
-              ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}
+              \${'★'.repeat(Math.floor(product.rating))}\${'☆'.repeat(5-Math.floor(product.rating))}
             </div>
-            <span class="rating-score">${product.rating}</span>
+            <span class="rating-score">\${product.rating}</span>
           </div>
-          <p class="product-desc">${product.desc}</p>
+          <p class="product-desc">\${product.desc}</p>
           <div class="product-origin">
             <i class="fas fa-map-marker-alt"></i>
-            <span>${product.origin}</span>
+            <span>\${product.origin}</span>
           </div>
           <div class="product-price">
-            <span class="price-main">$${product.priceKg.toFixed(2)}</span>
+            <span class="price-main">\$\$\{product.priceKg.toFixed(2)}</span>
             <span class="price-unit">/kg</span>
           </div>
         </div>
@@ -348,15 +350,15 @@ function setupFilters(products) {
             <button class="qty-btn plus" aria-label="Aumentar cantidad">+</button>
           </div>
           <div class="total-price" aria-live="polite">
-            Total: $${(product.priceKg*1).toFixed(2)}
+            Total: \$\$\{(product.priceKg*1).toFixed(2)}
           </div>
-          <button class="btn-primary add-to-cart" data-product-id="${product.id}">
+          <button class="btn-primary add-to-cart" data-product-id="\${product.id}">
             <i class="fas fa-shopping-cart"></i>
             Agregar
           </button>
         </div>
       </div>
-    `).join('');
+    \`).join('');
 
     // Re-wire interactions for filtered products
     setupProductInteractions(filtered);
@@ -381,7 +383,7 @@ function setupProductInteractions(products) {
     function updateTotal() {
       const qty = Number(qtyInput.value);
       const total = qty * product.priceKg;
-      totalPrice.textContent = `Total: $${total.toFixed(2)}`;
+      totalPrice.textContent = \`Total: \$\$\{total.toFixed(2)}\`;
     }
 
     minusBtn.addEventListener('click', () => {
@@ -427,8 +429,13 @@ function setupCart() {
       showNotification('Tu carrito está vacío', false);
       return;
     }
-    showNotification(`Procesando ${cart.length} productos...`, true);
-    // Here you would integrate with payment processor
+
+    // Show checkout modal with cart data
+    if (window.checkoutModal) {
+      window.checkoutModal.show({ items: cart });
+    } else {
+      showNotification('Error: Modal de checkout no disponible', false);
+    }
   });
 }
 
@@ -442,7 +449,7 @@ function addToCart(item) {
 
   localStorage.setItem('fruvi_cart', JSON.stringify(cart));
   updateCartDisplay();
-  showNotification(`${item.name} añadido al carrito`, true);
+  showNotification(\`\${item.name} añadido al carrito\`, true);
 }
 
 function updateCartDisplay() {
@@ -453,16 +460,16 @@ function updateCartDisplay() {
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   countEl.textContent = totalItems;
-  totalEl.textContent = `$${totalPrice.toFixed(2)}`;
+  totalEl.textContent = \`$\$\{totalPrice.toFixed(2)}\`;
 }
 
 function showNotification(message, success = true) {
   const notification = document.createElement('div');
-  notification.className = `store-notification ${success ? 'success' : 'error'} glass`;
-  notification.innerHTML = `
-    <i class="fas ${success ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-    <span>${message}</span>
-  `;
+  notification.className = \`store-notification \${success ? 'success' : 'error'} glass\`;
+  notification.innerHTML = \`
+    <i class="fas \${success ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+    <span>\${message}</span>
+  \`;
 
   Object.assign(notification.style, {
     position: 'fixed',
