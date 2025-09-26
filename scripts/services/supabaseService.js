@@ -66,8 +66,6 @@ export async function uploadAvatar(file) {
   }
 }
 
-function getAnon() { return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY; }
-
 // Auth
 export async function signUpWithEmail({ email, password, metadata = {} }) {
   if (!supabaseClient) throw new Error('Supabase no inicializado');
