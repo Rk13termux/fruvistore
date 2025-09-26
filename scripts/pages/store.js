@@ -5,7 +5,7 @@ export function renderStorePage(root) {
     {
       id: 1,
       category: 'Cítricas',
-      img: './images/products/naranja-valencia.jpg',
+      img: './images/products/naranja-valencia.png
       name: 'Naranja Valencia',
       desc: 'Jugosa, dulce y rica en vitamina C. Perfecta para jugos y postres.',
       priceKg: 2.50,
