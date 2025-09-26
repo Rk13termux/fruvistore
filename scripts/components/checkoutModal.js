@@ -1,4 +1,6 @@
 // Checkout Modal Component
+import * as XLSX from 'xlsx';
+
 export class CheckoutModal {
   constructor() {
     this.currentStep = 1;
@@ -238,15 +240,12 @@ export class CheckoutModal {
   }
 
   async downloadExcel() {
-    if (!this.orderData || !this.orderData.items) {
-      alert('No hay productos en el carrito');
+    if (!this.orderData || !this.orderData.items || this.orderData.items.length === 0) {
+      this.showNotification('❌ No hay productos en el carrito', 'error');
       return;
     }
 
     try {
-      // Import xlsx dynamically
-      const XLSX = (await import('xlsx')).default;
-
       // Prepare data for Excel
       const excelData = this.prepareExcelData();
 
@@ -284,7 +283,7 @@ export class CheckoutModal {
 
     } catch (error) {
       console.error('Error downloading Excel:', error);
-      this.showNotification('❌ Error al descargar Excel', 'error');
+      this.showNotification('❌ Error al descargar Excel: ' + error.message, 'error');
     }
   }
 
