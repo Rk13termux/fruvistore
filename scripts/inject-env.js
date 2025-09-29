@@ -18,6 +18,12 @@ const envVars = {
 const indexPath = path.join(rootDir, 'index.html')
 let htmlContent = fs.readFileSync(indexPath, 'utf8')
 
+// Check if __ENV__ script already exists
+if (htmlContent.includes('window.__ENV__')) {
+  console.log('ℹ️  Environment variables already injected, skipping...')
+  process.exit(0)
+}
+
 // Inject environment variables as script tags
 const envScript = `
 <script>
