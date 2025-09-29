@@ -11,7 +11,7 @@ export function renderStorePage(root) {
     {
       id: 1,
       category: 'Cítricas',
-      img: `${imagePrefix}/images/products/naranja_valecia.png',
+      img: `${imagePrefix}/images/products/naranja_valecia.png`,
       name: 'Naranja Valencia',
       desc: 'Jugosa, dulce y rica en vitamina C. Perfecta para jugos y postres.',
       priceKg: 2.50,
@@ -22,7 +22,7 @@ export function renderStorePage(root) {
     {
       id: 2,
       category: 'Cítricas',
-      img: `${imagePrefix}/images/products/limon-eureka.png',
+      img: `${imagePrefix}/images/products/limon-eureka.png`,
       name: 'Limón Eureka',
       desc: 'Ácido y aromático. Ideal para bebidas, marinados y repostería.',
       priceKg: 3.20,
@@ -33,7 +33,7 @@ export function renderStorePage(root) {
     {
       id: 3,
       category: 'Cítricas',
-      img: `${imagePrefix}/images/products/mandarina-clementina.png',
+      img: `${imagePrefix}/images/products/mandarina-clementina.png`,
       name: 'Mandarina Clementina',
       desc: 'Fácil de pelar, muy dulce y sin semillas. Snack perfecto.',
       priceKg: 4.10,
@@ -46,7 +46,7 @@ export function renderStorePage(root) {
     {
       id: 4,
       category: 'Tropicales',
-      img: `${imagePrefix}/images/products/mango-ataulfo.png',
+      img: `${imagePrefix}/images/products/mango-ataulfo.png`,
       name: 'Mango Ataulfo',
       desc: 'Carne cremosa, sabor intenso y tropical. Premium quality.',
       priceKg: 5.90,
@@ -57,7 +57,7 @@ export function renderStorePage(root) {
     {
       id: 5,
       category: 'Tropicales',
-      img: `${imagePrefix}/images/products/pina-golden.jpg',
+      img: `${imagePrefix}/images/products/pina-golden.jpg`,
       name: 'Piña Golden',
       desc: 'Dulce, jugosa y muy aromática. Perfecta para postres.',
       priceKg: 3.80,
@@ -68,7 +68,7 @@ export function renderStorePage(root) {
     {
       id: 6,
       category: 'Tropicales',
-      img: `${imagePrefix}/images/products/kiwi-zespri.jpg',
+      img: `${imagePrefix}/images/products/kiwi-zespri.jpg`,
       name: 'Kiwi Zespri',
       desc: 'Equilibrio perfecto entre ácido y dulce. Alto en vitamina C.',
       priceKg: 6.50,
@@ -81,7 +81,7 @@ export function renderStorePage(root) {
     {
       id: 7,
       category: 'Bayas',
-      img: `${imagePrefix}/images/products/fresa-premium.jpg',
+      img: `${imagePrefix}/images/products/fresa-premium.jpg`,
       name: 'Fresa Premium',
       desc: 'Dulce, fragante y rica en antioxidantes. Selección superior.',
       priceKg: 7.20,
@@ -92,7 +92,7 @@ export function renderStorePage(root) {
     {
       id: 8,
       category: 'Bayas',
-      img: `${imagePrefix}/images/products/arandanos-azules.jpg',
+      img: `${imagePrefix}/images/products/arandanos-azules.jpg`,
       name: 'Arándanos Azules',
       desc: 'Superfood rica en antioxidantes. Perfectos para smoothies.',
       priceKg: 12.50,
@@ -103,7 +103,7 @@ export function renderStorePage(root) {
     {
       id: 9,
       category: 'Bayas',
-      img: `${imagePrefix}/images/products/frambuesas.jpg',
+      img: `${imagePrefix}/images/products/frambuesas.jpg`,
       name: 'Frambuesas',
       desc: 'Delicadas y aromáticas. Ideales para postres y decoración.',
       priceKg: 15.80,
@@ -116,7 +116,7 @@ export function renderStorePage(root) {
     {
       id: 10,
       category: 'Manzanas',
-      img: `${imagePrefix}/images/products/manzana-honeycrisp.jpg',
+      img: `${imagePrefix}/images/products/manzana-honeycrisp.jpg`,
       name: 'Manzana Honeycrisp',
       desc: 'Crujiente, jugosa y perfectamente equilibrada. Premium.',
       priceKg: 4.20,
@@ -127,7 +127,7 @@ export function renderStorePage(root) {
     {
       id: 11,
       category: 'Manzanas',
-      img: `${imagePrefix}/images/products/manzana-granny-smith.jpg',
+      img: `${imagePrefix}/images/products/manzana-granny-smith.jpg`,
       name: 'Manzana Granny Smith',
       desc: 'Ácida y crujiente. Perfecta para tartas y ensaladas.',
       priceKg: 3.50,
@@ -138,7 +138,7 @@ export function renderStorePage(root) {
     {
       id: 12,
       category: 'Manzanas',
-      img: `${imagePrefix}/images/products/manzana-gala.jpg',
+      img: `${imagePrefix}/images/products/manzana-gala.jpg`,
       name: 'Manzana Gala',
       desc: 'Dulce y suave. Ideal para snacks y niños.',
       priceKg: 3.80,
@@ -151,7 +151,7 @@ export function renderStorePage(root) {
     {
       id: 13,
       category: 'Uvas',
-      img: `${imagePrefix}/images/products/uva-roja-sin-semillas.jpg',
+      img: `${imagePrefix}/images/products/uva-roja-sin-semillas.jpg`,
       name: 'Uva Roja Sin Semillas',
       desc: 'Dulce, crujiente y fácil de comer. Perfecta para picnics.',
       priceKg: 5.90,
@@ -162,7 +162,7 @@ export function renderStorePage(root) {
     {
       id: 14,
       category: 'Uvas',
-      img: `${imagePrefix}/images/products/uva-blanca-thompson.jpg',
+      img: `${imagePrefix}/images/products/uva-blanca-thompson.jpg`,
       name: 'Uva Blanca Thompson',
       desc: 'Dulce y refrescante. Ideal para vinos y consumo directo.',
       priceKg: 4.50,
@@ -173,7 +173,7 @@ export function renderStorePage(root) {
     {
       id: 15,
       category: 'Uvas',
-      img: `${imagePrefix}/images/products/uva-negra-concord.jpg',
+      img: `${imagePrefix}/images/products/uva-negra-concord.jpg`,
       name: 'Uva Negra Concord',
       desc: 'Intenso sabor a uva. Perfecta para jugos y mermeladas.',
       priceKg: 6.20,
