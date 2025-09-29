@@ -28,11 +28,14 @@
             <ul class="nav-links">
                 <li><a href="#/">Inicio</a></li>
                 <li><a href="#/tienda">Tienda</a></li>
-                <li><a href="#/recetas">Recetas</a></li>
-                <li><a href="#/nutricion">Nutrición</a></li>
-                <li><a href="#/asistente">Asistente IA</a></li>
-                <li><a href="#/login">Login</a></li>
-                <li><a href="#/registro">Registro</a></li>
+                <!-- Pestañas premium ocultas inicialmente -->
+                <li class="premium-tab hidden" data-tab="recetas"><a href="#/recetas">Recetas</a></li>
+                <li class="premium-tab hidden" data-tab="nutricion"><a href="#/nutricion">Nutrición</a></li>
+                <li class="premium-tab hidden" data-tab="asistente"><a href="#/asistente">Asistente IA</a></li>
+                <!-- Pestañas básicas siempre visibles -->
+                <li class="basic-tab"><a href="#/login">Login</a></li>
+                <li class="basic-tab"><a href="#/registro">Registro</a></li>
+                <li class="basic-tab" style="display: block;"><a href="#/configuracion">⚙️ Config</a></li>
             </ul>
             <div class="mobile-menu">
                 <i class="fas fa-bars"></i>

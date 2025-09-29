@@ -1,9 +1,15 @@
 // Store Page - Professional Fruit Store
-export function renderStorePage(root) {
+export async function renderStorePage(root) {
   // Detectar si estamos en GitHub Pages o en local
   const isGitHubPages = window.location.hostname.includes('github.io');
   const imagePrefix = isGitHubPages ? '/fruvistore' : '';
-  
+
+  // Importar servicios de autenticación
+  const { getUserStatus, getRegistrationBenefits } = await import('../services/supabaseService.js');
+
+  // Obtener estado del usuario
+  const userStatus = await getUserStatus();
+
   const categories = ['Todas', 'Cítricas', 'Tropicales', 'Bayas', 'Manzanas', 'Uvas'];
 
   const products = [
@@ -190,7 +196,51 @@ export function renderStorePage(root) {
         <div class="store-header">
           <h2>Frutas Premium</h2>
           <p class="store-subtitle">Selección fresca y de la más alta calidad, entregada directamente a tu puerta</p>
+
+          <!-- Registration Banner for non-registered users -->
+          ${userStatus.isGuest ? `
+            <div class="registration-banner glass">
+              <div class="banner-content">
+                <div class="banner-icon">
+                  <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="banner-text">
+                  <h3>¡Regístrate y accede a beneficios exclusivos!</h3>
+                  <p>Compra frutas frescas, recibe entregas a domicilio y obtén ofertas especiales</p>
+                </div>
+                <div class="banner-actions">
+                  <button class="btn-primary register-now" onclick="window.location.hash='#/registro'">
+                    <i class="fas fa-rocket"></i>
+                    Registrarme Ahora
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : ''}
         </div>
+
+        <!-- Registration Benefits (for non-registered users) -->
+        ${userStatus.isGuest ? `
+          <div class="registration-benefits">
+            <h3 class="benefits-title">
+              <i class="fas fa-star"></i>
+              ¿Qué obtienes al registrarte?
+            </h3>
+            <div class="benefits-grid">
+              ${getRegistrationBenefits().map(benefit => `
+                <div class="benefit-card glass">
+                  <div class="benefit-icon">
+                    <i class="${benefit.icon}"></i>
+                  </div>
+                  <div class="benefit-content">
+                    <h4>${benefit.title}</h4>
+                    <p>${benefit.description}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
 
         <!-- Filters -->
         <div class="store-filters glass">
@@ -219,10 +269,23 @@ export function renderStorePage(root) {
         <!-- Products Grid -->
         <div class="products-grid" id="productsGrid">
           ${products.map(product => `
-            <div class="product-card glass fade-in-up" data-category="${product.category}" data-organic="${product.organic}" data-price="${product.priceKg}" data-rating="${product.rating}">
+            <div class="product-card glass fade-in-up ${userStatus.isGuest ? 'locked' : ''}" data-category="${product.category}" data-organic="${product.organic}" data-price="${product.priceKg}" data-rating="${product.rating}">
               <div class="product-badge ${product.organic ? 'organic' : ''}">
                 ${product.organic ? 'Orgánica' : 'Convencional'}
               </div>
+
+              <!-- Lock overlay for non-registered users -->
+              ${userStatus.isGuest ? `
+                <div class="product-lock-overlay">
+                  <div class="lock-icon">
+                    <i class="fas fa-lock"></i>
+                  </div>
+                  <div class="lock-text">
+                    <span>Regístrate para comprar</span>
+                  </div>
+                </div>
+              ` : ''}
+
               <div class="product-image">
                 <img src="${product.img}" alt="${product.name}" loading="lazy">
               </div>
@@ -245,25 +308,32 @@ export function renderStorePage(root) {
                 </div>
               </div>
               <div class="product-actions">
-                <div class="quantity-selector">
-                  <button class="qty-btn minus" aria-label="Reducir cantidad">-</button>
-                  <input type="number" min="0" step="0.5" value="1" class="qty-input" readonly>
-                  <button class="qty-btn plus" aria-label="Aumentar cantidad">+</button>
+                <div class="quantity-selector ${userStatus.isGuest ? 'disabled' : ''}">
+                  <button class="qty-btn minus" aria-label="Reducir cantidad" ${userStatus.isGuest ? 'disabled' : ''}>-</button>
+                  <input type="number" min="0" step="0.5" value="1" class="qty-input" readonly ${userStatus.isGuest ? 'disabled' : ''}>
+                  <button class="qty-btn plus" aria-label="Aumentar cantidad" ${userStatus.isGuest ? 'disabled' : ''}>+</button>
                 </div>
                 <div class="total-price" aria-live="polite">
                   Total: $${(product.priceKg*1).toFixed(2)}
                 </div>
-                <button class="btn-primary add-to-cart" data-product-id="${product.id}">
-                  <i class="fas fa-shopping-cart"></i>
-                  Agregar
-                </button>
+                ${userStatus.isGuest ? `
+                  <button class="btn-locked register-to-buy" onclick="window.location.hash='#/registro'">
+                    <i class="fas fa-user-plus"></i>
+                    Regístrate para Comprar
+                  </button>
+                ` : `
+                  <button class="btn-primary add-to-cart" data-product-id="${product.id}">
+                    <i class="fas fa-shopping-cart"></i>
+                    Agregar
+                  </button>
+                `}
               </div>
             </div>
           `).join('')}
         </div>
 
         <!-- Cart Summary (floating) -->
-        <div class="cart-summary glass" id="cartSummary">
+        <div class="cart-summary glass ${userStatus.isGuest ? 'locked' : ''}" id="cartSummary">
           <div class="cart-header">
             <i class="fas fa-shopping-basket"></i>
             <span>Carrito</span>
@@ -273,10 +343,22 @@ export function renderStorePage(root) {
             <span>Total:</span>
             <span class="cart-amount" id="cartTotal">$0.00</span>
           </div>
-          <button class="btn-primary cart-checkout" id="cartCheckout">
-            Proceder al Pago
-          </button>
+          ${userStatus.isGuest ? `
+            <button class="btn-locked register-to-checkout" onclick="window.location.hash='#/registro'">
+              <i class="fas fa-user-plus"></i>
+              Regístrate para Comprar
+            </button>
+          ` : `
+            <button class="btn-primary cart-checkout" id="cartCheckout">
+              Proceder al Pago
+            </button>
+          `}
         </div>
+
+        <!-- Periodic Registration Prompts for non-registered users -->
+        ${userStatus.isGuest ? `
+          <div class="registration-prompts" id="registrationPrompts"></div>
+        ` : ''}
       </div>
     </section>
   `;
@@ -285,6 +367,11 @@ export function renderStorePage(root) {
   setupFilters(products);
   setupProductInteractions(products);
   setupCart();
+
+  // Setup periodic registration prompts for non-registered users
+  if (userStatus.isGuest) {
+    setupRegistrationPrompts();
+  }
 }
 
 // Filter and sort functionality
@@ -494,4 +581,75 @@ function showNotification(message, success = true) {
     notification.style.transform = 'translateX(100%)';
     setTimeout(() => notification.remove(), 300);
   }, 3000);
+}
+
+// Setup periodic registration prompts for non-registered users
+function setupRegistrationPrompts() {
+  const promptsContainer = document.getElementById('registrationPrompts');
+  if (!promptsContainer) return;
+
+  const prompts = [
+    {
+      title: "¡No te quedes sin probar estas frutas!",
+      message: "Regístrate ahora y recibe un 10% de descuento en tu primera compra",
+      icon: "fas fa-gift",
+      color: "#ff6b6b"
+    },
+    {
+      title: "Frutas frescas esperando por ti",
+      message: "Crea tu cuenta y accede a nuestro catálogo completo",
+      icon: "fas fa-shopping-cart",
+      color: "#4ecdc4"
+    },
+    {
+      title: "Entrega a domicilio gratis",
+      message: "Regístrate hoy y recibe entrega gratuita en tu primer pedido",
+      icon: "fas fa-truck",
+      color: "#45b7d1"
+    },
+    {
+      title: "Ofertas exclusivas para miembros",
+      message: "Sé el primero en conocer nuestras ofertas especiales",
+      icon: "fas fa-star",
+      color: "#f9ca24"
+    }
+  ];
+
+  let currentPrompt = 0;
+
+  function showNextPrompt() {
+    if (currentPrompt >= prompts.length) {
+      currentPrompt = 0;
+    }
+
+    const prompt = prompts[currentPrompt];
+    promptsContainer.innerHTML = `
+      <div class="registration-prompt glass fade-in-up">
+        <div class="prompt-icon" style="color: ${prompt.color}">
+          <i class="${prompt.icon}"></i>
+        </div>
+        <div class="prompt-content">
+          <h4>${prompt.title}</h4>
+          <p>${prompt.message}</p>
+        </div>
+        <div class="prompt-actions">
+          <button class="btn-primary register-prompt-btn" onclick="window.location.hash='#/registro'">
+            <i class="fas fa-user-plus"></i>
+            Registrarme
+          </button>
+          <button class="btn-outline dismiss-prompt" onclick="this.parentElement.parentElement.remove()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+    `;
+
+    currentPrompt++;
+  }
+
+  // Show first prompt immediately
+  showNextPrompt();
+
+  // Show new prompt every 15 seconds
+  setInterval(showNextPrompt, 15000);
 }
