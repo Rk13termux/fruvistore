@@ -7,6 +7,8 @@ import { renderAssistantPage } from './pages/assistant.js';
 import { renderRegistrationPage } from './pages/registration.js';
 import { renderLoginPage } from './pages/login.js';
 import { renderProfilePage } from './pages/profile.js';
+import { renderRecipesBlogPage } from './pages/recipes.js';
+import { renderRecipeDetailPage } from './pages/recipeDetail.js';
 import { initChatWidget } from './components/chatWidget.js';
 import { getUser, signOut } from './services/supabaseService.js';
 import { checkoutModal } from './components/checkoutModal.js';
@@ -29,6 +31,17 @@ registerRoute('/asistente', () => showSPA(renderAssistantPage));
 registerRoute('/registro', () => showSPA(renderRegistrationPage));
 registerRoute('/login', () => showSPA(renderLoginPage));
 registerRoute('/perfil', () => showSPA(renderProfilePage));
+registerRoute('/recetas', () => showSPA(renderRecipesBlogPage));
+
+// Dynamic recipe routes
+registerRoute('/receta/:id', (params) => {
+  const root = document.getElementById('app-root');
+  if (!root) return;
+  root.innerHTML = '';
+  renderRecipeDetailPage(root, params.id);
+  highlightActiveLink();
+  renderAuthNav();
+});
 
 // Ensure default route hash
 if (!location.hash || location.hash === '#') {
