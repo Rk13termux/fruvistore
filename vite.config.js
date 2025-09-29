@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/fruvistore/',
+  // Usar base path solo en producción para GitHub Pages
+  base: process.env.NODE_ENV === 'production' ? '/fruvistore/' : './',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -12,7 +13,7 @@ export default defineConfig({
       }
     }
   },
-  publicDir: 'public', // Directorio público para assets estáticos
+  publicDir: 'images', // Copiar imágenes al directorio público
   define: {
     // Inyectar variables de entorno durante el build
     __VITE_SUPABASE_URL__: JSON.stringify(process.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'),
