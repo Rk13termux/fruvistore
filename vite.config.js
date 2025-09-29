@@ -12,7 +12,7 @@ export default defineConfig({
       }
     }
   },
-  publicDir: 'images', // Copiar imágenes al directorio público
+  publicDir: 'public', // Directorio público para assets estáticos
   define: {
     // Inyectar variables de entorno durante el build
     __VITE_SUPABASE_URL__: JSON.stringify(process.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'),
