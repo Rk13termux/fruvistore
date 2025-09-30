@@ -176,7 +176,6 @@ body {
 }
 .qty-input[type=number] {
   -moz-appearance: textfield;
-  appearance: textfield;
 }
 
 /* Hero */
@@ -2268,5 +2267,4 @@ body {
     align-items: flex-start;
     gap: 0.5rem;
   }
-}
 }

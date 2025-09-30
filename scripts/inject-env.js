@@ -7,11 +7,11 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(__dirname, '..')
 
-// Read environment variables
+// Read environment variables from multiple sources
 const envVars = {
-  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co',
-  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
-  VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages'
+  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://your-project.supabase.co',
+  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'your-anon-key',
+  VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY || process.env.GROQ_API_KEY || 'placeholder-key-for-github-pages'
 }
 
 // Read index.html
@@ -35,6 +35,7 @@ const envScript = `
 htmlContent = htmlContent.replace('</head>', `${envScript}\n  </head>`)
 
 console.log('✅ Environment variables injected into HTML')
+console.log('📋 Variables inyectadas:', Object.keys(envVars))
 
 // Write back to index.html
 fs.writeFileSync(indexPath, htmlContent)

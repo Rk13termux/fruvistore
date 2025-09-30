@@ -10,9 +10,9 @@
 
 <script>
   window.__ENV__ = {
-  "VITE_SUPABASE_URL": "https://your-project.supabase.co",
-  "VITE_SUPABASE_ANON_KEY": "your-anon-key",
-  "VITE_GROQ_API_KEY": "placeholder-key-for-github-pages"
+  "VITE_SUPABASE_URL": "${{ secrets.SUPABASE_URL }}",
+  "VITE_SUPABASE_ANON_KEY": "${{ secrets.SUPABASE_ANON_KEY }}",
+  "VITE_GROQ_API_KEY": "${{ secrets.GROQ_API_KEY || 'placeholder-key-for-github-pages' }}"
 };
 </script>
 
@@ -35,7 +35,6 @@
                 <!-- Pestañas básicas siempre visibles -->
                 <li class="basic-tab"><a href="#/login">Login</a></li>
                 <li class="basic-tab"><a href="#/registro">Registro</a></li>
-                <li class="basic-tab" style="display: block;"><a href="#/configuracion">⚙️ Config</a></li>
             </ul>
             <div class="mobile-menu">
                 <i class="fas fa-bars"></i>
