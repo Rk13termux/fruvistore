@@ -17,6 +17,29 @@ function isValidEnvVar(value) {
   return true;
 }
 
+// Función para inicializar Supabase manualmente (para desarrollo)
+export function initializeSupabase() {
+  try {
+    const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+    const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+
+    console.log('🔄 Inicializando Supabase con:', { url: url?.slice(0, 50) + '...', hasKey: !!anonKey });
+
+    if (isValidEnvVar(url) && isValidEnvVar(anonKey)) {
+      supabaseClient = supabase.createClient(url, anonKey);
+      console.log('✅ Supabase inicializado correctamente');
+      return true;
+    } else {
+      console.warn('⚠️ Variables de entorno no válidas para inicialización automática');
+      console.warn('🔍 Estado:', { url, anonKey, isValidUrl: isValidEnvVar(url), isValidKey: isValidEnvVar(anonKey) });
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error inicializando Supabase:', error);
+    return false;
+  }
+}
+
 function getAnon() {
   return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY;
 }
@@ -49,6 +72,17 @@ function initializeSupabaseClient() {
     console.error('❌ Error inicializando Supabase:', error);
     return false;
   }
+}
+
+// Auto-initialize when service loads
+if (typeof window !== 'undefined') {
+  // Try to initialize with environment variables first
+  setTimeout(() => {
+    if (!supabaseClient) {
+      console.log('🔄 Intentando inicialización automática de Supabase...');
+      initializeSupabase();
+    }
+  }, 100);
 }
 
 // Función para obtener información de configuración (sin claves sensibles)
