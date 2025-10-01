@@ -7,6 +7,16 @@
 const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
 const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
+// Función para validar si una variable de entorno es válida (no es un placeholder de GitHub Actions)
+function isValidEnvVar(value) {
+  if (!value || typeof value !== 'string') return false;
+  // Rechazar placeholders comunes de GitHub Actions
+  if (value.includes('${{') || value.includes('secrets.') || value === 'your-anon-key' || value === 'your-project.supabase.co') {
+    return false;
+  }
+  return true;
+}
+
 function getAnon() {
   return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY;
 }
@@ -19,12 +29,20 @@ function initializeSupabaseClient() {
     const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
     const anonKey = getAnon();
 
-    if (url && anonKey && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key') {
+    if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey) && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key') {
       supabaseClient = supabase.createClient(url, anonKey);
       console.log('✅ Supabase inicializado correctamente');
       return true;
     } else {
       console.warn('⚠️ Supabase no configurado - usando modo localStorage');
+      console.warn('🔍 Debug info:', {
+        url: url,
+        anonKey: anonKey ? '***' + anonKey.slice(-4) : 'undefined',
+        isValidUrl: isValidEnvVar(url),
+        isValidKey: isValidEnvVar(anonKey),
+        urlNotDefault: url !== 'https://your-project.supabase.co',
+        keyNotDefault: anonKey !== 'your-anon-key'
+      });
       return false;
     }
   } catch (error) {
@@ -36,9 +54,10 @@ function initializeSupabaseClient() {
 // Función para obtener información de configuración (sin claves sensibles)
 export function getSupabaseConfig() {
   const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
+  const anonKey = getAnon();
   return {
     url: url,
-    configured: url !== 'https://your-project.supabase.co' && getAnon() !== 'your-anon-key',
+    configured: isValidEnvVar(url) && isValidEnvVar(anonKey) && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key',
     initialized: supabaseClient !== null
   };
 }
