@@ -45,9 +45,9 @@ let htmlContent = fs.readFileSync(indexPath, 'utf8')
 
 // Check if __ENV__ script already exists
 if (htmlContent.includes('window.__ENV__')) {
-  // Verificar si contiene placeholders de GitHub Actions
-  if (htmlContent.includes('${{') || htmlContent.includes('secrets.') || htmlContent.includes('your-anon-key')) {
-    console.log('🔄 Placeholders de GitHub Actions detectados, reemplazando...');
+  // Verificar si contiene placeholders o si necesitamos actualizar
+  if (htmlContent.includes('${{') || htmlContent.includes('secrets.') || htmlContent.includes('your-anon-key') || htmlContent.includes('your-project.supabase.co')) {
+    console.log('🔄 Placeholders detectados, reemplazando...');
     // Reemplazar completamente el bloque existente
     const oldScriptPattern = /<script>\s*window\.__ENV__\s*=\s*{[^}]+};\s*<\/script>/g;
     const newScript = `<script>
@@ -55,8 +55,33 @@ if (htmlContent.includes('window.__ENV__')) {
 </script>`;
     htmlContent = htmlContent.replace(oldScriptPattern, newScript);
   } else {
-    console.log('ℹ️  Environment variables already injected, skipping...');
-    process.exit(0);
+    // Verificar si las variables actuales son diferentes a las del .env
+    const currentEnvMatch = htmlContent.match(/window\.__ENV__\s*=\s*({[^}]+})/);
+    if (currentEnvMatch) {
+      try {
+        const currentEnv = JSON.parse(currentEnvMatch[1].replace(/'/g, '"'));
+        const needsUpdate = JSON.stringify(currentEnv) !== JSON.stringify(envVars);
+
+        if (needsUpdate) {
+          console.log('🔄 Variables diferentes detectadas, actualizando...');
+          const oldScriptPattern = /<script>\s*window\.__ENV__\s*=\s*{[^}]+};\s*<\/script>/g;
+          const newScript = `<script>
+  window.__ENV__ = ${JSON.stringify(envVars, null, 2)};
+</script>`;
+          htmlContent = htmlContent.replace(oldScriptPattern, newScript);
+        } else {
+          console.log('ℹ️ Variables ya están actualizadas, skipping...');
+          process.exit(0);
+        }
+      } catch (e) {
+        console.log('🔄 Error parseando variables actuales, reemplazando...');
+        const oldScriptPattern = /<script>\s*window\.__ENV__\s*=\s*{[^}]+};\s*<\/script>/g;
+        const newScript = `<script>
+  window.__ENV__ = ${JSON.stringify(envVars, null, 2)};
+</script>`;
+        htmlContent = htmlContent.replace(oldScriptPattern, newScript);
+      }
+    }
   }
 }
 

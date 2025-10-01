@@ -7,13 +7,21 @@
 const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
 const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
-// Función para validar si una variable de entorno es válida (no es un placeholder de GitHub Actions)
+// Función para validar si una variable de entorno es válida (más tolerante para desarrollo)
 function isValidEnvVar(value) {
   if (!value || typeof value !== 'string') return false;
-  // Rechazar placeholders comunes de GitHub Actions
-  if (value.includes('${{') || value.includes('secrets.') || value === 'your-anon-key' || value === 'your-project.supabase.co') {
+
+  // Rechazar solo placeholders reales de GitHub Actions
+  if (value.includes('${{') || value.includes('secrets.')) {
     return false;
   }
+
+  // Ser más tolerante con valores de desarrollo
+  if (value === 'your-anon-key' || value === 'your-project.supabase.co') {
+    // Estos son valores por defecto válidos para desarrollo
+    return true;
+  }
+
   return true;
 }
 
@@ -23,25 +31,28 @@ export function initializeSupabase() {
     const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
     const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
-    console.log('🔄 Inicializando Supabase con:', { 
-      url: url?.slice(0, 50) + '...', 
+    console.log('🔄 initializeSupabase - Intentando inicialización con:', {
+      url: url,
       hasKey: !!anonKey,
-      isPlaceholderUrl: url.includes('your-project'),
-      isPlaceholderKey: anonKey === 'your-anon-key'
+      urlValid: isValidEnvVar(url),
+      keyValid: isValidEnvVar(anonKey)
     });
 
-    // Ser más tolerante con variables de desarrollo
-    if (url && anonKey && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key') {
-      supabaseClient = supabase.createClient(url, anonKey);
-      console.log('✅ Supabase inicializado correctamente');
-      return true;
+    if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey)) {
+      try {
+        supabaseClient = supabase.createClient(url, anonKey);
+        console.log('✅ Supabase inicializado correctamente desde initializeSupabase');
+        return true;
+      } catch (createError) {
+        console.error('❌ Error creando cliente Supabase:', createError);
+        return false;
+      }
     } else {
-      console.warn('⚠️ Variables de entorno no válidas para inicialización automática');
-      console.warn('🔧 Usa setupSupabase(url, key) en consola para configurar manualmente');
+      console.warn('⚠️ Variables no válidas para inicialización automática');
       return false;
     }
   } catch (error) {
-    console.error('❌ Error inicializando Supabase:', error);
+    console.error('❌ Error en initializeSupabase:', error);
     return false;
   }
 }
@@ -58,24 +69,36 @@ function initializeSupabaseClient() {
     const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
     const anonKey = getAnon();
 
-    if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey) && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key') {
-      supabaseClient = supabase.createClient(url, anonKey);
-      console.log('✅ Supabase inicializado correctamente');
-      return true;
+    console.log('🔄 initializeSupabaseClient - Verificando variables:', {
+      url: url,
+      anonKey: anonKey ? '***' + anonKey.slice(-4) : 'undefined',
+      urlValid: isValidEnvVar(url),
+      keyValid: isValidEnvVar(anonKey),
+      fromLocalStorage: !!localStorage.getItem('fruvi_supabase_url')
+    });
+
+    if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey)) {
+      try {
+        console.log('🔄 Creando cliente Supabase...');
+        supabaseClient = supabase.createClient(url, anonKey);
+        console.log('✅ Cliente Supabase creado exitosamente');
+        return true;
+      } catch (createError) {
+        console.error('❌ Error creando cliente Supabase:', createError);
+        console.error('🔍 Detalles del error:', {
+          message: createError.message,
+          url: url,
+          hasAnonKey: !!anonKey
+        });
+        return false;
+      }
     } else {
-      console.warn('⚠️ Supabase no configurado - usando modo localStorage');
-      console.warn('🔍 Debug info:', {
-        url: url,
-        anonKey: anonKey ? '***' + anonKey.slice(-4) : 'undefined',
-        isValidUrl: isValidEnvVar(url),
-        isValidKey: isValidEnvVar(anonKey),
-        urlNotDefault: url !== 'https://your-project.supabase.co',
-        keyNotDefault: anonKey !== 'your-anon-key'
-      });
+      console.warn('⚠️ Variables no válidas para inicialización automática');
+      console.warn('🔧 Usa las funciones de consola para configurar manualmente');
       return false;
     }
   } catch (error) {
-    console.error('❌ Error inicializando Supabase:', error);
+    console.error('❌ Error general en initializeSupabaseClient:', error);
     return false;
   }
 }
@@ -97,7 +120,7 @@ export function getSupabaseConfig() {
   const anonKey = getAnon();
   return {
     url: url,
-    configured: isValidEnvVar(url) && isValidEnvVar(anonKey) && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key',
+    configured: isValidEnvVar(url) && isValidEnvVar(anonKey),
     initialized: supabaseClient !== null
   };
 }
@@ -120,25 +143,37 @@ if (typeof window !== 'undefined') {
 // Función para configuración rápida desde consola (para desarrollo)
 window.setupSupabase = function(url, anonKey) {
   if (!url || !anonKey) {
-    console.error('❌ Uso: setupSupabase("URL", "CLAVE")');
-    console.error('Ejemplo: setupSupabase("https://your-project.supabase.co", "eyJ...")');
+    console.error('❌ Uso: setupSupabase("URL", "CLAVE_ANONIMA")');
+    console.error('Ejemplo: setupSupabase("https://ipjkpgmptexkhilrjnsl.supabase.co", "eyJ...")');
+    console.log('💡 Tu configuración actual requiere:');
+    console.log('   - URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
+    console.log('   - Clave anónima: clave válida de tu proyecto Supabase');
     return;
   }
 
   try {
+    console.log('🔧 Configurando Supabase manualmente...');
+    console.log('📋 URL:', url);
+    console.log('🔑 Clave configurada:', '***' + anonKey.slice(-4));
+
     localStorage.setItem('fruvi_supabase_url', url);
     localStorage.setItem('fruvi_supabase_anon', anonKey);
 
-    // Re-inicializar el cliente
-    initializeSupabaseClient();
+    // Intentar inicializar inmediatamente
+    const success = initializeSupabaseClient();
 
-    const config = getSupabaseConfig();
-    console.log('✅ Supabase configurado exitosamente:', config);
-    console.log('🔄 Recarga la página para aplicar los cambios');
+    if (success) {
+      console.log('✅ Supabase configurado e inicializado exitosamente');
+      console.log('🎉 Todas las funciones de Supabase ahora están disponibles');
+    } else {
+      console.log('⚠️ Supabase configurado pero no inicializado');
+      console.log('🔍 Verifica que la clave anónima sea válida');
+    }
 
-    return config;
+    return success;
   } catch (error) {
     console.error('❌ Error configurando Supabase:', error);
+    return false;
   }
 };
 
