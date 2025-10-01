@@ -28,16 +28,31 @@ function readEnvFile(filename) {
   return env
 }
 
-// Read environment variables from multiple sources
+// Read environment variables from multiple sources (más robusto para producción)
 const envFileVars = readEnvFile('.env')
 const envLocalVars = readEnvFile('.env.local')
-const allEnvVars = { ...envFileVars, ...envLocalVars }
+const systemEnvVars = {
+  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
+  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
+  VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY
+}
+const allEnvVars = { ...envFileVars, ...envLocalVars, ...systemEnvVars }
+
+console.log('🔍 Fuentes de variables encontradas:')
+console.log('📄 .env:', Object.keys(envFileVars).length > 0 ? '✅ Presente' : '❌ Ausente')
+console.log('📄 .env.local:', Object.keys(envLocalVars).length > 0 ? '✅ Presente' : '❌ Ausente')
+console.log('🖥️ Variables de sistema:', Object.keys(systemEnvVars).length > 0 ? '✅ Presentes' : '❌ Ausentes')
 
 const envVars = {
-  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || allEnvVars.VITE_SUPABASE_URL || 'https://your-project.supabase.co',
-  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || allEnvVars.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
-  VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY || allEnvVars.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages'
+  VITE_SUPABASE_URL: allEnvVars.VITE_SUPABASE_URL || 'https://your-project.supabase.co',
+  VITE_SUPABASE_ANON_KEY: allEnvVars.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
+  VITE_GROQ_API_KEY: allEnvVars.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages'
 }
+
+console.log('📋 Variables finales a inyectar:')
+console.log('URL:', envVars.VITE_SUPABASE_URL)
+console.log('KEY presente:', !!envVars.VITE_SUPABASE_ANON_KEY)
+console.log('GROQ presente:', !!envVars.VITE_GROQ_API_KEY)
 
 // Read index.html
 const indexPath = path.join(rootDir, 'index.html')

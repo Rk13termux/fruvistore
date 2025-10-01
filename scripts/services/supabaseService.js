@@ -64,46 +64,7 @@ function getAnon() {
 // Initialize Supabase client
 let supabaseClient = null;
 
-function initializeSupabaseClient() {
-  try {
-    const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
-    const anonKey = getAnon();
-
-    console.log('🔄 initializeSupabaseClient - Verificando variables:', {
-      url: url,
-      anonKey: anonKey ? '***' + anonKey.slice(-4) : 'undefined',
-      urlValid: isValidEnvVar(url),
-      keyValid: isValidEnvVar(anonKey),
-      fromLocalStorage: !!localStorage.getItem('fruvi_supabase_url')
-    });
-
-    if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey)) {
-      try {
-        console.log('🔄 Creando cliente Supabase...');
-        supabaseClient = supabase.createClient(url, anonKey);
-        console.log('✅ Cliente Supabase creado exitosamente');
-        return true;
-      } catch (createError) {
-        console.error('❌ Error creando cliente Supabase:', createError);
-        console.error('🔍 Detalles del error:', {
-          message: createError.message,
-          url: url,
-          hasAnonKey: !!anonKey
-        });
-        return false;
-      }
-    } else {
-      console.warn('⚠️ Variables no válidas para inicialización automática');
-      console.warn('🔧 Usa las funciones de consola para configurar manualmente');
-      return false;
-    }
-  } catch (error) {
-    console.error('❌ Error general en initializeSupabaseClient:', error);
-    return false;
-  }
-}
-
-// Auto-initialize when service loads
+// Auto-initialize when service loads (mejorado para producción)
 if (typeof window !== 'undefined') {
   // Try to initialize with environment variables first
   setTimeout(() => {
@@ -127,7 +88,7 @@ export function getSupabaseConfig() {
 
 // Función para configurar Supabase manualmente (útil para desarrollo)
 export function configureSupabase(url, anonKey) {
-  if (url && anonKey && url !== 'https://ipjkpgmptexkhilrjnsl.supabase.co') {
+  if (url && anonKey && url !== 'https://your-project.supabase.co') {
     localStorage.setItem('fruvi_supabase_url', url);
     localStorage.setItem('fruvi_supabase_anon', anonKey);
     initializeSupabaseClient();
