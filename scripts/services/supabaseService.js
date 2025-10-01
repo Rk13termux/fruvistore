@@ -108,7 +108,7 @@ window.setupSupabase = function(url, anonKey) {
     console.error('Ejemplo: setupSupabase("https://ipjkpgmptexkhilrjnsl.supabase.co", "eyJ...")');
     console.log('💡 Tu configuración actual requiere:');
     console.log('   - URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
-    console.log('   - Clave anónima: clave válida de tu proyecto Supabase');
+    console.log('   - Clave anónima: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MzQxOTQsImV4cCI6MjA3NDMxMDE5NH0.IxY5mC4SxyTzj1Vnns5kDu14wqkcVDksi3FvNEJ1F1o');
     return;
   }
 
@@ -185,12 +185,55 @@ window.testSupabaseConnection = async function(url, anonKey) {
   }
 };
 
-// Función para limpiar configuración (útil para desarrollo)
-window.clearSupabaseConfig = function() {
-  localStorage.removeItem('fruvi_supabase_url');
-  localStorage.removeItem('fruvi_supabase_anon');
-  console.log('🗑️ Configuración de Supabase eliminada');
-  console.log('🔄 Recarga la página para aplicar los cambios');
+// Función específica para solucionar problemas de login
+window.fixLoginConnection = async function() {
+  try {
+    console.log('🔧 Solucionando problemas de conexión para login...');
+
+    // Verificar configuración actual
+    const config = getSupabaseConfig();
+    console.log('📋 Configuración actual:', config);
+
+    if (!config.configured) {
+      console.error('❌ Variables de entorno no configuradas correctamente');
+      console.log('💡 Solución: Usa setupSupabase() con tu clave real');
+      return false;
+    }
+
+    if (!config.initialized) {
+      console.log('🔄 Inicializando cliente de Supabase...');
+
+      const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co';
+      const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+
+      // Solo proceder si tenemos variables reales
+      if (url.includes('ipjkpgmptexkhilrjnsl.supabase.co') && anonKey !== 'your-anon-key') {
+        supabaseClient = supabase.createClient(url, anonKey);
+        console.log('✅ Cliente inicializado exitosamente');
+
+        // Probar conexión inmediatamente
+        const { error } = await supabaseClient.from('customers').select('count', { count: 'exact', head: true });
+
+        if (error) {
+          console.error('❌ Error en prueba de conexión:', error.message);
+          return false;
+        } else {
+          console.log('✅ Conexión verificada correctamente');
+          return true;
+        }
+      } else {
+        console.error('❌ Clave de API no válida detectada');
+        console.log('💡 Necesitas configurar tu clave anónima real');
+        return false;
+      }
+    } else {
+      console.log('✅ Cliente ya está inicializado');
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ Error solucionando conexión:', error);
+    return false;
+  }
 };
 
 // Upload avatar to Supabase Storage (bucket: 'avatars'). Returns public URL.
@@ -251,13 +294,45 @@ export async function signUpWithEmail({ email, password, metadata = {} }) {
 }
 
 export async function signInWithEmail({ email, password }) {
-  if (!supabaseClient) {
-    const config = getSupabaseConfig();
-    throw new Error(`Supabase no inicializado. Configuración actual: ${JSON.stringify(config)}`);
+  try {
+    // Intentar solucionar problemas de conexión antes del login
+    const connectionFixed = await fixLoginConnection();
+    if (!connectionFixed) {
+      console.warn('⚠️ Problemas de conexión detectados, intentando login de todas formas...');
+    }
+
+    if (!supabaseClient) {
+      const config = getSupabaseConfig();
+      throw new Error(`Supabase no inicializado. Configuración actual: ${JSON.stringify(config)}`);
+    }
+
+    console.log('🔐 Intentando login...');
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      console.error('❌ Error en login:', error.message);
+
+      // Si el error es de conexión, intentar una última solución
+      if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
+        console.log('🔧 Intentando solución automática...');
+        const retryFixed = await fixLoginConnection();
+        if (retryFixed) {
+          console.log('🔄 Reintentando login después de solución...');
+          const { data: retryData, error: retryError } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (retryError) throw retryError;
+          return retryData;
+        }
+      }
+
+      throw error;
+    }
+
+    console.log('✅ Login exitoso');
+    return data;
+  } catch (error) {
+    console.error('❌ Error en signInWithEmail:', error);
+    throw error;
   }
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return data;
 }
 
 export async function signOut() {
