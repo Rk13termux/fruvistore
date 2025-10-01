@@ -23,15 +23,21 @@ export function initializeSupabase() {
     const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
     const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
-    console.log('🔄 Inicializando Supabase con:', { url: url?.slice(0, 50) + '...', hasKey: !!anonKey });
+    console.log('🔄 Inicializando Supabase con:', { 
+      url: url?.slice(0, 50) + '...', 
+      hasKey: !!anonKey,
+      isPlaceholderUrl: url.includes('your-project'),
+      isPlaceholderKey: anonKey === 'your-anon-key'
+    });
 
-    if (isValidEnvVar(url) && isValidEnvVar(anonKey)) {
+    // Ser más tolerante con variables de desarrollo
+    if (url && anonKey && url !== 'https://your-project.supabase.co' && anonKey !== 'your-anon-key') {
       supabaseClient = supabase.createClient(url, anonKey);
       console.log('✅ Supabase inicializado correctamente');
       return true;
     } else {
       console.warn('⚠️ Variables de entorno no válidas para inicialización automática');
-      console.warn('🔍 Estado:', { url, anonKey, isValidUrl: isValidEnvVar(url), isValidKey: isValidEnvVar(anonKey) });
+      console.warn('🔧 Usa setupSupabase(url, key) en consola para configurar manualmente');
       return false;
     }
   } catch (error) {

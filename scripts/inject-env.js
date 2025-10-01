@@ -47,7 +47,13 @@ let htmlContent = fs.readFileSync(indexPath, 'utf8')
 if (htmlContent.includes('window.__ENV__')) {
   // Verificar si contiene placeholders de GitHub Actions
   if (htmlContent.includes('${{') || htmlContent.includes('secrets.') || htmlContent.includes('your-anon-key')) {
-    console.log('🔄 Placeholders de GitHub Actions detectados, actualizando...');
+    console.log('🔄 Placeholders de GitHub Actions detectados, reemplazando...');
+    // Reemplazar completamente el bloque existente
+    const oldScriptPattern = /<script>\s*window\.__ENV__\s*=\s*{[^}]+};\s*<\/script>/g;
+    const newScript = `<script>
+  window.__ENV__ = ${JSON.stringify(envVars, null, 2)};
+</script>`;
+    htmlContent = htmlContent.replace(oldScriptPattern, newScript);
   } else {
     console.log('ℹ️  Environment variables already injected, skipping...');
     process.exit(0);
