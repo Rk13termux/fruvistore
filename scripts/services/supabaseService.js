@@ -127,7 +127,7 @@ export function getSupabaseConfig() {
 
 // Función para configurar Supabase manualmente (útil para desarrollo)
 export function configureSupabase(url, anonKey) {
-  if (url && anonKey && url !== 'https://your-project.supabase.co') {
+  if (url && anonKey && url !== 'https://ipjkpgmptexkhilrjnsl.supabase.co') {
     localStorage.setItem('fruvi_supabase_url', url);
     localStorage.setItem('fruvi_supabase_anon', anonKey);
     initializeSupabaseClient();
@@ -177,11 +177,51 @@ window.setupSupabase = function(url, anonKey) {
   }
 };
 
-// Función para verificar configuración actual
-window.checkSupabaseConfig = function() {
-  const config = getSupabaseConfig();
-  console.log('🔍 Configuración actual de Supabase:', config);
-  return config;
+// Función para probar conexión con Supabase y diagnosticar problemas
+window.testSupabaseConnection = async function(url, anonKey) {
+  try {
+    console.log('🔍 Probando conexión con Supabase...');
+
+    if (!url || !anonKey) {
+      console.error('❌ Uso: testSupabaseConnection("URL", "CLAVE")');
+      console.log('💡 Tu configuración actual requiere:');
+      console.log('   URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
+      console.log('   Clave: clave anónima real de tu proyecto');
+      return false;
+    }
+
+    // Crear cliente temporal para probar
+    const testClient = supabase.createClient(url, anonKey);
+
+    console.log('📋 Probando consulta simple...');
+
+    // Probar una consulta básica
+    const { data, error } = await testClient
+      .from('customers')
+      .select('count', { count: 'exact', head: true });
+
+    if (error) {
+      console.error('❌ Error de conexión:', error.message);
+      console.error('🔍 Código de error:', error.code);
+
+      if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
+        console.error('🚨 Error típico de red o configuración:');
+        console.error('   - Verifica que la URL sea correcta');
+        console.error('   - Verifica que la clave anónima sea válida');
+        console.error('   - Verifica tu conexión a internet');
+        console.error('   - Verifica que el proyecto Supabase esté activo');
+      }
+
+      return false;
+    } else {
+      console.log('✅ Conexión exitosa con Supabase');
+      console.log('📊 Proyecto Supabase operativo');
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ Error general:', error.message);
+    return false;
+  }
 };
 
 // Función para limpiar configuración (útil para desarrollo)
