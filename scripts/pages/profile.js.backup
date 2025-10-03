@@ -1,10 +1,8 @@
 // Mi Cuenta - Perfil del usuario (Fruvi)
-// Funciones de Supabase disponibles en window:
-// window.getUser, window.getMyCustomer, window.upsertCustomer, window.ensureCustomerExists, window.updateMyCustomer
-// Estas funciones están disponibles globalmente desde supabaseService.js
+import { getUser, getMyCustomer, upsertCustomer, ensureCustomerExists, updateMyCustomer } from '../services/supabaseService.js';
 
 export async function renderProfilePage(root) {
-  const user = await window.getUser();
+  const user = await getUser();
   if (!user) {
     root.innerHTML = `
       <section class="container" style="padding:80px 0;">
@@ -15,9 +13,9 @@ export async function renderProfilePage(root) {
     return;
   }
 
-  let profile = await window.getMyCustomer();
+  let profile = await getMyCustomer();
   if (!profile) {
-    try { profile = await window.ensureCustomerExists(); } catch(_) {}
+    try { profile = await ensureCustomerExists(); } catch(_) {}
   }
 
   root.innerHTML = `
@@ -142,7 +140,7 @@ export async function renderProfilePage(root) {
         email: getVal('#email') || user.email,
         created_at: new Date().toISOString()
       };
-      await window.updateMyCustomer({ ...payload });
+      await updateMyCustomer({ ...payload });
       showToast('Datos guardados');
       // Actualizar nombre en navbar si cambia
       const btn = document.querySelector('.account-btn');
