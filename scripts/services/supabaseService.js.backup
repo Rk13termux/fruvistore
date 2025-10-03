@@ -23,7 +23,7 @@ function isValidEnvVar(value) {
   }
 
 // Función para inicializar Supabase manualmente (para desarrollo)
-window.initializeSupabase = function() {
+export function initializeSupabase() {
   try {
     const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
     const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
@@ -84,7 +84,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Función para obtener información de configuración (sin claves sensibles)
-window.getSupabaseConfig = function() {
+export function getSupabaseConfig() {
   const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
   const anonKey = getAnon();
   return {
@@ -95,7 +95,7 @@ window.getSupabaseConfig = function() {
 }
 
 // Función para configurar Supabase manualmente (útil para desarrollo)
-window.configureSupabase = function(url, anonKey) {
+export function configureSupabase(url, anonKey) {
   if (url && anonKey && url !== 'https://ipjkpgmptexkhilrjnsl.supabase.co') {
     localStorage.setItem('fruvi_supabase_url', url);
     localStorage.setItem('fruvi_supabase_anon', anonKey);
@@ -245,7 +245,7 @@ window.fixLoginConnection = async function() {
 };
 
 // Upload avatar to Supabase Storage (bucket: 'avatars'). Returns public URL.
-window.uploadAvatar = async function(file) {
+export async function uploadAvatar(file) {
   if (!supabaseClient) throw new Error('Supabase no inicializado');
   const { data: authData } = await supabaseClient.auth.getUser();
   const user = authData?.user;
@@ -291,7 +291,7 @@ window.uploadAvatar = async function(file) {
 }
 
 // Auth
-window.signUpWithEmail = async function({ email, password, metadata = {} }) {
+export async function signUpWithEmail({ email, password, metadata = {} }) {
   if (!supabaseClient) {
     const config = getSupabaseConfig();
     throw new Error(`Supabase no inicializado. Configuración actual: ${JSON.stringify(config)}`);
@@ -301,7 +301,7 @@ window.signUpWithEmail = async function({ email, password, metadata = {} }) {
   return data;
 }
 
-window.signInWithEmail = async function({ email, password }) {
+export async function signInWithEmail({ email, password }) {
   try {
     // Intentar solucionar problemas de conexión antes del login
     const connectionFixed = await fixLoginConnection();
@@ -343,7 +343,7 @@ window.signInWithEmail = async function({ email, password }) {
   }
 }
 
-window.signOut = async function() {
+export async function signOut() {
   if (!supabaseClient) {
     console.warn('Supabase no inicializado - no se puede cerrar sesión');
     return;
@@ -351,14 +351,14 @@ window.signOut = async function() {
   await supabaseClient.auth.signOut();
 }
 
-window.getUser = async function() {
+export async function getUser() {
   if (!supabaseClient) return null;
   const { data } = await supabaseClient.auth.getUser();
   return data?.user || null;
 }
 
 // Data: customers table
-window.insertCustomer = async function(userData) {
+export async function insertCustomer(userData) {
   if (supabaseClient) {
     const { error } = await supabaseClient.from('customers').insert([userData]);
     if (!error) return { ok: true };
@@ -371,7 +371,7 @@ window.insertCustomer = async function(userData) {
   return { ok: true, local: true };
 }
 
-window.upsertCustomer = async function(match, patch) {
+export async function upsertCustomer(match, patch) {
   if (!supabaseClient) throw new Error('Supabase no inicializado');
   const { data, error } = await supabaseClient
     .from('customers')
@@ -381,7 +381,7 @@ window.upsertCustomer = async function(match, patch) {
   return data?.[0] || null;
 }
 
-window.getMyCustomer = async function() {
+export async function getMyCustomer() {
   if (!supabaseClient) throw new Error('Supabase no inicializado');
   const { data: authData } = await supabaseClient.auth.getUser();
   const uid = authData?.user?.id;
@@ -397,7 +397,7 @@ window.getMyCustomer = async function() {
 }
 
 // Update current user's customer row; if not exists, insert. Prevents duplicate key errors.
-window.updateMyCustomer = async function(patch) {
+export async function updateMyCustomer(patch) {
   if (!supabaseClient) throw new Error('Supabase no inicializado');
   const { data: authData } = await supabaseClient.auth.getUser();
   const user = authData?.user;
@@ -422,7 +422,7 @@ window.updateMyCustomer = async function(patch) {
 }
 
 // Crea un perfil mínimo si no existe (tras login)
-window.ensureCustomerExists = async function() {
+export async function ensureCustomerExists() {
   if (!supabaseClient) throw new Error('Supabase no inicializado');
   const { data: authData } = await supabaseClient.auth.getUser();
   const user = authData?.user;
@@ -443,7 +443,7 @@ window.ensureCustomerExists = async function() {
 }
 
 // Función para detectar si el usuario está registrado
-window.isUserRegistered = async function() {
+export async function isUserRegistered() {
   try {
     const user = await getUser();
     return user !== null;
@@ -454,7 +454,7 @@ window.isUserRegistered = async function() {
 }
 
 // Función para obtener el estado del usuario (registrado/no registrado)
-window.getUserStatus = async function() {
+export async function getUserStatus() {
   const isRegistered = await isUserRegistered();
   return {
     isRegistered,
@@ -465,7 +465,7 @@ window.getUserStatus = async function() {
 }
 
 // Función para mostrar beneficios de registro
-window.getRegistrationBenefits = function() {
+export function getRegistrationBenefits() {
   return [
     {
       icon: 'fas fa-shopping-cart',
