@@ -46,9 +46,9 @@ export function renderLoginPage(root) {
     const password = String(data.get('password')||'');
     if (!email || !password) return;
     try {
-      await window.signInWithEmail({ email, password });
+      await signInWithEmail({ email, password });
       // Ensure profile exists after login
-      try { await window.ensureCustomerExists(); } catch(_) {}
+      try { await ensureCustomerExists(); } catch(_) {}
       showAuthToast(`Bienvenido, ${email}`);
       setTimeout(() => { location.hash = '#/'; }, 800);
     } catch (err) {
