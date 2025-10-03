@@ -1,7 +1,5 @@
 // Registration Page (Temu-style 3 steps)
-// Funciones de Supabase disponibles en window:
-// window.insertCustomer, window.signUpWithEmail, window.upsertCustomer
-// Estas funciones están disponibles globalmente desde supabaseService.js
+import { insertCustomer, signUpWithEmail, upsertCustomer } from '../services/supabaseService.js';
 import { chatCompletion } from '../services/groqService.js';
 
 export function renderRegistrationPage(root) {
@@ -156,7 +154,7 @@ export function renderRegistrationPage(root) {
 
     try {
       // 1) Crear cuenta en Supabase Auth
-      const signRes = await window.signUpWithEmail({
+      const signRes = await signUpWithEmail({
         email: emailVal,
         password: password,
         metadata: { full_name: payload.full_name, phone: payload.phone }
@@ -168,7 +166,7 @@ export function renderRegistrationPage(root) {
       if (hasSession && userId) {
         // 2) Guardar perfil en customers (usuario ya autenticado)
         const profile = { ...payload, user_id: userId };
-        await window.upsertCustomer({ user_id: userId }, profile);
+        await upsertCustomer({ user_id: userId }, profile);
       }
 
       // Mensaje según modo de confirmación

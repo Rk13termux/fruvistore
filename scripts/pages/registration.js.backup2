@@ -156,7 +156,7 @@ export function renderRegistrationPage(root) {
 
     try {
       // 1) Crear cuenta en Supabase Auth
-      const signRes = await window.signUpWithEmail({
+      const signRes = await signUpWithEmail({
         email: emailVal,
         password: password,
         metadata: { full_name: payload.full_name, phone: payload.phone }
@@ -168,7 +168,7 @@ export function renderRegistrationPage(root) {
       if (hasSession && userId) {
         // 2) Guardar perfil en customers (usuario ya autenticado)
         const profile = { ...payload, user_id: userId };
-        await window.upsertCustomer({ user_id: userId }, profile);
+        await upsertCustomer({ user_id: userId }, profile);
       }
 
       // Mensaje según modo de confirmación
