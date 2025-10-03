@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Directo - Funciones de Supabase</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .test-section {
+            padding: 30px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        button {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+        button.secondary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Test Directo - Funciones de Supabase</h1>
+            <p>Prueba las funciones directamente sin necesidad del resto de la aplicación</p>
+        </div>
+
+        <div class="test-section">
+            <h2>🚀 Configuración de Supabase</h2>
+            <div class="form-group">
+                <label for="supabase-url">URL de Supabase:</label>
+                <input type="text" id="supabase-url" placeholder="https://tu-proyecto.supabase.co" 
+                       value="https://ipjkpgmptexkhilrjnsl.supabase.co">
+            </div>
+            <div class="form-group">
+                <label for="supabase-key">Clave Anónima:</label>
+                <input type="password" id="supabase-key" placeholder="eyJhbGciOiJIUzI1NiIs...">
+            </div>
+            <button onclick="configureSupabase()">Configurar Supabase</button>
+            <button onclick="checkConfiguration()" class="secondary">Verificar Configuración</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🔐 Probar Autenticación</h2>
+            <div class="form-group">
+                <label for="test-email">Email:</label>
+                <input type="email" id="test-email" placeholder="test@example.com">
+            </div>
+            <div class="form-group">
+                <label for="test-password">Contraseña:</label>
+                <input type="password" id="test-password" placeholder="••••••••">
+            </div>
+            <button onclick="testSignIn()">Probar Login</button>
+            <button onclick="testSignUp()" class="secondary">Probar Registro</button>
+            <button onclick="testGetUser()" class="secondary">Obtener Usuario Actual</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Estado del Usuario</h2>
+            <button onclick="checkUserStatus()">Verificar Estado del Usuario</button>
+            <button onclick="checkAllFunctions()" class="secondary">Verificar Todas las Funciones</button>
+        </div>
+
+        <div id="results" class="result"></div>
+    </div>
+
+    <script>
+        // Cargar supabaseService.js directamente
+        const script = document.createElement('script');
+        script.src = 'scripts/services/supabaseService.js';
+        script.onload = () => {
+            log('✅ supabaseService.js cargado correctamente', 'success');
+        };
+        script.onerror = () => {
+            log('❌ Error cargando supabaseService.js', 'error');
+        };
+        document.head.appendChild(script);
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : '';
+            results.innerHTML = `[${timestamp}] ${message}<br>` + results.innerHTML;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function configureSupabase() {
+            const url = document.getElementById('supabase-url').value;
+            const key = document.getElementById('supabase-key').value;
+            
+            if (!url || !key) {
+                log('❌ Por favor ingresa URL y clave de Supabase', 'error');
+                return;
+            }
+
+            if (typeof window.setupSupabase === 'function') {
+                window.setupSupabase(url, key);
+                log(`✅ Supabase configurado: ${url}`, 'success');
+            } else {
+                log('❌ setupSupabase no disponible. Espera a que cargue el archivo...', 'error');
+            }
+        }
+
+        function checkConfiguration() {
+            if (typeof window.checkSupabaseConfig === 'function') {
+                try {
+                    const config = window.checkSupabaseConfig();
+                    log(`📊 Configuración: ${JSON.stringify(config, null, 2)}`, 'success');
+                } catch (error) {
+                    log(`❌ Error verificando configuración: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ checkSupabaseConfig no disponible', 'error');
+            }
+        }
+
+        async function testSignIn() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            
+            if (!email || !password) {
+                log('❌ Por favor ingresa email y contraseña', 'error');
+                return;
+            }
+
+            if (typeof window.signInWithEmail === 'function') {
+                try {
+                    log(`🔐 Intentando login con: ${email}`, 'info');
+                    const result = await window.signInWithEmail({ email, password });
+                    
+                    if (result.error) {
+                        log(`❌ Error en login: ${result.error.message}`, 'error');
+                    } else {
+                        log(`✅ Login exitoso: ${result.data.user?.email}`, 'success');
+                    }
+                } catch (error) {
+                    log(`❌ Error ejecutando login: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ signInWithEmail no disponible. ¿Se cargó supabaseService.js?', 'error');
+            }
+        }
+
+        async function testSignUp() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            
+            if (!email || !password) {
+                log('❌ Por favor ingresa email y contraseña', 'error');
+                return;
+            }
+
+            if (typeof window.signUpWithEmail === 'function') {
+                try {
+                    log(`📝 Intentando registro con: ${email}`, 'info');
+                    const result = await window.signUpWithEmail({ email, password });
+                    
+                    if (result.error) {
+                        log(`❌ Error en registro: ${result.error.message}`, 'error');
+                    } else {
+                        log(`✅ Registro exitoso: ${result.data.user?.email}`, 'success');
+                    }
+                } catch (error) {
+                    log(`❌ Error ejecutando registro: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ signUpWithEmail no disponible', 'error');
+            }
+        }
+
+        async function testGetUser() {
+            if (typeof window.getUser === 'function') {
+                try {
+                    log('👤 Obteniendo usuario actual...', 'info');
+                    const user = await window.getUser();
+                    
+                    if (user) {
+                        log(`✅ Usuario actual: ${user.email}`, 'success');
+                    } else {
+                        log('❌ No hay usuario autenticado', 'error');
+                    }
+                } catch (error) {
+                    log(`❌ Error obteniendo usuario: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ getUser no disponible', 'error');
+            }
+        }
+
+        async function checkUserStatus() {
+            if (typeof window.getUserStatus === 'function') {
+                try {
+                    log('🔍 Verificando estado del usuario...', 'info');
+                    const status = await window.getUserStatus();
+                    log(`📊 Estado: ${JSON.stringify(status, null, 2)}`, 'success');
+                } catch (error) {
+                    log(`❌ Error verificando estado: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ getUserStatus no disponible', 'error');
+            }
+        }
+
+        function checkAllFunctions() {
+            log('🔍 === VERIFICANDO TODAS LAS FUNCIONES ===');
+            
+            const functions = [
+                'signInWithEmail', 'signUpWithEmail', 'getUser', 'getUserStatus',
+                'setupSupabase', 'checkSupabaseConfig', 'ensureSupabaseFunctions'
+            ];
+
+            functions.forEach(func => {
+                const available = typeof window[func] === 'function';
+                const status = available ? '✅ DISPONIBLE' : '❌ NO DISPONIBLE';
+                log(`${status} - ${func}`, available ? 'success' : 'error');
+            });
+        }
+
+        // Verificar funciones al cargar la página
+        setTimeout(() => {
+            log('🚀 Página de test cargada. Verificando funciones...', 'info');
+            checkAllFunctions();
+        }, 2000);
+
+        log('💡 === INSTRUCCIONES ===');
+        log('1. Configura tu URL y clave de Supabase arriba');
+        log('2. Haz clic en "Configurar Supabase"');
+        log('3. Usa los botones para probar cada función');
+        log('4. Revisa la consola para mensajes detallados');
+    </script>
+</body>
+</html>
