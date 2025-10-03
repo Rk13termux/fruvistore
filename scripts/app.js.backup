@@ -10,9 +10,7 @@ import { renderProfilePage } from './pages/profile.js';
 import { renderRecipesBlogPage } from './pages/recipes.js';
 import { renderRecipeDetailPage } from './pages/recipeDetail.js';
 import { initChatWidget } from './components/chatWidget.js';
-// Funciones de Supabase disponibles en window:
-// window.getUser, window.signOut, window.getUserStatus
-// Estas funciones están disponibles globalmente desde supabaseService.js
+import { getUser, signOut, getUserStatus } from './services/supabaseService.js';
 import { checkoutModal } from './components/checkoutModal.js';
 
 function showSPA(renderFn) {
@@ -97,7 +95,7 @@ function showRegistrationRequiredPage(pageName) {
 registerRoute('/', () => showSPA(renderHomePage));
 registerRoute('', () => showSPA(renderHomePage));
 registerRoute('/tienda', async () => {
-  const userStatus = await window.getUserStatus();
+  const userStatus = await getUserStatus();
   if (userStatus.isGuest) {
     showSPA(renderStorePage);
   } else {
@@ -105,7 +103,7 @@ registerRoute('/tienda', async () => {
   }
 });
 registerRoute('/nutricion', async () => {
-  const userStatus = await window.getUserStatus();
+  const userStatus = await getUserStatus();
   if (userStatus.isGuest) {
     showRegistrationRequiredPage('nutricion');
   } else {
@@ -113,7 +111,7 @@ registerRoute('/nutricion', async () => {
   }
 });
 registerRoute('/asistente', async () => {
-  const userStatus = await window.getUserStatus();
+  const userStatus = await getUserStatus();
   if (userStatus.isGuest) {
     showRegistrationRequiredPage('asistente');
   } else {
@@ -121,7 +119,7 @@ registerRoute('/asistente', async () => {
   }
 });
 registerRoute('/recetas', async () => {
-  const userStatus = await window.getUserStatus();
+  const userStatus = await getUserStatus();
   if (userStatus.isGuest) {
     showRegistrationRequiredPage('recetas');
   } else {
@@ -131,7 +129,7 @@ registerRoute('/recetas', async () => {
 registerRoute('/registro', () => showSPA(renderRegistrationPage));
 registerRoute('/login', () => showSPA(renderLoginPage));
 registerRoute('/perfil', async () => {
-  const userStatus = await window.getUserStatus();
+  const userStatus = await getUserStatus();
   if (userStatus.isGuest) {
     showRegistrationRequiredPage('perfil');
   } else {
@@ -141,7 +139,7 @@ registerRoute('/perfil', async () => {
 
 // Dynamic recipe routes (solo para usuarios registrados)
 registerRoute('/receta/:id', async (params) => {
-  const userStatus = await window.getUserStatus();
+  const userStatus = await getUserStatus();
   if (userStatus.isGuest) {
     showRegistrationRequiredPage('receta');
   } else {
@@ -232,7 +230,7 @@ requestAnimationFrame(highlightActiveLink);
 async function renderAuthNav() {
   const nav = document.querySelector('.nav-links');
   if (!nav) return;
-  const user = await window.getUser();
+  const user = await getUser();
 
   // Remove existing auth items
   nav.querySelectorAll('li[data-auth-item]')?.forEach(li => li.remove());
@@ -286,7 +284,7 @@ async function renderAuthNav() {
 
     // Wire sign out
     li.querySelector('#navSignOut').addEventListener('click', async () => {
-      await window.signOut();
+      await signOut();
       renderAuthNav();
       location.hash = '#/';
     });
