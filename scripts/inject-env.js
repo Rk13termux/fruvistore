@@ -44,7 +44,7 @@ console.log('📄 .env.local:', Object.keys(envLocalVars).length > 0 ? '✅ Pres
 console.log('🖥️ Variables de sistema:', Object.keys(systemEnvVars).length > 0 ? '✅ Presentes' : '❌ Ausentes')
 
 const envVars = {
-  VITE_SUPABASE_URL: allEnvVars.VITE_SUPABASE_URL || 'https://your-project.supabase.co',
+  VITE_SUPABASE_URL: allEnvVars.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co',
   VITE_SUPABASE_ANON_KEY: allEnvVars.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
   VITE_GROQ_API_KEY: allEnvVars.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages'
 }
@@ -61,7 +61,7 @@ let htmlContent = fs.readFileSync(indexPath, 'utf8')
 // Check if __ENV__ script already exists
 if (htmlContent.includes('window.__ENV__')) {
   // Verificar si contiene placeholders o si necesitamos actualizar
-  if (htmlContent.includes('${{') || htmlContent.includes('secrets.') || htmlContent.includes('your-anon-key') || htmlContent.includes('your-project.supabase.co')) {
+  if (htmlContent.includes('${{') || htmlContent.includes('secrets.') || htmlContent.includes('your-anon-key') || htmlContent.includes('ipjkpgmptexkhilrjnsl.supabase.co')) {
     console.log('🔄 Placeholders detectados, reemplazando...');
     // Reemplazar completamente el bloque existente
     const oldScriptPattern = /<script>\s*window\.__ENV__\s*=\s*{[^}]+};\s*<\/script>/g;
