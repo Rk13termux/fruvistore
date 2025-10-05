@@ -1,5 +1,24 @@
 // Store Page - Professional Fruit Store
+
+// Helper para esperar a que los servicios estén listos
+async function waitForSupabase() {
+  for (let i = 0; i < 10; i++) { // Intentar por 2 segundos
+    if (window.getUserStatus && window.getRegistrationBenefits) {
+      return true;
+    }
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+  console.error('Error: Los servicios de Supabase no se cargaron a tiempo.');
+  return false;
+}
+
 export async function renderStorePage(root) {
+  const supabaseReady = await waitForSupabase();
+  if (!supabaseReady) {
+    root.innerHTML = `<p style="text-align:center; padding: 40px;">Error al cargar los servicios. Intenta recargar la página.</p>`;
+    return;
+  }
+
   // Detectar si estamos en GitHub Pages o en local
   const isGitHubPages = window.location.hostname.includes('github.io');
   const imagePrefix = isGitHubPages ? '/fruvistore' : '';

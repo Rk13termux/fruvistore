@@ -96,14 +96,7 @@ function showRegistrationRequiredPage(pageName) {
 // Register routes
 registerRoute('/', () => showSPA(renderHomePage));
 registerRoute('', () => showSPA(renderHomePage));
-registerRoute('/tienda', async () => {
-  const userStatus = await window.getUserStatus();
-  if (userStatus.isGuest) {
-    showSPA(renderStorePage);
-  } else {
-    showSPA(renderStorePage);
-  }
-});
+registerRoute('/tienda', () => showSPA(renderStorePage));
 registerRoute('/nutricion', async () => {
   const userStatus = await window.getUserStatus();
   if (userStatus.isGuest) {
