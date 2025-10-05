@@ -8,7 +8,7 @@ const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || window.__ENV__?.VITE_
 const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Función para validar si una variable de entorno es válida (más tolerante para desarrollo)
-function isValidEnvVar(value) {
+  // Función para validar si una variable de entorno es válida (más tolerante para desarrollo)
 if (!value || typeof value !== 'string') return false;
 
 // Rechazar solo placeholders reales de GitHub Actions
@@ -65,8 +65,10 @@ return false;
 }
 }
 
-function getAnon() {
-return localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY;
+function getEnvironmentVariables() {
+  const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
+  const anonKey = localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY;
+  return { url, anonKey };
 }
 
 // Initialize Supabase client
@@ -85,14 +87,14 @@ initializeSupabase();
 
 // Función para obtener información de configuración (sin claves sensibles)
 window.getSupabaseConfig = function getSupabaseConfig() {
-  const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
-const anonKey = getAnon();
-return {
-url: url,
-configured: isValidEnvVar(url) && isValidEnvVar(anonKey),
-initialized: supabaseClient !== null
+  const { url } = getEnvironmentVariables();
+  const anonKey = getAnon();
+  return {
+    url: url,
+    configured: isValidEnvVar(url) && isValidEnvVar(anonKey),
+    initialized: supabaseClient !== null
+  };
 };
-}
 
 // Función para configurar Supabase manualmente (útil para desarrollo)
 window.configureSupabase = function configureSupabase() {
@@ -111,7 +113,7 @@ window.isSupabaseConfigured = () => supabaseClient !== null;
 
 // Función para configuración rápida desde consola (para desarrollo)
 window.setupSupabase = function setupSupabase() {
-  if (!url || !anonKey) {
+  const { url, anonKey } = getEnvironmentVariables();
 console.error('❌ Uso: setupSupabase("URL", "CLAVE_ANONIMA")');
 console.error('Ejemplo: setupSupabase("https://ipjkpgmptexkhilrjnsl.supabase.co", "eyJ...")');
 console.log('💡 Tu configuración actual requiere:');
@@ -119,32 +121,6 @@ console.log('   - URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
 console.log('   - Clave anónima: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MzQxOTQsImV4cCI6MjA3NDMxMDE5NH0.IxY5mC4SxyTzj1Vnns5kDu14wqkcVDksi3FvNEJ1F1o');
 return;
 }
-
-try {
-console.log('🔧 Configurando Supabase manualmente...');
-console.log('📋 URL:', url);
-console.log('🔑 Clave configurada:', '***' + anonKey.slice(-4));
-
-localStorage.setItem('fruvi_supabase_url', url);
-localStorage.setItem('fruvi_supabase_anon', anonKey);
-
-// Intentar inicializar inmediatamente
-const success = initializeSupabaseClient();
-
-if (success) {
-console.log('✅ Supabase configurado e inicializado exitosamente');
-console.log('🎉 Todas las funciones de Supabase ahora están disponibles');
-} else {
-console.log('⚠️ Supabase configurado pero no inicializado');
-console.log('🔍 Verifica que la clave anónima sea válida');
-}
-
-return success;
-} catch (error) {
-console.error('❌ Error configurando Supabase:', error);
-return false;
-}
-};
 
 // Función para probar conexión con Supabase y diagnosticar problemas
 window.testSupabaseConnection = async function testSupabaseConnection() {
@@ -499,14 +475,6 @@ description: 'Guarda tus frutas preferidas para comprar después'
 }
 ];
 }
-
-}
-
-// ============================================================================
-// VERIFICACIÓN ROBUSTA DE FUNCIONES - EJECUTAR DESPUÉS DE LA CARGA
-// ============================================================================
-
-// Función para asegurar que todas las funciones críticas estén disponibles
 function ensureSupabaseFunctions() {
   console.log('🔧 Verificando funciones de Supabase...');
   
@@ -526,10 +494,10 @@ function ensureSupabaseFunctions() {
   criticalFunctions.forEach(funcName => {
     // Verificar si la función existe
     if (typeof window[funcName] !== 'function') {
-      console.warn();
+      console.warn(`❌ Función faltante: ${funcName}`);
       missingFunctions.push(funcName);
     } else {
-      console.log();
+      console.log(`✅ ${funcName}`);
     }
   });
 
@@ -556,3 +524,4 @@ window.ensureSupabaseFunctions = ensureSupabaseFunctions;
 
 console.log('🚀 Sistema de verificación de funciones iniciado');
 console.log('💡 Usa ensureSupabaseFunctions() en consola para verificar manualmente');
+

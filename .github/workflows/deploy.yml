@@ -35,8 +35,8 @@ jobs:
 
       - name: Create environment file
         run: |
-          echo "VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env.local
-          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.local
+          echo "VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL || 'https://your-project.supabase.co' }}" > .env.local
+          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY || 'your-anon-key' }}" >> .env.local
           echo "VITE_GROQ_API_KEY=${{ secrets.GROQ_API_KEY || 'placeholder-key-for-github-pages' }}" >> .env.local
           echo "=== Variables de entorno configuradas ===" >> .env.local
           echo "Build started at: $(date)" >> .env.local
@@ -44,7 +44,7 @@ jobs:
       - name: Verify environment variables
         run: |
           echo "=== Verificando variables de entorno ==="
-          echo "VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}"
+          echo "VITE_SUPABASE_URL presente: ${{ secrets.SUPABASE_URL != '' }}"
           echo "VITE_SUPABASE_ANON_KEY presente: ${{ secrets.SUPABASE_ANON_KEY != '' }}"
           echo "VITE_GROQ_API_KEY presente: ${{ secrets.GROQ_API_KEY != '' }}"
           echo "=== Contenido del archivo .env.local ==="
@@ -64,9 +64,9 @@ jobs:
           npm run build
         env:
           NODE_ENV: production
-          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://your-project.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'your-anon-key' }}
+          VITE_GROQ_API_KEY: ${{ secrets.GROQ_API_KEY || 'placeholder-key-for-github-pages' }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
