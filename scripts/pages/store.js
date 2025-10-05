@@ -4,11 +4,8 @@ export async function renderStorePage(root) {
   const isGitHubPages = window.location.hostname.includes('github.io');
   const imagePrefix = isGitHubPages ? '/fruvistore' : '';
 
-  // Importar servicios de autenticación
-  const { getUserStatus, getRegistrationBenefits } = await import('../services/supabaseService.js');
-
-  // Obtener estado del usuario
-  const userStatus = await getUserStatus();
+  // Obtener estado del usuario desde el objeto global window
+  const userStatus = await window.getUserStatus();
 
   const categories = ['Todas', 'Cítricas', 'Tropicales', 'Bayas', 'Manzanas', 'Uvas'];
 
@@ -227,7 +224,7 @@ export async function renderStorePage(root) {
               ¿Qué obtienes al registrarte?
             </h3>
             <div class="benefits-grid">
-              ${getRegistrationBenefits().map(benefit => `
+              ${window.getRegistrationBenefits().map(benefit => `
                 <div class="benefit-card glass">
                   <div class="benefit-icon">
                     <i class="${benefit.icon}"></i>
