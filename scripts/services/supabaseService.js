@@ -270,7 +270,7 @@ throw error;
 }
 
 // Auth
-window.signUpWithEmail = async function signUpWithEmail() {
+window.signUpWithEmail = async function signUpWithEmail(email, password, metadata = {}) {
   if (!supabaseClient) {
 const config = getSupabaseConfig();
 throw new Error(`Supabase no inicializado. Configuración actual: ${JSON.stringify(config)}`);
@@ -280,7 +280,7 @@ if (error) throw error;
 return data;
 }
 
-window.signInWithEmail = async function signInWithEmail() {
+window.signInWithEmail = async function signInWithEmail(email, password) {
   try {
 // Intentar solucionar problemas de conexión antes del login
 const connectionFixed = await fixLoginConnection();

@@ -1,6 +1,6 @@
 // Login Page - Fruvi Dark Glass Theme
 // Funciones de Supabase disponibles en window:
-// window.signInWithEmail, window.ensureCustomerExists
+// window.signInWithEmail(email, password), window.ensureCustomerExists
 // Estas funciones están disponibles globalmente desde supabaseService.js
 
 export function renderLoginPage(root) {
@@ -46,7 +46,7 @@ export function renderLoginPage(root) {
     const password = String(data.get('password')||'');
     if (!email || !password) return;
     try {
-      await window.signInWithEmail({ email, password });
+      await window.signInWithEmail(email, password);
       // Ensure profile exists after login
       try { await window.ensureCustomerExists(); } catch(_) {}
       showAuthToast(`Bienvenido, ${email}`);
