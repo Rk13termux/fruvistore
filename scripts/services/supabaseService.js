@@ -77,15 +77,10 @@ function getEnvironmentVariables() {
 // Initialize Supabase client
 let supabaseClient = null;
 
-// Auto-initialize when service loads (mejorado para producción)
-if (typeof window !== 'undefined') {
-// Try to initialize with environment variables first
-setTimeout(() => {
-if (!supabaseClient) {
-console.log('🔄 Intentando inicialización automática de Supabase...');
-initializeSupabase();
-}
-}, 100);
+// Auto-initialize when service loads
+if (typeof window !== 'undefined' && !supabaseClient) {
+  console.log('🔄 Inicializando Supabase automáticamente...');
+  initializeSupabase();
 }
 
 // Función para obtener información de configuración (sin claves sensibles)
