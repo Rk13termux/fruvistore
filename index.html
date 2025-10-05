@@ -483,5 +483,31 @@
     <script type="module" src="scripts/services/supabaseService.js"></script>
     <script type="module" src="scripts/services/groqService.js"></script>
     <script type="module" src="scripts/app.js"></script>
+
+    <!-- Debug script para verificar funciones -->
+    <script>
+      // Función de verificación inmediata
+      function checkSupabaseFunctions() {
+        console.log('🔍 Verificando funciones de Supabase inmediatamente...');
+        const functions = ['signInWithEmail', 'signUpWithEmail', 'getUser', 'signOut'];
+        functions.forEach(func => {
+          if (typeof window[func] === 'function') {
+            console.log(`✅ ${func} está disponible`);
+          } else {
+            console.error(`❌ ${func} NO está disponible`);
+          }
+        });
+      }
+
+      // Ejecutar inmediatamente cuando se cargue la página
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkSupabaseFunctions);
+      } else {
+        checkSupabaseFunctions();
+      }
+
+      // También verificar después de 3 segundos
+      setTimeout(checkSupabaseFunctions, 3000);
+    </script>
 </body>
 </html>

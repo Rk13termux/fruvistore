@@ -8,18 +8,21 @@ const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || window.__ENV__?.VITE_
 const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Función para validar si una variable de entorno es válida (más tolerante para desarrollo)
-  // Función para validar si una variable de entorno es válida (más tolerante para desarrollo)
-if (!value || typeof value !== 'string') return false;
+function isValidEnvVar(value) {
+  if (!value || typeof value !== 'string') return false;
 
-// Rechazar solo placeholders reales de GitHub Actions
-if (value.includes('${{') || value.includes('secrets.')) {
-return false;
-}
+  // Rechazar solo placeholders reales de GitHub Actions
+  if (value.includes('${{') || value.includes('secrets.')) {
+    return false;
+  }
 
-// Ser más tolerante con valores de desarrollo
-if (value === 'your-anon-key' || value === 'ipjkpgmptexkhilrjnsl.supabase.co') {
-// Estos son valores por defecto válidos para desarrollo
-return true;
+  // Ser más tolerante con valores de desarrollo
+  if (value === 'your-anon-key' || value === 'ipjkpgmptexkhilrjnsl.supabase.co') {
+    // Estos son valores por defecto válidos para desarrollo
+    return true;
+  }
+
+  return true;
 }
 
 // Función para inicializar Supabase manualmente (para desarrollo)
