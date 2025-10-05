@@ -99,14 +99,22 @@ window.getSupabaseConfig = function getSupabaseConfig() {
   };
 };
 
-// Función para configurar Supabase manualmente (útil para desarrollo)
-window.configureSupabase = function configureSupabase() {
-  if (url && anonKey && url !== 'https://ipjkpgmptexkhilrjnsl.supabase.co') {
-localStorage.setItem('fruvi_supabase_url', url);
-localStorage.setItem('fruvi_supabase_anon', anonKey);
-initializeSupabaseClient();
-}
-}
+// Función para configurar Supabase con credenciales reales
+window.configureSupabase = function configureSupabase(url, anonKey) {
+  if (!url || !anonKey) {
+    console.error('❌ Uso: configureSupabase("URL_SUPABASE", "CLAVE_ANONIMA")');
+    console.error('Ejemplo: configureSupabase("https://tu-proyecto.supabase.co", "eyJ...")');
+    return false;
+  }
+
+  // Guardar configuración
+  localStorage.setItem('fruvi_supabase_url', url);
+  localStorage.setItem('fruvi_supabase_anon', anonKey);
+
+  // Reinicializar cliente
+  const success = window.initializeSupabase();
+  return success;
+};
 
 // Hacer funciones disponibles globalmente para consola de desarrollo
 if (typeof window !== 'undefined') {
@@ -115,15 +123,41 @@ window.isSupabaseConfigured = () => supabaseClient !== null;
 }
 
 // Función para configuración rápida desde consola (para desarrollo)
-window.setupSupabase = function setupSupabase() {
-  const { url, anonKey } = getEnvironmentVariables();
-console.error('❌ Uso: setupSupabase("URL", "CLAVE_ANONIMA")');
-console.error('Ejemplo: setupSupabase("https://ipjkpgmptexkhilrjnsl.supabase.co", "eyJ...")');
-console.log('💡 Tu configuración actual requiere:');
-console.log('   - URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
-console.log('   - Clave anónima: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MzQxOTQsImV4cCI6MjA3NDMxMDE5NH0.IxY5mC4SxyTzj1Vnns5kDu14wqkcVDksi3FvNEJ1F1o');
-return;
-}
+window.setupSupabase = function setupSupabase(url, anonKey) {
+  if (!url || !anonKey) {
+    console.error('❌ Uso: setupSupabase("URL_SUPABASE", "CLAVE_ANONIMA")');
+    console.error('Ejemplo: setupSupabase("https://tu-proyecto.supabase.co", "eyJhbGciOiJIUzI1NiIs...")');
+    console.log('💡 Pasos para obtener tus credenciales:');
+    console.log('1. Ve a https://supabase.com/dashboard');
+    console.log('2. Selecciona tu proyecto');
+    console.log('3. Ve a Settings > API');
+    console.log('4. Copia la URL del proyecto y la clave "anon public"');
+    return;
+  }
+
+  try {
+    console.log('🔧 Configurando Supabase con tus credenciales...');
+
+    // Guardar en localStorage para persistencia
+    localStorage.setItem('fruvi_supabase_url', url);
+    localStorage.setItem('fruvi_supabase_anon', anonKey);
+
+    // Inicializar cliente
+    const success = window.initializeSupabase();
+
+    if (success) {
+      console.log('✅ Supabase configurado exitosamente');
+      console.log('🎉 Puedes usar todas las funciones de autenticación ahora');
+      return true;
+    } else {
+      console.error('❌ Error al inicializar Supabase');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error configurando Supabase:', error);
+    return false;
+  }
+};
 
 // Función para probar conexión con Supabase y diagnosticar problemas
 window.testSupabaseConnection = async function testSupabaseConnection() {
