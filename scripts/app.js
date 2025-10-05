@@ -319,37 +319,6 @@ if (document.readyState === 'loading') {
 // Make checkout modal globally available
 window.checkoutModal = checkoutModal;
 
-// Make Supabase service functions globally available
-import('./services/supabaseService.js').then(module => {
-  window.supabaseService = module;
-
-  // Make key functions available globally for console access
-  if (typeof window !== 'undefined') {
-    window.getSupabaseConfig = module.getSupabaseConfig;
-    window.configureSupabase = module.configureSupabase;
-    window.isSupabaseConfigured = module.isSupabaseConfigured;
-    window.setupSupabase = function(url, anonKey) {
-      if (module.configureSupabase) {
-        module.configureSupabase(url, anonKey);
-        console.log('✅ Supabase configurado exitosamente');
-        console.log('🔄 Recarga la página para aplicar los cambios');
-      }
-    };
-    window.checkSupabaseConfig = function() {
-      const config = module.getSupabaseConfig ? module.getSupabaseConfig() : { url: 'No disponible', configured: false, initialized: false };
-      console.log('🔍 Configuración actual de Supabase:', config);
-      return config;
-    };
-    window.clearSupabaseConfig = function() {
-      localStorage.removeItem('fruvi_supabase_url');
-      localStorage.removeItem('fruvi_supabase_anon');
-      console.log('🗑️ Configuración de Supabase eliminada');
-      console.log('🔄 Recarga la página para aplicar los cambios');
-    };
-  }
-}).catch(error => {
-  console.error('Error loading Supabase service:', error);
-});
 
 // Global function to refresh navigation after login/signup
 window.refreshNavigation = () => {
