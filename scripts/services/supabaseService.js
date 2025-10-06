@@ -16,10 +16,9 @@ function isValidEnvVar(value) {
     return false;
   }
 
-  // Ser más tolerante con valores de desarrollo
-  if (value === 'your-anon-key' || value === 'ipjkpgmptexkhilrjnsl.supabase.co') {
-    // Estos son valores por defecto válidos para desarrollo
-    return true;
+  // REJECT invalid placeholder keys. This is the root cause of the crash.
+  if (value === 'your-anon-key') {
+    return false;
   }
 
   return true;
@@ -311,44 +310,25 @@ return data;
 
 window.signInWithEmail = async function signInWithEmail(email, password) {
   try {
-// Intentar solucionar problemas de conexión antes del login
-const connectionFixed = await fixLoginConnection();
-if (!connectionFixed) {
-console.warn('⚠️ Problemas de conexión detectados, intentando login de todas formas...');
-}
+    if (!supabaseClient) {
+      const config = getSupabaseConfig();
+      throw new Error(`Supabase no inicializado. Configuración actual: ${JSON.stringify(config)}`);
+    }
 
-if (!supabaseClient) {
-const config = getSupabaseConfig();
-throw new Error(`Supabase no inicializado. Configuración actual: ${JSON.stringify(config)}`);
-}
+    console.log('🔐 Intentando login...');
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
-console.log('🔐 Intentando login...');
-const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+      console.error('❌ Error en login:', error.message);
+      throw error;
+    }
 
-if (error) {
-console.error('❌ Error en login:', error.message);
-
-// Si el error es de conexión, intentar una última solución
-if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
-console.log('🔧 Intentando solución automática...');
-const retryFixed = await fixLoginConnection();
-if (retryFixed) {
-console.log('🔄 Reintentando login después de solución...');
-const { data: retryData, error: retryError } = await supabaseClient.auth.signInWithPassword({ email, password });
-if (retryError) throw retryError;
-return retryData;
-}
-}
-
-throw error;
-}
-
-console.log('✅ Login exitoso');
-return data;
-} catch (error) {
-console.error('❌ Error en signInWithEmail:', error);
-throw error;
-}
+    console.log('✅ Login exitoso');
+    return data;
+  } catch (error) {
+    console.error('❌ Error en signInWithEmail:', error);
+    throw error;
+  }
 }
 
 window.signOut = async function signOut() {
