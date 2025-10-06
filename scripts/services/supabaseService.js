@@ -340,9 +340,10 @@ await supabaseClient.auth.signOut();
 }
 
 window.getUser = async function getUser() {
+  // CRITICAL FIX: Prevent crash if supabase client failed to initialize.
   if (!supabaseClient) return null;
-const { data } = await supabaseClient.auth.getUser();
-return data?.user || null;
+  const { data } = await supabaseClient.auth.getUser();
+  return data?.user || null;
 }
 
 // Data: customers table
