@@ -28,44 +28,44 @@ function isValidEnvVar(value) {
 // Función para inicializar Supabase manualmente (para desarrollo)
 window.initializeSupabase = function initializeSupabase() {
   try {
-const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+    // CORRECT: Use the helper function that properly checks localStorage and env vars.
+    const { url, anonKey } = getEnvironmentVariables();
 
-console.log('🔄 initializeSupabase - Variables recibidas:', {
-url: url,
-hasKey: !!anonKey,
-urlType: typeof url,
-keyType: typeof anonKey,
-urlValid: isValidEnvVar(url),
-keyValid: isValidEnvVar(anonKey)
-});
+    console.log('🔄 initializeSupabase - Variables recibidas:', {
+      url: url,
+      hasKey: !!anonKey,
+      urlType: typeof url,
+      keyType: typeof anonKey,
+      urlValid: isValidEnvVar(url),
+      keyValid: isValidEnvVar(anonKey)
+    });
 
-if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey)) {
-try {
-console.log('🚀 Creando cliente Supabase con URL:', url);
-supabaseClient = supabase.createClient(url, anonKey);
-console.log('✅ Cliente Supabase creado exitosamente');
-return true;
-} catch (createError) {
-console.error('❌ Error creando cliente Supabase:', createError.message);
-console.error('🔍 Detalles del error:', createError);
-return false;
-}
-} else {
-console.warn('⚠️ Variables no válidas para inicialización automática');
-console.warn('🔧 Estado actual:', {
-url: url,
-hasUrl: !!url,
-hasKey: !!anonKey,
-urlValid: isValidEnvVar(url),
-keyValid: isValidEnvVar(anonKey)
-});
-return false;
-}
-} catch (error) {
-console.error('❌ Error general en initializeSupabase:', error);
-return false;
-}
+    if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey)) {
+      try {
+        console.log('🚀 Creando cliente Supabase con URL:', url);
+        supabaseClient = supabase.createClient(url, anonKey);
+        console.log('✅ Cliente Supabase creado exitosamente');
+        return true;
+      } catch (createError) {
+        console.error('❌ Error creando cliente Supabase:', createError.message);
+        console.error('🔍 Detalles del error:', createError);
+        return false;
+      }
+    } else {
+      console.warn('⚠️ Variables no válidas para inicialización automática');
+      console.warn('🔧 Estado actual:', {
+        url: url,
+        hasUrl: !!url,
+        hasKey: !!anonKey,
+        urlValid: isValidEnvVar(url),
+        keyValid: isValidEnvVar(anonKey)
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error general en initializeSupabase:', error);
+    return false;
+  }
 }
 
 function getEnvironmentVariables() {
