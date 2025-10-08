@@ -580,38 +580,149 @@ body {
   .auth__card { padding: 24px 28px; margin: 0 16px; }
 }
 
-/* Registration form as glass */
-.registration .registration-form {
-  border-radius: 20px; padding: 32px 36px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid var(--border);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+/* Professional Registration Form (Centered) */
+.registration { padding: 80px 0; }
+.registration__header {
+  text-align: center;
+  margin-bottom: 48px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.registration .form-group input,
-.registration .form-group select {
+.registration__header h2 {
+  color: var(--txt);
+  margin-bottom: 12px;
+  font-size: 2.2rem;
+  text-shadow: 0 0 20px rgba(124,245,155,0.2);
+}
+.registration__header p {
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.registration__form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.registration-form {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.form-step {
+  display: none;
+  animation: fadeInUp 0.4s ease-out;
+}
+.form-step.active {
+  display: block;
+}
+
+.form-step h3 {
+  color: var(--txt);
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  color: var(--txt);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
   background: rgba(255,255,255,0.06);
-  color: var(--txt); border: 2px solid var(--border);
-  border-radius: 12px; padding: 14px 16px;
-  font-size: 1rem; transition: all 0.2s ease;
+  color: var(--txt);
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.2s ease;
 }
-.registration .form-group input:focus,
-.registration .form-group select:focus {
+
+.form-group input:focus,
+.form-group select:focus {
   border-color: var(--brand);
   box-shadow: 0 0 0 3px rgba(124,245,155,0.15);
 }
-.registration .form-step h3 {
-  color: var(--txt); margin-bottom: 24px; font-size: 1.3rem;
+
+.form-group input::placeholder {
+  color: var(--muted);
 }
-.prev-step {
-  background: rgba(255,255,255,0.08) !important;
-  color: var(--txt); border: 1px solid var(--border);
-  padding: 12px 20px; border-radius: 12px;
-  font-weight: 600; transition: all 0.2s ease;
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
 }
-.prev-step:hover {
-  background: rgba(255,255,255,0.12) !important;
-  border-color: var(--muted);
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.checkbox-group label:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .registration { padding: 60px 0; }
+  .registration__header {
+    margin-bottom: 32px;
+    padding: 0 16px;
+  }
+  .registration__header h2 {
+    font-size: 1.8rem;
+  }
+  .registration__form-wrapper {
+    padding: 0 16px;
+  }
+  .form-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .checkbox-group {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-form {
+    padding: 24px 28px;
+  }
+  .form-step h3 {
+    font-size: 1.2rem;
+  }
 }
 
 
