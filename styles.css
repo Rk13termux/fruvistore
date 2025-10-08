@@ -35,6 +35,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
+    position: relative;
 }
 
 .logo {
@@ -75,13 +76,14 @@ body {
 /* Hero Section */
 .hero {
     background: linear-gradient(rgba(46, 204, 113, 0.8), rgba(39, 174, 96, 0.8)), url('https://via.placeholder.com/1920x1080') center/cover;
-    height: 100vh;
+    min-height: 70vh;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: white;
     margin-top: 80px;
+    padding: 40px 0;
 }
 
 .hero-content h1 {
@@ -147,7 +149,8 @@ body {
 
 .product-card img {
     width: 100%;
-    height: 200px;
+    height: auto;
+    aspect-ratio: 4 / 3;
     object-fit: cover;
 }
 
@@ -515,43 +518,39 @@ body {
 @media (max-width: 768px) {
     .nav-links {
         display: none;
+        position: absolute;
+        right: 0;
+        top: 64px;
+        width: 72vw;
+        max-width: 380px;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(0,0,0,0.9);
+        padding: 12px;
+        border-radius: 12px 0 0 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     }
+    .nav-links li { width: 100%; }
+    .nav-links a { display: block; padding: 12px 10px; border-radius: 8px; }
+    .nav-links a:hover { background: rgba(255,255,255,0.08); }
 
     .mobile-menu {
         display: block;
     }
 
-    .hero-content h1 {
-        font-size: 2.5rem;
-    }
+    .hero-content h1 { font-size: 2.2rem; }
+    .hero-content p { font-size: 1.05rem; }
 
-    .hero-content p {
-        font-size: 1.1rem;
-    }
+    .products-grid { grid-template-columns: 1fr; }
 
-    .products-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-buttons {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
+    .form-buttons { flex-direction: column; gap: 1rem; }
     .next-step,
     .prev-step,
-    .submit-btn {
-        width: 100%;
-    }
+    .submit-btn { width: 100%; }
 
-    .nutrition-table {
-        font-size: 0.9rem;
-    }
-
+    .nutrition-table { font-size: 0.9rem; }
     .nutrition-table th,
-    .nutrition-table td {
-        padding: 10px 5px;
-    }
+    .nutrition-table td { padding: 10px 5px; }
 }
 
 @media (max-width: 480px) {
