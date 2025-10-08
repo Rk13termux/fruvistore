@@ -169,36 +169,33 @@ async function renderAuthNav() {
     basicTabs.forEach(el => { el.classList.add('hidden'); el.style.display = 'none'; });
     premiumTabs.forEach(el => { el.classList.remove('hidden'); el.style.display = 'list-item'; });
 
-    // Agregar menú de cuenta
+    // Agregar menú de cuenta (con ARIA)
     const display = user.user_metadata?.full_name || user.email || 'Mi Cuenta';
     const li = document.createElement('li');
     li.dataset.authItem = 'account';
+    const btnId = 'accbtn-' + Math.random().toString(36).slice(2, 8);
     li.innerHTML = `
       <div class="account-dropdown">
-        <button class="account-btn">${escapeHtml(display)} <i class="fas fa-chevron-down"></i></button>
-        <div class="account-menu glass">
-          <a href="#/perfil" class="account-link">Mi Cuenta</a>
-          <button id="navSignOut" class="account-link btn-linklike">Salir</button>
+        <button class="account-btn" aria-haspopup="true" aria-expanded="false" id="${btnId}">
+          ${escapeHtml(display)} <i class="fas fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <div class="account-menu glass" role="menu" aria-labelledby="${btnId}">
+          <a href="#/perfil" class="account-link" role="menuitem">Mi Cuenta</a>
+          <button id="navSignOut" class="account-link btn-linklike" role="menuitem">Salir</button>
         </div>
       </div>
     `;
     nav.appendChild(li);
-    // Dropdown toggle/open/close behavior
-    const btn = li.querySelector('.account-btn');
-    const menu = li.querySelector('.account-menu');
-    const closeMenu = () => menu.classList.remove('open');
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      menu.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-      if (!li.contains(e.target)) closeMenu();
-    }, { once: true });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); }, { once: true });
-
-    li.querySelector('#navSignOut').addEventListener('click', async () => {
-      await window.signOut();
-      location.hash = '#/';
+    // Manejar sign-out con protección doble click
+    const signOutBtn = li.querySelector('#navSignOut');
+    signOutBtn.addEventListener('click', async () => {
+      try {
+        signOutBtn.disabled = true;
+        await window.signOut();
+      } finally {
+        location.hash = '#/';
+        signOutBtn.disabled = false;
+      }
     });
   } else {
     // Invitado: mostrar básicas, ocultar premium
@@ -221,6 +218,9 @@ async function renderAuthNav() {
       registroLi.style.display = '';
     }
   }
+
+  // Inicializar controlador global del dropdown (una sola vez)
+  setupAccountDropdown();
 }
 
 function escapeHtml(s) { return (s || '').replace(/[&<>'"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -230,16 +230,52 @@ function escapeHtml(s) { return (s || '').replace(/[&<>'"']/g, c => ({ '&': '&am
 window.checkoutModal = checkoutModal;
 window.refreshNavigation = renderAuthNav;
 
+// Controlador global para el dropdown de cuenta
+let accountDropdownInitialized = false;
+function setupAccountDropdown() {
+  if (accountDropdownInitialized) return;
+  accountDropdownInitialized = true;
+  // Toggle al click en el botón
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.account-btn');
+    const openMenus = document.querySelectorAll('.account-menu.open');
+    // Cerrar todos por defecto
+    openMenus.forEach(m => {
+      const b = document.getElementById(m.getAttribute('aria-labelledby'));
+      if (b) b.setAttribute('aria-expanded', 'false');
+      m.classList.remove('open');
+    });
+    if (btn) {
+      const dd = btn.closest('.account-dropdown');
+      const menu = dd?.querySelector('.account-menu');
+      if (menu) {
+        const willOpen = !menu.classList.contains('open');
+        if (willOpen) {
+          menu.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+          // Evitar que cierre instantáneamente
+          e.stopPropagation();
+        }
+      }
+    }
+  });
+  // Cerrar con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.account-menu.open').forEach(m => {
+        const b = document.getElementById(m.getAttribute('aria-labelledby'));
+        if (b) b.setAttribute('aria-expanded', 'false');
+        m.classList.remove('open');
+      });
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   setupMobileNav();
   initChatWidget();
   renderAuthNav();
-  // Observe nav changes and enforce visibility to avoid race conditions
-  const nav = document.querySelector('.nav-links');
-  if (nav) {
-    const observer = new MutationObserver(() => { renderAuthNav(); });
-    observer.observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
-  }
+  setupAccountDropdown();
 });
 
 window.addEventListener('hashchange', renderAuthNav);
