@@ -166,8 +166,8 @@ async function renderAuthNav() {
 
   if (user) {
     // Usuario autenticado: ocultar básicas, mostrar premium
-    basicTabs.forEach(el => el.classList.add('hidden'));
-    premiumTabs.forEach(el => el.classList.remove('hidden'));
+    basicTabs.forEach(el => { el.classList.add('hidden'); el.style.display = 'none'; });
+    premiumTabs.forEach(el => { el.classList.remove('hidden'); el.style.display = 'list-item'; });
 
     // Agregar menú de cuenta
     const display = user.user_metadata?.full_name || user.email || 'Mi Cuenta';
@@ -189,8 +189,8 @@ async function renderAuthNav() {
     });
   } else {
     // Invitado: mostrar básicas, ocultar premium
-    basicTabs.forEach(el => el.classList.remove('hidden'));
-    premiumTabs.forEach(el => el.classList.add('hidden'));
+    basicTabs.forEach(el => { el.classList.remove('hidden'); el.style.display = ''; });
+    premiumTabs.forEach(el => { el.classList.add('hidden'); el.style.display = 'none'; });
     // No agregamos Login/Registro aquí para evitar duplicados; ya existen como .basic-tab en index.html
   }
 }
