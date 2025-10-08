@@ -24,7 +24,7 @@ function showSPA(rootEl, renderFn, ...args) {
 
 function showRegistrationRequiredPage(rootEl, pageName) {
   if (!rootEl) return;
-  const pageTitles = { nutricion: 'Nutrición', asistente: 'Asistente IA', recetas: 'Recetas', perfil: 'Perfil', receta: 'Receta' };
+  const pageTitles = { nutricion: 'Nutrición', asistente: 'Asistente IA', recetas: 'Recetas', perfil: 'Perfil', receta: 'Receta', tienda: 'Tienda' };
   const pageTitle = pageTitles[pageName] || 'Esta página';
   rootEl.innerHTML = `
     <section class="registration-required-page">
@@ -49,9 +49,27 @@ function showRegistrationRequiredPage(rootEl, pageName) {
 
 registerRoute('/', (rootEl, params) => showSPA(rootEl, renderHomePage));
 registerRoute('', (rootEl, params) => showSPA(rootEl, renderHomePage));
-registerRoute('/tienda', (rootEl, params) => showSPA(rootEl, renderStorePage));
-registerRoute('/registro', (rootEl, params) => showSPA(rootEl, renderRegistrationPage));
-registerRoute('/login', (rootEl, params) => showSPA(rootEl, renderLoginPage));
+registerRoute('/tienda', async (rootEl, params) => {
+  const userStatus = await window.getUserStatus();
+  if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'tienda');
+  else showSPA(rootEl, renderStorePage);
+});
+registerRoute('/registro', async (rootEl, params) => {
+  const user = await window.getUser();
+  if (user) {
+    location.hash = '#/';
+    return;
+  }
+  showSPA(rootEl, renderRegistrationPage);
+});
+registerRoute('/login', async (rootEl, params) => {
+  const user = await window.getUser();
+  if (user) {
+    location.hash = '#/';
+    return;
+  }
+  showSPA(rootEl, renderLoginPage);
+});
 
 registerRoute('/nutricion', async (rootEl, params) => {
   const userStatus = await window.getUserStatus();
@@ -139,9 +157,19 @@ async function renderAuthNav() {
   if (!nav) return;
   const user = await window.getUser();
 
+  // Limpia elementos de cuenta previos (dropdown de cuenta y similares)
   nav.querySelectorAll('[data-auth-item]').forEach(el => el.remove());
 
+  // Referencias a pestañas básicas y premium existentes en el DOM
+  const basicTabs = nav.querySelectorAll('.basic-tab');
+  const premiumTabs = nav.querySelectorAll('.premium-tab');
+
   if (user) {
+    // Usuario autenticado: ocultar básicas, mostrar premium
+    basicTabs.forEach(el => el.classList.add('hidden'));
+    premiumTabs.forEach(el => el.classList.remove('hidden'));
+
+    // Agregar menú de cuenta
     const display = user.user_metadata?.full_name || user.email || 'Mi Cuenta';
     const li = document.createElement('li');
     li.dataset.authItem = 'account';
@@ -160,14 +188,10 @@ async function renderAuthNav() {
       location.hash = '#/';
     });
   } else {
-    const loginLi = document.createElement('li');
-    loginLi.dataset.authItem = 'login';
-    loginLi.innerHTML = '<a href="#/login">Login</a>';
-    const regLi = document.createElement('li');
-    regLi.dataset.authItem = 'register';
-    regLi.innerHTML = '<a href="#/registro">Registro</a>';
-    nav.appendChild(loginLi);
-    nav.appendChild(regLi);
+    // Invitado: mostrar básicas, ocultar premium
+    basicTabs.forEach(el => el.classList.remove('hidden'));
+    premiumTabs.forEach(el => el.classList.add('hidden'));
+    // No agregamos Login/Registro aquí para evitar duplicados; ya existen como .basic-tab en index.html
   }
 }
 

@@ -226,6 +226,47 @@ body {
 .btn-link:hover { text-decoration: underline; }
 .toast { padding: 12px 14px; border-radius: 12px; color: var(--txt); border: 1px solid var(--border); }
 
+/* Registration Required (Gate) */
+.registration-required-page { padding: 120px 0 80px; }
+.registration-required-content {
+  position: relative;
+  border-radius: 18px;
+  padding: 24px 26px;
+  overflow: hidden;
+}
+.registration-required-content::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: radial-gradient(800px 300px at -10% 0%, rgba(124,245,155,0.08), transparent 60%),
+              radial-gradient(600px 240px at 110% 0%, rgba(94,199,255,0.08), transparent 60%);
+}
+.required-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  display: grid; place-items: center; margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  color: #0b0f14; border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 24px rgba(124,245,155,0.18);
+}
+.registration-required-content h2 {
+  margin: 6px 0 6px; color: var(--txt);
+  text-shadow: 0 0 18px rgba(124,245,155,0.18);
+}
+.registration-required-content .required-message { color: var(--muted); margin-bottom: 14px; }
+.registration-required-content strong { color: var(--brand); }
+.required-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* Button variants for gate */
+.btn-outline { border: 1px solid var(--brand); background: transparent; color: var(--brand); padding: 10px 14px; border-radius: 12px; cursor: pointer; }
+.btn-outline:hover { background: var(--brand); color: #0b0f14; }
+.registration-required-content .btn-primary { padding: 10px 16px; border-radius: 12px; font-weight: 700; }
+.registration-required-content .register-now { animation: glowPulse 2.2s ease-in-out infinite; }
+
+@media (max-width: 560px) {
+  .registration-required-content { padding: 18px; }
+  .required-actions { gap: 8px; }
+}
+
 /* Registration form as glass */
 .registration .registration-form { border-radius: 18px; }
 .registration .registration-form, .registration .form-group input, .registration .form-group select { background: rgba(255,255,255,0.06); color: var(--txt); border-color: var(--border); }
