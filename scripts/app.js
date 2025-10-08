@@ -183,6 +183,19 @@ async function renderAuthNav() {
       </div>
     `;
     nav.appendChild(li);
+    // Dropdown toggle/open/close behavior
+    const btn = li.querySelector('.account-btn');
+    const menu = li.querySelector('.account-menu');
+    const closeMenu = () => menu.classList.remove('open');
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      menu.classList.toggle('open');
+    });
+    document.addEventListener('click', (e) => {
+      if (!li.contains(e.target)) closeMenu();
+    }, { once: true });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); }, { once: true });
+
     li.querySelector('#navSignOut').addEventListener('click', async () => {
       await window.signOut();
       location.hash = '#/';
@@ -192,6 +205,21 @@ async function renderAuthNav() {
     basicTabs.forEach(el => { el.classList.remove('hidden'); el.style.display = ''; });
     premiumTabs.forEach(el => { el.classList.add('hidden'); el.style.display = 'none'; });
     // No agregamos Login/Registro aquí para evitar duplicados; ya existen como .basic-tab en index.html
+  }
+
+  // Fallback: explicitly toggle Login/Registro by href in case classes are missing or overridden
+  const loginA = nav.querySelector('a[href="#/login"]');
+  const registroA = nav.querySelector('a[href="#/registro"]');
+  const loginLi = loginA ? loginA.closest('li') : null;
+  const registroLi = registroA ? registroA.closest('li') : null;
+  if (loginLi && registroLi) {
+    if (user) {
+      loginLi.style.display = 'none';
+      registroLi.style.display = 'none';
+    } else {
+      loginLi.style.display = '';
+      registroLi.style.display = '';
+    }
   }
 }
 
@@ -206,6 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMobileNav();
   initChatWidget();
   renderAuthNav();
+  // Observe nav changes and enforce visibility to avoid race conditions
+  const nav = document.querySelector('.nav-links');
+  if (nav) {
+    const observer = new MutationObserver(() => { renderAuthNav(); });
+    observer.observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+  }
 });
 
 window.addEventListener('hashchange', renderAuthNav);
