@@ -10,6 +10,37 @@ const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || window.__ENV__?.VITE_
 function getGroqBase() {
   return localStorage.getItem('fruvi_groq_base') || DEFAULT_GROQ_API_BASE;
 }
+
+// Multi-turn chat completion with history and stricter domain guard
+export async function chatCompletionWithHistory(messages, {
+  temperature = 0.3,
+  max_tokens = 800
+} = {}) {
+  // messages: array of { role: 'user'|'assistant', content: string }
+  const systemPrompt = `Eres Fruvi, el asistente tipo ChatGPT de una tienda de frutas premium.
+Reglas:
+- Responde SIEMPRE en español con tono cercano y profesional.
+- Enfócate SOLO en temas de frutas: variedades, compras, pedidos, envíos, almacenamiento, nutrición, recetas con frutas, maridajes, estacionalidad y calidad.
+- Si te preguntan algo fuera de ese ámbito, rehúsa amablemente y redirige el tema a frutas.
+- Sé útil y conciso, usa listas y formato Markdown cuando ayude (titulares breves, listas, negritas para puntos clave).
+- Si faltan datos, indícalo y sugiere alternativas u opciones.
+Marca: Fruvi.`;
+
+  const body = {
+    model: getGroqModel(),
+    messages: [
+      { role: 'system', content: systemPrompt },
+      ...messages
+    ],
+    temperature,
+    max_tokens,
+    stream: false
+  };
+
+  const res = await callGroq(body);
+  const data = await res.json();
+  return data?.choices?.[0]?.message?.content || 'No se recibió respuesta.';
+}
 function getGroqKey() {
   return localStorage.getItem('fruvi_groq_key') || GROQ_API_KEY;
 }
@@ -106,7 +137,7 @@ Las cantidades son aproximadas y por cada 100 g. Si no hay datos, usa null. Nunc
 
 // General chat completion for assistant
 export async function chatCompletion(userMessage) {
-  const systemPrompt = `Eres FreshBot, asistente de una tienda de frutas FreshFruits. Responde en español de forma clara, breve, útil y amigable. Puedes ayudar con precios, compras, envíos, nutrición y calidad. Si no tienes datos exactos, indícalo y ofrece una alternativa.`;
+  const systemPrompt = `Eres Fruvi, asistente de una tienda de frutas. Responde en español de forma clara, breve, útil y amigable. Puedes ayudar con precios, compras, envíos, nutrición, recetas y calidad. Si no tienes datos exactos, indícalo y ofrece una alternativa. Mantén el enfoque en frutas y temas relacionados.`;
 
   const body = {
     model: getGroqModel(),
