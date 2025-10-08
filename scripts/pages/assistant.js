@@ -19,7 +19,9 @@ export function renderAssistantPage(root) {
         <form id="chatForm" class="fruvi-chatgpt__form" autocomplete="off">
           <textarea id="userInput" rows="1" placeholder="Pregunta a Fruvi sobre frutas, recetas, nutrición, compras..." aria-label="Escribe tu mensaje"></textarea>
           <div class="fruvi-chatgpt__actions">
-            <button type="submit" class="btn-primary" id="sendBtn" title="Enviar"><i class="fas fa-paper-plane"></i></button>
+            <button type="submit" class="btn-primary fruvi-send-btn" id="sendBtn" title="Enviar mensaje">
+              <i class="fas fa-paper-plane"></i>
+            </button>
           </div>
         </form>
         <p class="fruvi-chatgpt__hint">Fruvi puede equivocarse. Verifica información importante, especialmente nutrición o alergias.</p>

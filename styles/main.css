@@ -42,14 +42,247 @@ body {
 .footer-section h3 { color: var(--brand) !important; }
 .footer-section p, .footer-bottom { color: var(--muted) !important; }
 
-/* Buttons */
-.cta-button, .next-step, .submit-btn, .add-to-cart, .chat-input button, .btn-primary {
+/* Professional Button System */
+.btn-primary,
+.submit-btn,
+.next-step,
+.cta-button,
+.add-to-cart,
+.chat-input button,
+.chat-panel__input button {
+  position: relative;
   background: linear-gradient(135deg, var(--brand-2), var(--brand));
   color: #0b0f14 !important;
-  box-shadow: 0 8px 30px rgba(124,245,155,0.25);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(124,245,155,0.25),
+              0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.cta-button:hover, .next-step:hover, .submit-btn:hover, .add-to-cart:hover, .chat-input button:hover, .btn-primary:hover {
+
+.btn-primary:hover,
+.submit-btn:hover,
+.next-step:hover,
+.cta-button:hover,
+.add-to-cart:hover,
+.chat-input button:hover,
+.chat-panel__input button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(124,245,155,0.35),
+              0 4px 8px rgba(0,0,0,0.15);
   filter: brightness(1.05) saturate(1.1);
+}
+
+.btn-primary:active,
+.submit-btn:active,
+.next-step:active,
+.cta-button:active,
+.add-to-cart:active,
+.chat-input button:active,
+.chat-panel__input button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(124,245,155,0.25);
+}
+
+.btn-primary:disabled,
+.submit-btn:disabled,
+.next-step:disabled,
+.cta-button:disabled,
+.add-to-cart:disabled,
+.chat-input button:disabled,
+.chat-panel__input button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Outline Button Variant */
+.btn-outline {
+  background: transparent;
+  color: var(--brand);
+  border: 2px solid var(--brand);
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-outline:hover {
+  background: var(--brand);
+  color: #0b0f14;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124,245,155,0.25);
+}
+
+.btn-outline:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: var(--txt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--brand);
+}
+
+/* Icon Buttons */
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--txt);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+
+.btn-icon:hover {
+  background: var(--brand);
+  color: #0b0f14;
+  border-color: var(--brand);
+}
+
+.btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* Chat Send Button */
+.fruvi-chatgpt__form button,
+.chat-input button {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  border: none;
+  color: #0b0f14;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(124,245,155,0.25);
+}
+
+.fruvi-chatgpt__form button:hover,
+.chat-input button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(124,245,155,0.35);
+}
+
+/* Fruvi Send Button Enhancement */
+.fruvi-send-btn {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, var(--brand-2), var(--brand)) !important;
+  border: none !important;
+  color: #0b0f14 !important;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: grid !important;
+  place-items: center;
+  font-size: 1.3rem !important;
+  box-shadow: 0 6px 16px rgba(124,245,155,0.3),
+              0 2px 6px rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.fruvi-send-btn:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 10px 24px rgba(124,245,155,0.4),
+              0 4px 12px rgba(0,0,0,0.2);
+}
+
+.fruvi-send-btn:active {
+  transform: scale(0.95) !important;
+}
+
+.fruvi-send-btn i {
+  transition: transform 0.2s ease;
+}
+
+.fruvi-send-btn:hover i {
+  transform: translateX(1px) translateY(-1px);
+}
+
+/* Registration/Login Form Buttons */
+.auth__form button,
+.registration-form button {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth__form button[type="submit"],
+.registration-form .submit-btn {
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  color: #0b0f14;
+  box-shadow: 0 4px 12px rgba(124,245,155,0.25);
+}
+
+.auth__form button[type="submit"]:hover,
+.registration-form .submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(124,245,155,0.35);
+}
+
+.registration-form .prev-step {
+  background: rgba(255,255,255,0.08);
+  color: var(--txt);
+  border: 1px solid var(--border);
+}
+
+.registration-form .prev-step:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--muted);
 }
 
 /* Cards/Glass */
@@ -213,28 +446,76 @@ body {
 .ai-nutrition__search input { background: rgba(255,255,255,0.05); color: var(--txt); border-color: var(--border); }
 .ai-nutrition__error { background: rgba(255,0,0,0.08) !important; border-color: rgba(255,0,0,0.2) !important; }
 
-/* Auth (Login/Registration) */
-.auth { padding: 120px 0 80px; }
-.auth__wrap { display: grid; place-items: center; }
-.auth__card { max-width: 520px; width: 100%; padding: 32px; border-radius: 18px; }
-.auth__brand { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-.auth__brand i { color: var(--brand-2); font-size: 1.4rem; }
-.auth__brand span { color: var(--brand); font-weight: 700; letter-spacing: .4px; }
-.auth__subtitle { color: var(--muted); margin-bottom: 18px; }
-.auth__form .form-group label { color: var(--txt); }
-.auth__form input { background: rgba(255,255,255,0.06); color: var(--txt); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-.auth__actions { display:flex; gap: 12px; align-items:center; margin-top: 10px; }
-.btn-link { color: var(--brand); text-decoration: none; }
-.btn-link:hover { text-decoration: underline; }
-.toast { padding: 12px 14px; border-radius: 12px; color: var(--txt); border: 1px solid var(--border); }
+/* Professional Auth Forms */
+.auth__wrap { display: grid; place-items: center; min-height: 60vh; }
+.auth__card {
+  max-width: 480px; width: 100%;
+  padding: 32px 36px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.auth__brand {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:12px; text-align: center; justify-content: center;
+}
+.auth__brand i { color: var(--brand-2); font-size: 1.6rem; }
+.auth__brand span { color: var(--brand); font-weight: 800; letter-spacing: .4px; font-size: 1.4rem; }
+.auth__subtitle {
+  color: var(--muted); margin-bottom: 24px;
+  text-align: center; font-size: 1rem;
+}
+.auth__form .form-group {
+  margin-bottom: 20px;
+}
+.auth__form .form-group label {
+  color: var(--txt); font-weight: 600;
+  display:block; margin-bottom: 8px; font-size: 0.95rem;
+}
+.auth__form input {
+  width: 100%; padding: 14px 16px;
+  border-radius: 12px; border: 2px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--txt); outline: none;
+  font-size: 1rem; transition: all 0.2s ease;
+}
+.auth__form input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(124,245,155,0.15);
+}
+.auth__form input::placeholder {
+  color: var(--muted);
+}
+.auth__actions {
+  display:flex; gap: 12px; align-items:center;
+  margin-top: 24px; justify-content: space-between;
+}
+.btn-link {
+  color: var(--brand); text-decoration: none;
+  font-weight: 600; transition: color 0.2s ease;
+}
+.btn-link:hover {
+  color: var(--brand-2); text-decoration: underline;
+}
+.toast {
+  padding: 14px 16px; border-radius: 12px;
+  color: var(--txt); border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  margin: 16px 0;
+}
 
 /* Registration Required (Gate) */
 .registration-required-page { padding: 120px 0 80px; }
 .registration-required-content {
-  position: relative;
-  border-radius: 18px;
-  padding: 24px 26px;
-  overflow: hidden;
+  position: relative; border-radius: 20px;
+  padding: 28px 32px; overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  max-width: 520px; margin: 0 auto;
 }
 .registration-required-content::after {
   content: "";
@@ -244,36 +525,95 @@ body {
               radial-gradient(600px 240px at 110% 0%, rgba(94,199,255,0.08), transparent 60%);
 }
 .required-icon {
-  width: 42px; height: 42px; border-radius: 12px;
-  display: grid; place-items: center; margin-bottom: 10px;
+  width: 48px; height: 48px; border-radius: 14px;
+  display: grid; place-items: center; margin-bottom: 16px;
   background: linear-gradient(135deg, var(--brand-2), var(--brand));
-  color: #0b0f14; border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 0 8px 24px rgba(124,245,155,0.18);
+  color: #0b0f14; border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 24px rgba(124,245,155,0.2);
 }
 .registration-required-content h2 {
-  margin: 6px 0 6px; color: var(--txt);
-  text-shadow: 0 0 18px rgba(124,245,155,0.18);
+  margin: 8px 0 12px; color: var(--txt);
+  text-shadow: 0 0 20px rgba(124,245,155,0.2);
+  font-size: 1.5rem;
 }
-.registration-required-content .required-message { color: var(--muted); margin-bottom: 14px; }
+.registration-required-content .required-message {
+  color: var(--muted); margin-bottom: 20px; line-height: 1.5;
+}
 .registration-required-content strong { color: var(--brand); }
-.required-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.required-actions {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
 
 /* Button variants for gate */
-.btn-outline { border: 1px solid var(--brand); background: transparent; color: var(--brand); padding: 10px 14px; border-radius: 12px; cursor: pointer; }
-.btn-outline:hover { background: var(--brand); color: #0b0f14; }
-.registration-required-content .btn-primary { padding: 10px 16px; border-radius: 12px; font-weight: 700; }
-.registration-required-content .register-now { animation: glowPulse 2.2s ease-in-out infinite; }
+.btn-outline {
+  border: 2px solid var(--brand); background: transparent;
+  color: var(--brand); padding: 12px 20px;
+  border-radius: 12px; cursor: pointer;
+  font-weight: 600; font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px; display: inline-flex;
+  align-items: center; justify-content: center; gap: 8px;
+}
+.btn-outline:hover {
+  background: var(--brand); color: #0b0f14;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124,245,155,0.25);
+}
+.registration-required-content .btn-primary {
+  padding: 12px 20px; border-radius: 12px;
+  font-weight: 600; background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  color: #0b0f14; border: none; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(124,245,155,0.25);
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+.registration-required-content .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(124,245,155,0.35);
+}
 
 @media (max-width: 560px) {
-  .registration-required-content { padding: 18px; }
+  .registration-required-content {
+    padding: 20px 24px; margin: 0 16px;
+  }
   .required-actions { gap: 8px; }
+  .auth__card { padding: 24px 28px; margin: 0 16px; }
 }
 
 /* Registration form as glass */
-.registration .registration-form { border-radius: 18px; }
-.registration .registration-form, .registration .form-group input, .registration .form-group select { background: rgba(255,255,255,0.06); color: var(--txt); border-color: var(--border); }
-.registration .form-step h3 { color: var(--txt); }
-.prev-step { background: rgba(255,255,255,0.12) !important; }
+.registration .registration-form {
+  border-radius: 20px; padding: 32px 36px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.registration .form-group input,
+.registration .form-group select {
+  background: rgba(255,255,255,0.06);
+  color: var(--txt); border: 2px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 1rem; transition: all 0.2s ease;
+}
+.registration .form-group input:focus,
+.registration .form-group select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(124,245,155,0.15);
+}
+.registration .form-step h3 {
+  color: var(--txt); margin-bottom: 24px; font-size: 1.3rem;
+}
+.prev-step {
+  background: rgba(255,255,255,0.08) !important;
+  color: var(--txt); border: 1px solid var(--border);
+  padding: 12px 20px; border-radius: 12px;
+  font-weight: 600; transition: all 0.2s ease;
+}
+.prev-step:hover {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: var(--muted);
+}
+
 
 /* Animations */
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -289,29 +629,133 @@ body {
 /* Fruvi ChatGPT Fullscreen  */
 /* ========================= */
 .fruvi-chatgpt { display: grid; grid-template-rows: auto 1fr auto; min-height: calc(100vh - 100px); }
-.fruvi-chatgpt__header { position: sticky; top: 100px; z-index: 1; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.5); backdrop-filter: blur(8px) saturate(130%); }
-.fruvi-chatgpt__header__inner { display:flex; align-items:center; justify-content: space-between; padding: 10px 0; }
-.fruvi-chatgpt__header .brand { display:flex; align-items:center; gap:8px; font-weight: 800; letter-spacing: .3px; }
+.fruvi-chatgpt__header {
+  position: sticky; top: 100px; z-index: 1;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px) saturate(130%);
+}
+.fruvi-chatgpt__header__inner {
+  display:flex; align-items:center; justify-content: space-between;
+  padding: 10px 0;
+}
+.fruvi-chatgpt__header .brand {
+  display:flex; align-items:center; gap:8px;
+  font-weight: 800; letter-spacing: .3px;
+}
 .fruvi-chatgpt__header .brand i { color: var(--brand-2); }
 .fruvi-chatgpt__header .brand span { color: var(--brand); }
-.fruvi-chatgpt__header .subtitle { color: var(--muted); font-size: .95rem; }
+.fruvi-chatgpt__header .subtitle {
+  color: var(--muted); font-size: .95rem;
+}
 
 .fruvi-chatgpt__main { padding: 10px 0 0; }
-.fruvi-chatgpt__scroll { height: calc(100% - 0px); max-height: calc(100vh - 220px); overflow: auto; display: flex; flex-direction: column; gap: 12px; padding: 12px 0 16px; }
+.fruvi-chatgpt__scroll {
+  height: calc(100% - 0px);
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0 16px;
+}
 
-.fruvi-msg { display:flex; align-items: flex-start; gap: 10px; }
-.fruvi-msg__avatar { width: 32px; height: 32px; display:grid; place-items:center; border:1px solid var(--border); border-radius: 10px; background: rgba(0,0,0,0.4); color: var(--txt); flex: 0 0 auto; }
-.fruvi-msg__bubble { border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; line-height: 1.55; max-width: 850px; background: var(--surface-strong); color: var(--txt); }
-.fruvi-msg--user .fruvi-msg__bubble { background: linear-gradient(135deg, var(--brand-2), var(--brand)); color: #0b0f14; border-color: transparent; }
+.fruvi-msg {
+  display:flex; align-items: flex-start; gap: 10px;
+  animation: fadeInUp 0.4s ease-out;
+}
+.fruvi-msg__avatar {
+  width: 32px; height: 32px;
+  display:grid; place-items:center;
+  border:1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(0,0,0,0.4);
+  color: var(--txt);
+  flex: 0 0 auto;
+}
+.fruvi-msg__bubble {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 16px;
+  line-height: 1.6;
+  max-width: 850px;
+  background: var(--surface-strong);
+  color: var(--txt);
+  position: relative;
+}
+.fruvi-msg__bubble::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid var(--border);
+}
+.fruvi-msg--assistant .fruvi-msg__bubble::before {
+  border-right-color: var(--surface-strong);
+}
+.fruvi-msg--user .fruvi-msg__avatar {
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  border-color: transparent;
+}
+.fruvi-msg--user .fruvi-msg__bubble {
+  background: linear-gradient(135deg, var(--brand-2), var(--brand));
+  color: #0b0f14;
+  border-color: transparent;
+}
+.fruvi-msg--user .fruvi-msg__bubble::before {
+  left: auto;
+  right: -6px;
+  border-right: none;
+  border-left: 6px solid var(--brand-2);
+}
 
-.fruvi-chatgpt__input { position: sticky; bottom: 0; border-top: 1px solid var(--border); background: rgba(0,0,0,0.55); backdrop-filter: blur(10px) saturate(130%); padding: 10px 0; }
-.fruvi-chatgpt__form { display:flex; align-items: flex-end; gap: 10px; }
-.fruvi-chatgpt__form textarea { flex:1; resize:none; max-height: 180px; min-height: 44px; padding: 12px 12px; border-radius: 12px; border:1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--txt); outline: none; }
-.fruvi-chatgpt__form textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(124,245,155,0.12); }
-.fruvi-chatgpt__actions { display:flex; gap: 8px; }
-.fruvi-chatgpt__hint { margin-top: 8px; color: var(--muted); font-size: .85rem; }
+.fruvi-chatgpt__input {
+  position: sticky; bottom: 0;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px) saturate(130%);
+  padding: 10px 0;
+}
+.fruvi-chatgpt__form {
+  display:flex; align-items: flex-end; gap: 10px;
+}
+.fruvi-chatgpt__form textarea {
+  flex:1; resize:none; max-height: 180px;
+  min-height: 44px; padding: 12px 16px;
+  border-radius: 12px; border:1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--txt); outline: none;
+  font-size: 1rem; line-height: 1.4;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+.fruvi-chatgpt__form textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(124,245,155,0.12);
+}
+.fruvi-chatgpt__form textarea::placeholder {
+  color: var(--muted);
+}
+.fruvi-chatgpt__actions {
+  display:flex; gap: 8px;
+}
+.fruvi-chatgpt__hint {
+  margin-top: 8px; color: var(--muted);
+  font-size: .85rem; text-align: center;
+}
 
-.typing .fruvi-msg__bubble .loading { display:inline-block; width: 14px; height: 14px; border: 3px solid rgba(255,255,255,0.25); border-top-color: var(--brand); border-radius: 50%; animation: spin .8s linear infinite; vertical-align: middle; margin-left: 6px; }
+.typing .fruvi-msg__bubble .loading {
+  display:inline-block; width: 14px; height: 14px;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  vertical-align: middle; margin-left: 6px;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 768px) {
