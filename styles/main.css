@@ -1682,21 +1682,20 @@ body {
   }
 }
 
-/* Navigation Premium Tabs */
+/* Navigation Tabs Visibility Control */
 .premium-tab.hidden {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
 }
+/* Allow premium tabs to be visible by default; JS toggles 'hidden' */
+.premium-tab { display: list-item; opacity: 1; visibility: visible; }
 
-.premium-tab {
+/* Hide basic tabs when JS adds 'hidden' after login */
+.basic-tab.hidden {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
-}
-
-.basic-tab {
-  display: block !important;
 }
 
 /* Registration Required Page */
