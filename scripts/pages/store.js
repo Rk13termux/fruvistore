@@ -511,17 +511,66 @@ function setupProductInteractions(products) {
 // Cart functionality
 let cart = JSON.parse(localStorage.getItem('fruvi_cart') || '[]');
 
+// Cart modal element
+let cartModal = null;
+
 function setupCart() {
+  // Create cart modal if it doesn't exist
+  if (!document.getElementById('cartModal')) {
+    const modalHTML = `
+      <div id="cartModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content glass">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+                <span id="cartItemsCount" class="badge bg-brand ms-2">${cart.length}</span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="cartItemsList" class="mb-3">
+                ${renderCartItems()}
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Total:</h5>
+                <h4 class="mb-0 text-brand" id="cartModalTotal">$0.00</h4>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir comprando</button>
+              <button type="button" class="btn btn-primary" id="cartCheckout">
+                <i class="fas fa-credit-card me-2"></i>Pagar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+  }
+
+  // Update cart display in header
   updateCartDisplay();
 
+  // Setup cart button to show modal
+  document.querySelectorAll('[data-bs-toggle="cart"]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      showCart();
+    });
+  });
+
+  // Setup checkout button in modal
   document.getElementById('cartCheckout')?.addEventListener('click', () => {
     if (cart.length === 0) {
       showNotification('Tu carrito está vacío', false);
       return;
     }
-
     // Show checkout modal with cart data
     if (window.checkoutModal) {
+      cartModal.hide();
       window.checkoutModal.show({ items: cart });
     } else {
       showNotification('Error: Modal de checkout no disponible', false);
@@ -529,28 +578,155 @@ function setupCart() {
   });
 }
 
+function renderCartItems() {
+  if (cart.length === 0) {
+    return `
+      <div class="text-center py-4">
+        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+        <p class="text-muted">Tu carrito está vacío</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="list-group">
+      ${cart.map((item, index) => `
+        <div class="list-group-item bg-transparent border-light mb-2 rounded-3" data-product-id="${item.id}">
+          <div class="d-flex align-items-center">
+            <img src="${item.img}" alt="${item.name}" class="rounded-2 me-3" width="60" height="60" style="object-fit: cover;">
+            <div class="flex-grow-1">
+              <h6 class="mb-1">${item.name}</h6>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                  <button class="btn btn-sm btn-outline-secondary btn-quantity" data-action="decrease" data-id="${item.id}">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <span class="mx-2">${item.quantity}</span>
+                  <button class="btn btn-sm btn-outline-secondary btn-quantity" data-action="increase" data-id="${item.id}">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <span class="fw-bold">$${(item.price * item.quantity).toFixed(2)}</span>
+              </div>
+            </div>
+            <button class="btn btn-link text-danger ms-2 btn-remove" data-id="${item.id}">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function showCart() {
+  if (!cartModal) return;
+  
+  const modal = document.getElementById('cartModal');
+  modal.querySelector('#cartItemsList').innerHTML = renderCartItems();
+  updateCartModalTotal();
+  
+  // Setup event listeners for quantity buttons
+  modal.querySelectorAll('.btn-quantity').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const action = e.currentTarget.getAttribute('data-action');
+      const productId = parseInt(e.currentTarget.getAttribute('data-id'));
+      updateCartItemQuantity(productId, action === 'increase' ? 1 : -1);
+    });
+  });
+  
+  // Setup event listeners for remove buttons
+  modal.querySelectorAll('.btn-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const productId = parseInt(e.currentTarget.getAttribute('data-id'));
+      removeFromCart(productId);
+    });
+  });
+  
+  cartModal.show();
+}
+
+function updateCartItemQuantity(productId, change) {
+  const itemIndex = cart.findIndex(item => item.id === productId);
+  if (itemIndex === -1) return;
+  
+  cart[itemIndex].quantity += change;
+  
+  // Remove item if quantity is 0 or less
+  if (cart[itemIndex].quantity <= 0) {
+    cart.splice(itemIndex, 1);
+    showNotification('Producto eliminado del carrito');
+  }
+  
+  saveCart();
+  updateCartDisplay();
+  
+  // Update the cart modal if it's open
+  if (document.querySelector('#cartModal.show')) {
+    showCart();
+  }
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.id !== productId);
+  saveCart();
+  updateCartDisplay();
+  showNotification('Producto eliminado del carrito');
+  
+  // Update the cart modal if it's open
+  if (document.querySelector('#cartModal.show')) {
+    showCart();
+  }
+}
+
 function addToCart(item) {
   const existing = cart.find(cartItem => cartItem.id === item.id);
+  
   if (existing) {
     existing.quantity += item.quantity;
   } else {
-    cart.push(item);
+    cart.push({...item});
   }
-
-  localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+  
+  saveCart();
   updateCartDisplay();
-  showNotification(`${item.name} añadido al carrito`, true);
+  showNotification(`${item.name} ${existing ? 'actualizado en' : 'añadido al'} carrito`, true);
+  
+  // Update the cart modal if it's open
+  if (document.querySelector('#cartModal.show')) {
+    showCart();
+  }
+}
+
+function saveCart() {
+  localStorage.setItem('fruvi_cart', JSON.stringify(cart));
 }
 
 function updateCartDisplay() {
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
+  const countBadge = document.getElementById('cartItemsCount');
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  countEl.textContent = totalItems;
-  totalEl.textContent = `$${totalPrice.toFixed(2)}`;
+  if (countEl) countEl.textContent = totalItems;
+  if (totalEl) totalEl.textContent = `$${totalPrice.toFixed(2)}`;
+  if (countBadge) countBadge.textContent = totalItems;
+  
+  // Update cart modal total if it's open
+  const modalTotal = document.getElementById('cartModalTotal');
+  if (modalTotal) {
+    updateCartModalTotal();
+  }
+}
+
+function updateCartModalTotal() {
+  const modalTotal = document.getElementById('cartModalTotal');
+  if (modalTotal) {
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    modalTotal.textContent = `$${totalPrice.toFixed(2)}`;
+  }
 }
 
 function showNotification(message, success = true) {
