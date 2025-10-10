@@ -143,8 +143,8 @@ function setupMobileNav() {
   
   // Toggle mobile navigation
   mobileMenu.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-    const isOpen = navLinks.classList.contains('active');
+    navLinks.classList.toggle('open');
+    const isOpen = navLinks.classList.contains('open');
     
     // Update aria attributes
     mobileMenu.setAttribute('aria-expanded', isOpen);
@@ -163,7 +163,7 @@ function setupMobileNav() {
   navLinks.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       if (window.innerWidth <= 768) {
-        navLinks.classList.remove('active');
+        navLinks.classList.remove('open');
         mobileMenu.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
         
@@ -179,13 +179,14 @@ function setupMobileNav() {
   // Close mobile menu when clicking outside
   document.addEventListener('click', (e) => {
     if (window.innerWidth <= 768 && 
-        !navLinks.contains(e.target) && 
-        !mobileMenu.contains(e.target) &&
-        navLinks.classList.contains('active')) {
-      navLinks.classList.remove('active');
+        !mobileMenu.contains(e.target) && 
+        !navLinks.contains(e.target) &&
+        navLinks.classList.contains('open')) {
+      navLinks.classList.remove('open');
       mobileMenu.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
       
+      // Reset icon
       const icon = mobileMenu.querySelector('i');
       if (icon) {
         icon.className = 'fas fa-bars';
@@ -196,7 +197,22 @@ function setupMobileNav() {
   // Handle window resize
   window.addEventListener('resize', () => {
     if (window.innerWidth > 768) {
-      navLinks.classList.remove('active');
+      navLinks.classList.remove('open');
+      mobileMenu.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      
+      // Reset icon
+      const icon = mobileMenu.querySelector('i');
+      if (icon) {
+        icon.className = 'fas fa-bars';
+      }
+    }
+  });
+  
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      navLinks.classList.remove('open');
       mobileMenu.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
       
