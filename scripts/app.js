@@ -138,17 +138,73 @@ function highlightActiveLink() {
 function setupMobileNav() {
   const mobileMenu = document.querySelector('.mobile-menu');
   const navLinks = document.querySelector('.nav-links');
+  
   if (!mobileMenu || !navLinks) return;
+  
+  // Toggle mobile navigation
   mobileMenu.addEventListener('click', () => {
-    const isShown = getComputedStyle(navLinks).display !== 'none';
-    navLinks.style.display = isShown ? 'none' : 'flex';
+    navLinks.classList.toggle('active');
+    const isOpen = navLinks.classList.contains('active');
+    
+    // Update aria attributes
+    mobileMenu.setAttribute('aria-expanded', isOpen);
+    
+    // Update mobile menu icon
+    const icon = mobileMenu.querySelector('i');
+    if (icon) {
+      icon.className = isOpen ? 'fas fa-times' : 'fas fa-bars';
+    }
+    
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   });
+  
+  // Close mobile menu when clicking on a link
   navLinks.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       if (window.innerWidth <= 768) {
-        navLinks.style.display = 'none';
+        navLinks.classList.remove('active');
+        mobileMenu.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        
+        // Reset icon
+        const icon = mobileMenu.querySelector('i');
+        if (icon) {
+          icon.className = 'fas fa-bars';
+        }
       }
     });
+  });
+  
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768 && 
+        !navLinks.contains(e.target) && 
+        !mobileMenu.contains(e.target) &&
+        navLinks.classList.contains('active')) {
+      navLinks.classList.remove('active');
+      mobileMenu.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      
+      const icon = mobileMenu.querySelector('i');
+      if (icon) {
+        icon.className = 'fas fa-bars';
+      }
+    }
+  });
+  
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      navLinks.classList.remove('active');
+      mobileMenu.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      
+      const icon = mobileMenu.querySelector('i');
+      if (icon) {
+        icon.className = 'fas fa-bars';
+      }
+    }
   });
 }
 

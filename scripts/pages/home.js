@@ -1,136 +1,317 @@
-// Home Page - Fruvi Landing (dark glass)
+// Home Page - Fruvi Professional Design
 export function renderHomePage(root) {
   root.innerHTML = `
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container hero__grid">
-      <div class="hero__copy fade-in-up">
-        <h1>Fruvi: Fruta premium, fresca y trazable</h1>
-        <p>Conecta con cultivos locales, recibe fruta seleccionada y descubre su valor nutricional con IA. Calidad verificada, entrega programada y soporte experto.</p>
-        <div class="hero__actions">
-          <a class="cta-button glow-pulse" href="#/registro">Crear cuenta</a>
-          <a class="btn-link" href="#/nutricion-ai">Explorar Nutrición AI →</a>
-        </div>
-        <div class="hero__badges">
-          <span class="badge glass">Entrega 24-48h</span>
-          <span class="badge glass">Origen verificado</span>
-          <span class="badge glass">Pago seguro</span>
-        </div>
+  <!-- HERO PROFESSIONAL -->
+  <section class="hero-pro">
+    <div class="animated-background">
+      <div class="particles"></div>
+      <div class="gradient-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
       </div>
-      <div class="hero__media fade-in-up">
-        <div class="media-card glass">
-          <img src="https://images.unsplash.com/photo-1547514701-42782101795e?q=80&w=900&auto=format&fit=crop" alt="Frutas premium">
-        </div>
-      </div>
+      <div class="grid-overlay"></div>
     </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="section features">
-    <div class="container">
-      <h2 class="section__title">¿Por qué elegir Fruvi?</h2>
-      <div class="cards-grid">
-        ${[
-          { icon:'fa-seedling', title:'Calidad certificada', desc:'Selección por lotes con controles de frescura y sabor. Estándares premium en toda la cadena.' },
-          { icon:'fa-truck-fast', title:'Logística óptima', desc:'Cosecha + empaquetado + entrega en 24-48h. Mantén la cadena de frío y los nutrientes.' },
-          { icon:'fa-shield-heart', title:'Salud y bienestar', desc:'Planes personalizados de frutas según tus metas. IA nutricional para recomendaciones.' },
-          { icon:'fa-mobile-screen', title:'Experiencia app', desc:'Compra en 3 toques. Historial, favoritos y reordenes. Chat IA 24/7.' }
-        ].map(f => `
-          <article class="card glass fade-in-up">
-            <i class="fas ${f.icon} card__icon"></i>
-            <h3>${f.title}</h3>
-            <p>${f.desc}</p>
-          </article>
-        `).join('')}
-      </div>
-    </div>
-  </section>
-
-  <!-- PRODUCT SPOTLIGHT -->
-  <section class="section spotlight">
-    <div class="container spotlight__wrap glass">
-      <div class="spotlight__copy">
-        <h2>Naranjas de Valencia • Dulzura con Vitamina C</h2>
-        <p>Directo del productor. Niveles altos de vitamina C y antioxidantes. Perfectas para jugos o snacks energéticos.</p>
-        <div class="spotlight__actions">
-          <a class="cta-button" href="#/tienda">Ver tienda</a>
-          <a class="btn-link" href="#/nutricion-ai">Ver nutrición con IA</a>
+    
+    <div class="container hero-pro__content">
+      <div class="hero-pro__main">
+        <div class="hero-pro__badge">
+          <div class="badge-glow"></div>
+          <i class="fas fa-star"></i>
+          <span>Líder en frutas premium</span>
         </div>
-      </div>
-      <div class="spotlight__media">
-        <img src="https://images.unsplash.com/photo-1607877411656-e1e4e9f7f4a2?q=80&w=900&auto=format&fit=crop" alt="Naranjas frescas">
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="section how-it-works">
-    <div class="container">
-      <h2 class="section__title">¿Cómo funciona?</h2>
-      <div class="steps-grid">
-        ${[
-          { step:'01', title:'Regístrate', text:'Crea tu cuenta y dinos tus preferencias de frutas.' },
-          { step:'02', title:'Elige y ordena', text:'Explora la tienda, agrega al carrito y confirma.' },
-          { step:'03', title:'IA Nutricional', text:'Consulta beneficios y nutrientes con Fruvi AI.' },
-          { step:'04', title:'Recibe tu pedido', text:'Entrega programada en 24-48h. Frescura garantizada.' }
-        ].map(s => `
-          <div class="step glass fade-in-up">
-            <div class="step__num">${s.step}</div>
-            <h3>${s.title}</h3>
-            <p>${s.text}</p>
+        
+        <h1 class="hero-pro__title">
+          <span class="title-line-1">Frutas Premium</span>
+          <span class="title-line-2">Directas del Huerto</span>
+          <span class="title-accent">Con Tecnología IA</span>
+        </h1>
+        
+        <p class="hero-pro__description">
+          Revoluciona tu alimentación con frutas seleccionadas por expertos, 
+          entregadas en 24h y analizadas por nuestra IA nutricional avanzada.
+        </p>
+        
+        <div class="hero-pro__metrics">
+          <div class="metric-item">
+            <div class="metric-number">15,000+</div>
+            <div class="metric-label">Clientes activos</div>
           </div>
-        `).join('')}
+          <div class="metric-item">
+            <div class="metric-number">98.7%</div>
+            <div class="metric-label">Satisfacción</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-number">24h</div>
+            <div class="metric-label">Entrega garantizada</div>
+          </div>
+        </div>
+        
+        <div class="hero-pro__actions">
+          <button class="btn-primary-pro" onclick="location.href='#/registro'">
+            <span class="btn-text">Comenzar Ahora</span>
+            <div class="btn-glow"></div>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+          <button class="btn-secondary-pro" onclick="location.href='#/tienda'">
+            <span class="btn-text">Ver Productos</span>
+            <i class="fas fa-shopping-basket"></i>
+          </button>
+        </div>
+        
+        <div class="hero-pro__trust">
+          <div class="trust-item">
+            <i class="fas fa-shield-check"></i>
+            <span>Certificación orgánica</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-truck"></i>
+            <span>Envío gratis +$25k</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-medal"></i>
+            <span>Garantía 100%</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-pro__visual">
+        <div class="floating-card main-card">
+          <div class="card-glow"></div>
+          <img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=500&auto=format&fit=crop" alt="Frutas premium">
+          <div class="card-overlay">
+            <div class="quality-seal">
+              <i class="fas fa-certificate"></i>
+              <span>Premium</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="floating-card ai-card">
+          <div class="ai-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div class="ai-content">
+            <h4>IA Nutricional</h4>
+            <p>Análisis personalizado</p>
+            <div class="ai-progress">
+              <div class="progress-bar"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="floating-card delivery-card">
+          <div class="delivery-icon">
+            <i class="fas fa-shipping-fast"></i>
+          </div>
+          <div class="delivery-content">
+            <h4>Entrega Express</h4>
+            <p>En 24 horas</p>
+            <div class="delivery-status">
+              <div class="status-dot"></div>
+              <span>En camino</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- TESTIMONIALS -->
-  <section class="section testimonials">
+  <!-- FEATURES PROFESSIONAL -->
+  <section class="features-pro">
     <div class="container">
-      <h2 class="section__title">Clientes que confían en Fruvi</h2>
-      <div class="cards-grid">
-        ${[
-          { quote:'La calidad es excepcional y la IA me ayuda a elegir mejor.', name:'María G.' },
-          { quote:'Entregas puntuales y frutas con sabor increíble.', name:'Luis R.' },
-          { quote:'Mi plan semanal de frutas me ha mejorado la energía.', name:'Ana P.' }
-        ].map(t => `
-          <blockquote class="card glass fade-in-up">
-            <p>“${t.quote}”</p>
-            <footer>— ${t.name}</footer>
-          </blockquote>
-        `).join('')}
+      <div class="section-header-pro">
+        <h2>¿Por qué somos diferentes?</h2>
+        <p>Tecnología, calidad y experiencia que marca la diferencia</p>
+      </div>
+      
+      <div class="features-grid-pro">
+        <div class="feature-card-pro">
+          <div class="feature-icon">
+            <i class="fas fa-seedling"></i>
+          </div>
+          <h3>Origen Certificado</h3>
+          <p>Trazabilidad completa desde el huerto hasta tu mesa. Certificaciones orgánicas y de comercio justo.</p>
+          <div class="feature-link">
+            <span>Conocer más</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </div>
+        
+        <div class="feature-card-pro">
+          <div class="feature-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>Inteligencia Artificial</h3>
+          <p>Análisis nutricional personalizado y recomendaciones basadas en tus objetivos de salud.</p>
+          <div class="feature-link">
+            <span>Probar IA</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </div>
+        
+        <div class="feature-card-pro">
+          <div class="feature-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h3>Entrega Ultra-rápida</h3>
+          <p>Logística optimizada con cadena de frío. De la cosecha a tu puerta en menos de 24 horas.</p>
+          <div class="feature-link">
+            <span>Ver zonas</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="section faq">
+  <!-- PRODUCTS SHOWCASE -->
+  <section class="products-pro">
     <div class="container">
-      <h2 class="section__title">Preguntas frecuentes</h2>
-      <div class="faq__list">
-        ${[
-          { q:'¿De dónde provienen las frutas?', a:'Trabajamos con productores locales certificados y trazabilidad por lote.' },
-          { q:'¿Cómo se garantiza la frescura?', a:'Cosecha y despacho coordinados, cadena de frío y tiempos máximos de tránsito.' },
-          { q:'¿Qué métodos de pago aceptan?', a:'Tarjetas, transferencias y billeteras. Pago seguro cifrado.' },
-          { q:'¿Puedo ver la nutrición de cualquier fruta?', a:'Sí, con Nutrición AI obtienes datos por 100 g para frutas de todo el mundo.' }
-        ].map(item => `
-          <details class="faq__item glass">
-            <summary>${item.q}</summary>
-            <p>${item.a}</p>
-          </details>
-        `).join('')}
+      <div class="section-header-pro">
+        <h2>Productos estrella</h2>
+        <p>Lo mejor de cada temporada, seleccionado por expertos</p>
+      </div>
+      
+      <div class="products-slider-pro">
+        <div class="product-card-pro">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?q=80&w=400&auto=format&fit=crop" alt="Manzanas premium">
+            <div class="product-badge">Bestseller</div>
+          </div>
+          <div class="product-info">
+            <h4>Manzanas Gala Premium</h4>
+            <p>Valle del Elqui, Chile</p>
+            <div class="product-price">$8.990 <span>/kg</span></div>
+            <button class="add-to-cart-pro">
+              <i class="fas fa-plus"></i>
+              Agregar
+            </button>
+          </div>
+        </div>
+        
+        <div class="product-card-pro">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1543528176-61b239494933?q=80&w=400&auto=format&fit=crop" alt="Fresas orgánicas">
+            <div class="product-badge">Orgánico</div>
+          </div>
+          <div class="product-info">
+            <h4>Fresas Orgánicas</h4>
+            <p>Curicó, Chile</p>
+            <div class="product-price">$12.990 <span>/bandeja</span></div>
+            <button class="add-to-cart-pro">
+              <i class="fas fa-plus"></i>
+              Agregar
+            </button>
+          </div>
+        </div>
+        
+        <div class="product-card-pro">
+          <div class="product-image">
+            <img src="https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?q=80&w=400&auto=format&fit=crop" alt="Aguacates Hass">
+            <div class="product-badge">Premium</div>
+          </div>
+          <div class="product-info">
+            <h4>Aguacates Hass</h4>
+            <p>La Ligua, Chile</p>
+            <div class="product-price">$15.990 <span>/kg</span></div>
+            <button class="add-to-cart-pro">
+              <i class="fas fa-plus"></i>
+              Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="products-cta">
+        <button class="btn-outline-pro" onclick="location.href='#/tienda'">
+          Ver toda la tienda
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </div>
     </div>
   </section>
 
-  <!-- FINAL CTA -->
-  <section class="section final-cta">
-    <div class="container final-cta__wrap glass fade-in-up">
-      <h2>Empieza hoy con Fruvi</h2>
-      <p>Regístrate gratis, recibe frutas premium y descubre su valor con IA.</p>
-      <div>
-        <a href="#/registro" class="cta-button">Crear cuenta</a>
-        <a href="#/tienda" class="btn-link">Ver tienda →</a>
+  <!-- TESTIMONIALS MINIMAL -->
+  <section class="testimonials-pro">
+    <div class="container">
+      <div class="section-header-pro">
+        <h2>Lo que dicen nuestros clientes</h2>
+        <p>Experiencias reales de quienes ya transformaron su alimentación</p>
+      </div>
+      
+      <div class="testimonials-grid-pro">
+        <div class="testimonial-card-pro">
+          <div class="testimonial-content">
+            <p>"La calidad es excepcional. Mis hijos ahora prefieren las frutas a los dulces."</p>
+          </div>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b550?q=80&w=100&auto=format&fit=crop" alt="María González">
+            <div class="author-info">
+              <h5>María González</h5>
+              <span>Madre de familia</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card-pro">
+          <div class="testimonial-content">
+            <p>"Como chef, la diferencia en sabor y frescura es notable. Fruvi es mi proveedor oficial."</p>
+          </div>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop" alt="Luis Rodriguez">
+            <div class="author-info">
+              <h5>Luis Rodríguez</h5>
+              <span>Chef ejecutivo</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="testimonial-card-pro">
+          <div class="testimonial-content">
+            <p>"La IA nutricional me ayudó a optimizar mi dieta. Mi energía mejoró notablemente."</p>
+          </div>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=100&auto=format&fit=crop" alt="Ana Patricia">
+            <div class="author-info">
+              <h5>Ana Patricia</h5>
+              <span>Nutricionista</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA PROFESSIONAL -->
+  <section class="cta-pro">
+    <div class="container">
+      <div class="cta-pro__content">
+        <h2>Comienza tu transformación hoy</h2>
+        <p>Únete a miles de familias que ya disfrutan de la mejor calidad en frutas premium</p>
+        
+        <div class="cta-pro__actions">
+          <button class="btn-primary-pro large" onclick="location.href='#/registro'">
+            <span class="btn-text">Crear cuenta gratis</span>
+            <div class="btn-glow"></div>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        
+        <div class="cta-pro__benefits">
+          <div class="benefit-item">
+            <i class="fas fa-check"></i>
+            <span>Sin compromiso</span>
+          </div>
+          <div class="benefit-item">
+            <i class="fas fa-check"></i>
+            <span>Envío gratis primer pedido</span>
+          </div>
+          <div class="benefit-item">
+            <i class="fas fa-check"></i>
+            <span>Acceso completo a IA</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
