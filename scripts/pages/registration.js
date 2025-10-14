@@ -1,116 +1,159 @@
-// Registration Page (Temu-style 3 steps)
-// Funciones de Supabase disponibles en window:
-// window.insertCustomer, window.signUpWithEmail(email, password, metadata), window.upsertCustomer
-// Estas funciones están disponibles globalmente desde supabaseService.js
-import { chatCompletion } from '../services/groqService.js';
-
 export function renderRegistrationPage(root) {
   root.innerHTML = `
-  <section class="registration">
+  <section class="registration registration--premium">
     <div class="container">
-      <h2>Registro de Cliente</h2>
-      <p>Únete a Fruvi y recibe frutas premium en la puerta de tu casa. Nuestro asistente te guiará en menos de 1 minuto.</p>
-
-      <div class="registration__grid" style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:20px; align-items:start;">
-        <!-- AI Concierge -->
-        <div class="glass chat-container" id="aiConcierge" style="min-height:360px;">
-          <div class="chat-messages" id="aiMsgs">
-            <div class="message bot-message"><i class="fas fa-robot"></i><p>¡Hola! Soy tu asistente Fruvi. Te daré la bienvenida y te acompañaré en el registro. Beneficios:
-            • Entrega rápida a tu puerta
-            • Selección premium verificada
-            • Recomendaciones con IA según tus gustos
-            ¿Me indicas tu nombre para empezar?</p></div>
+      <div class="registration__layout">
+        <aside class="registration__intro glass fade-in-up">
+          <div class="registration__brand">
+            <i class="fas fa-apple-alt"></i>
+            <span>Fruvi Prime</span>
           </div>
-          <div class="chat-input" style="border-top:1px solid var(--border); padding:10px; display:flex; gap:8px;">
-            <input type="text" id="aiInput" placeholder="Escribe aquí..." />
-            <button id="aiSend" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+          <h2>Activa tu perfil AgroTech</h2>
+          <p>Controla la trazabilidad, personaliza entregas y recibe recomendaciones con datos nutricionales inteligentes.</p>
+          <ul class="registration__benefits">
+            <li><i class="fas fa-seedling"></i> Lotes premium auditados con sensores de campo.</li>
+            <li><i class="fas fa-microchip"></i> IA que calibra macros y micronutrientes para ti.</li>
+            <li><i class="fas fa-shield-alt"></i> Logística con trazabilidad blockchain 24/7.</li>
+          </ul>
+          <div class="registration__badges">
+            <span><i class="fas fa-tachometer-alt"></i> Entregas 24-48h</span>
+            <span><i class="fas fa-star"></i> Curaduría premium</span>
+            <span><i class="fas fa-leaf"></i> Cultivos regenerativos</span>
           </div>
-        </div>
+        </aside>
 
-        <!-- Form -->
-        <form id="registrationForm" class="registration-form glass">
-          <div class="form-step active" id="step1">
-            <h3>Paso 1: Información Personal</h3>
-            <div class="form-group">
-              <label for="fullName">Nombre Completo *</label>
-              <input type="text" id="fullName" name="fullName" required>
+        <div class="registration__form-shell glass fade-in-up">
+          <header class="registration__header">
+            <div class="registration__eyebrow">Onboarding exclusivo</div>
+            <h3>Completa tu registro en 3 pasos</h3>
+            <p>Tu cuenta sincroniza recomendaciones, historial nutricional y logística avanzada.</p>
+            <span class="registration__step-count">Paso <strong id="stepIndex">1</strong> de 3</span>
+          </header>
+
+          <div class="registration__progress">
+            <div class="progress-step is-active" data-step="1">
+              <span class="progress-badge">1</span>
+              <span class="progress-label">Identidad</span>
             </div>
-            <div class="form-group">
-              <label for="email">Email *</label>
-              <input type="email" id="email" name="email" required>
+            <div class="progress-step" data-step="2">
+              <span class="progress-badge">2</span>
+              <span class="progress-label">Entrega</span>
             </div>
-            <div class="form-group">
-              <label for="phone">Teléfono *</label>
-              <input type="tel" id="phone" name="phone" required>
+            <div class="progress-step" data-step="3">
+              <span class="progress-badge">3</span>
+              <span class="progress-label">Preferencias</span>
             </div>
-            <div class="form-group">
-              <label for="password">Contraseña *</label>
-              <div style="position:relative;">
-                <input type="password" id="password" name="password" minlength="6" placeholder="Mínimo 6 caracteres" required style="padding-right:44px;">
-                <button type="button" id="togglePwd" aria-label="Mostrar/ocultar contraseña" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:transparent; border:none; color:var(--muted); cursor:pointer;">
-                  <i class="fas fa-eye"></i>
-                </button>
+          </div>
+
+          <form id="registrationForm" class="registration-form">
+            <div class="form-step active" id="step1">
+              <div class="form-section-title">
+                <h4>Información personal</h4>
+                <p>Conectamos tus datos con nuestro ecosistema para entregas personalizadas.</p>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fullName">Nombre completo *</label>
+                  <input type="text" id="fullName" name="fullName" placeholder="Carla Mendoza" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email *</label>
+                  <input type="email" id="email" name="email" placeholder="tucorreo@fruvi.com" required>
+                </div>
+                <div class="form-group">
+                  <label for="phone">Teléfono *</label>
+                  <input type="tel" id="phone" name="phone" placeholder="(+57) 300 000 0000" required>
+                </div>
+                <div class="form-group password-field">
+                  <label for="password">Contraseña *</label>
+                  <div class="password-wrapper">
+                    <input type="password" id="password" name="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+                    <button type="button" id="togglePwd" aria-label="Mostrar u ocultar contraseña">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-buttons form-buttons--end">
+                <button type="button" class="next-step" id="next1">Continuar</button>
               </div>
             </div>
-            <button type="button" class="next-step" id="next1">Siguiente</button>
-          </div>
 
-          <div class="form-step" id="step2">
-            <h3>Paso 2: Dirección de Entrega</h3>
-            <div class="form-group">
-              <label for="address">Dirección *</label>
-              <input type="text" id="address" name="address" required>
-          </div>
-          <div class="form-group">
-            <label for="zipCode">Código Postal *</label>
-            <input type="text" id="zipCode" name="zipCode" required>
-          </div>
-          <div class="form-buttons">
-            <button type="button" class="prev-step" id="prev2">Anterior</button>
-            <button type="button" class="next-step" id="next2">Siguiente</button>
-          </div>
-        </div>
-
-        <div class="form-step" id="step3">
-          <h3>Paso 3: Preferencias</h3>
-          <div class="form-group">
-            <label>Frutas Favoritas (selecciona múltiples)</label>
-            <div class="checkbox-group">
-              ${['Manzanas','Plátanos','Naranjas','Fresas','Mango','Piña'].map((f,i)=>
-                `<label><input type="checkbox" name="fruits" value="${f.toLowerCase()}"> ${f}</label>`
-              ).join('')}
+            <div class="form-step" id="step2">
+              <div class="form-section-title">
+                <h4>Dirección de entrega</h4>
+                <p>Optimiza rutas y ventanas de entrega precisas.</p>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="address">Dirección *</label>
+                  <input type="text" id="address" name="address" placeholder="Calle 123 #45-67" required>
+                </div>
+                <div class="form-group">
+                  <label for="city">Ciudad *</label>
+                  <input type="text" id="city" name="city" placeholder="Bogotá" required>
+                </div>
+                <div class="form-group">
+                  <label for="zipCode">Código postal *</label>
+                  <input type="text" id="zipCode" name="zipCode" placeholder="110111" required>
+                </div>
+                <div class="form-group">
+                  <label for="frequency">Frecuencia de compra</label>
+                  <select id="frequency" name="frequency">
+                    <option value="semanal">Semanal</option>
+                    <option value="quincenal">Quincenal</option>
+                    <option value="mensual">Mensual</option>
+                    <option value="ocasional" selected>Ocasional</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-buttons">
+                <button type="button" class="prev-step" id="prev2">Volver</button>
+                <button type="button" class="next-step" id="next2">Continuar</button>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="frequency">Frecuencia de Compra</label>
-            <select id="frequency" name="frequency">
-              <option value="semanal">Semanal</option>
-              <option value="quincenal">Quincenal</option>
-              <option value="mensual">Mensual</option>
-              <option value="ocasional" selected>Ocasional</option>
-            </select>
-          </div>
-          <div class="form-buttons">
-            <button type="button" class="prev-step" id="prev3">Anterior</button>
-            <button type="submit" class="submit-btn">Registrarse</button>
-          </div>
+
+            <div class="form-step" id="step3">
+              <div class="form-section-title">
+                <h4>Preferencias nutricionales</h4>
+                <p>Personalizamos tus cajas según objetivos y sabores favoritos.</p>
+              </div>
+              <div class="form-grid form-grid--two">
+                <div class="form-group">
+                  <label>Frutas favoritas</label>
+                  <div class="checkbox-group">
+                    ${['Manzanas','Plátanos','Naranjas','Fresas','Mango','Piña','Kiwi','Uvas'].map(f =>
+                      `<label><input type="checkbox" name="fruits" value="${f.toLowerCase()}"> ${f}</label>`
+                    ).join('')}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="notes">Objetivo principal</label>
+                  <textarea id="notes" name="notes" rows="4" placeholder="Ej: Refuerzo inmunológico para mi equipo de ventas"></textarea>
+                </div>
+              </div>
+              <div class="form-buttons">
+                <button type="button" class="prev-step" id="prev3">Volver</button>
+                <button type="submit" class="submit-btn">Finalizar registro</button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
       </div>
     </div>
   </section>
   `;
 
   const form = root.querySelector('#registrationForm');
-  const steps = [1,2,3];
   let currentStep = 1;
+  const progressSteps = Array.from(root.querySelectorAll('.progress-step'));
+  const stepIndexEl = root.querySelector('#stepIndex');
 
   root.querySelector('#next1').addEventListener('click', () => moveTo(2));
   root.querySelector('#next2').addEventListener('click', () => moveTo(3));
   root.querySelector('#prev2').addEventListener('click', () => moveTo(1));
   root.querySelector('#prev3').addEventListener('click', () => moveTo(2));
 
-  // Show/hide password toggle
   const pwd = root.querySelector('#password');
   const togglePwd = root.querySelector('#togglePwd');
   if (pwd && togglePwd) {
@@ -120,6 +163,8 @@ export function renderRegistrationPage(root) {
       togglePwd.innerHTML = show ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
     });
   }
+
+  updateProgress(currentStep);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -135,6 +180,7 @@ export function renderRegistrationPage(root) {
       zip_code: data.get('zipCode'),
       frequency: data.get('frequency') || 'ocasional',
       favorite_fruits: data.getAll('fruits'),
+      notes: data.get('notes') || '',
       created_at: new Date().toISOString()
     };
 
@@ -181,57 +227,6 @@ export function renderRegistrationPage(root) {
     }
   });
 
-  // --- AI Concierge ---
-  const aiMsgs = root.querySelector('#aiMsgs');
-  const aiInput = root.querySelector('#aiInput');
-  const aiSend = root.querySelector('#aiSend');
-  aiSend.addEventListener('click', sendToAI);
-  aiInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendToAI(); }});
-
-  function addMsg(text, sender='bot') {
-    const div = document.createElement('div');
-    div.className = `message ${sender}-message`;
-    const icon = sender==='user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
-    div.innerHTML = `${icon}<p>${escapeHtml(text)}</p>`;
-    aiMsgs.appendChild(div);
-    aiMsgs.scrollTop = aiMsgs.scrollHeight;
-  }
-  function typing(on=true){
-    let t = root.querySelector('#aiTyping');
-    if(on){ if(!t){ t = document.createElement('div'); t.id='aiTyping'; t.className='message bot-message typing-indicator'; t.innerHTML='<i class="fas fa-robot"></i><p>Escribiendo <span class="loading"></span></p>'; aiMsgs.appendChild(t);} }
-    else { if(t) t.remove(); }
-    aiMsgs.scrollTop = aiMsgs.scrollHeight;
-  }
-
-  async function sendToAI(){
-    const text = (aiInput.value||'').trim();
-    if(!text) return;
-    addMsg(text,'user');
-    aiInput.value='';
-    // Simple extraction heuristics to auto-fill
-    extractAndFill(text);
-    typing(true);
-    try{
-      const prompt = `Actúa como un concierge de registro para una tienda de frutas premium llamada Fruvi. Saluda con empatía, recuerda beneficios (entrega a domicilio, selección premium, IA personaliza), y guía paso a paso. Si el usuario proporciona nombre, email, teléfono o dirección, confírmalo brevemente. Pide el siguiente dato pendiente hasta completar: nombre, email, teléfono, dirección, ciudad y código postal. Respuestas cortas (máx 2 oraciones). Usuario: ${text}`;
-      const reply = await chatCompletion(prompt);
-      typing(false);
-      addMsg(reply,'bot');
-    }catch(err){ typing(false); addMsg('Hubo un problema, intenta nuevamente.','bot'); }
-  }
-
-  function extractAndFill(text){
-    const nameMatch = text.match(/me llamo ([A-Za-zÁÉÍÓÚÑáéíóúñ ]{2,})/i) || text.match(/^([A-Za-zÁÉÍÓÚÑáéíóúñ ]{2,})$/);
-    if(nameMatch){ fullName.value = (nameMatch[1]||nameMatch[0]).trim(); }
-    const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-    if(emailMatch){ email.value = emailMatch[0]; }
-    const phoneMatch = text.match(/[+]?\d[\d\s\-()]{8,}/);
-    if(phoneMatch){ phone.value = phoneMatch[0]; }
-    const addrMatch = text.match(/(calle|av\.|avenida|cra\.|carrera|cll\.|mz\.|manzana|#|numero|n°|nº)[^,\n]{3,}/i);
-    if(addrMatch){ address.value = (address.value||'') ? address.value : addrMatch[0]; }
-  }
-
-  function escapeHtml(s){ return s.replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
-
   function moveTo(step, force = false) {
     if (!force && step > currentStep && !validateStep(currentStep)) return;
     const from = root.querySelector(`#step${currentStep}`);
@@ -240,6 +235,7 @@ export function renderRegistrationPage(root) {
       from.classList.remove('active');
       to.classList.add('active');
       currentStep = step;
+      updateProgress(currentStep);
     }
   }
 
@@ -264,6 +260,15 @@ export function renderRegistrationPage(root) {
       }
     }
     return true;
+  }
+
+  function updateProgress(step) {
+    progressSteps.forEach((item) => {
+      const value = Number(item.dataset.step);
+      item.classList.toggle('is-active', value === step);
+      item.classList.toggle('is-complete', value < step);
+    });
+    if (stepIndexEl) stepIndexEl.textContent = step;
   }
 
   function showBanner(text, ok=true) {
