@@ -9,6 +9,7 @@ import { renderLoginPage } from './pages/login.js';
 import { renderProfilePage } from './pages/profile.js';
 import { renderRecipesBlogPage } from './pages/recipes.js';
 import { renderRecipeDetailPage } from './pages/recipeDetail.js';
+import { renderMysteryBoxesPage } from './pages/mysteryBoxes.js';
 import { initChatWidget } from './components/chatWidget.js';
 import { checkoutModal } from './components/checkoutModal.js';
 
@@ -49,6 +50,7 @@ function showRegistrationRequiredPage(rootEl, pageName) {
 
 registerRoute('/', (rootEl, params) => showSPA(rootEl, renderHomePage));
 registerRoute('', (rootEl, params) => showSPA(rootEl, renderHomePage));
+registerRoute('/cajas-misteriosas', (rootEl, params) => showSPA(rootEl, renderMysteryBoxesPage));
 registerRoute('/tienda', async (rootEl, params) => {
   const userStatus = await window.getUserStatus();
   if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'tienda');
