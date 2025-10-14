@@ -18,21 +18,7 @@ export function initChatWidget() {
         <button id="fruvi-chat-close" class="btn-icon" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
       </div>
       <div id="fruvi-chat-messages" class="chat-panel__messages">
-        <div class="message bot-message welcome-message">
-          <i class="fas fa-robot"></i>
-          <div class="message-content">
-            <div class="welcome-header">
-              <span class="brand-highlight">Fruvi</span> <span class="emoji">🍎</span>
-            </div>
-            <p class="welcome-text">¡Hola! Soy tu asistente de frutas premium. ¿En qué puedo ayudarte hoy?</p>
-            <div class="welcome-tags">
-              <span class="tag">🍓 Frutas frescas</span>
-              <span class="tag">🥗 Nutrición</span>
-              <span class="tag">📦 Envíos</span>
-              <span class="tag">🍹 Recetas</span>
-            </div>
-          </div>
-        </div>
+        <div class="message bot-message"><i class="fas fa-robot"></i><p>¡Hola! Soy el asistente de Fruvi. Pregúntame sobre frutas, nutrición o compras.</p></div>
       </div>
       <div class="chat-panel__input">
         <input type="text" id="fruvi-chat-input" placeholder="Escribe tu pregunta..." />

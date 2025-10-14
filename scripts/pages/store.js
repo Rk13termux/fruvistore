@@ -510,66 +510,18 @@ function setupProductInteractions(products) {
 
 // Cart functionality
 let cart = JSON.parse(localStorage.getItem('fruvi_cart') || '[]');
-let cartModal = null;
-let cartWidget = null;
 
 function setupCart() {
-  // Create cart modal if it doesn't exist
-  if (!document.getElementById('cartModal')) {
-    const modalHTML = `
-      <div id="cartModal" class="modal fade" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content glass">
-            <div class="modal-header">
-              <h5 class="modal-title">
-                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
-                <span id="cartItemsCount" class="badge bg-brand ms-2">${cart.length}</span>
-              </h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div id="cartItemsList" class="mb-3">
-                ${renderCartItems()}
-              </div>
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">Total:</h5>
-                <h4 class="mb-0 text-brand" id="cartModalTotal">$0.00</h4>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir comprando</button>
-              <button type="button" class="btn btn-primary" id="cartCheckout">
-                <i class="fas fa-credit-card me-2"></i>Pagar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
-  }
-
-  // Update cart display in header
   updateCartDisplay();
 
-  // Setup cart button to show modal
-  document.querySelectorAll('[data-bs-toggle="cart"]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      showCart();
-    });
-  });
-
-  // Setup checkout button in modal
   document.getElementById('cartCheckout')?.addEventListener('click', () => {
     if (cart.length === 0) {
       showNotification('Tu carrito está vacío', false);
       return;
     }
+
     // Show checkout modal with cart data
     if (window.checkoutModal) {
-      cartModal.hide();
       window.checkoutModal.show({ items: cart });
     } else {
       showNotification('Error: Modal de checkout no disponible', false);
@@ -577,324 +529,38 @@ function setupCart() {
   });
 }
 
-function renderCartWidgetItems() {
-  if (cart.length === 0) {
-    return `
-      <div class="empty-cart-widget">
-        <i class="fas fa-shopping-cart"></i>
-        <p>Tu carrito está vacío</p>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="cart-items-list">
-      ${cart.slice(0, 3).map(item => `
-        <div class="cart-item-widget" data-id="${item.id}">
-          <img src="${item.img}" alt="${item.name}" class="item-image">
-          <div class="item-details">
-            <div class="item-name">${item.name}</div>
-            <div class="item-quantity">
-              <button class="qty-btn" data-action="decrease" data-id="${item.id}">-</button>
-              <span>${item.quantity}</span>
-              <button class="qty-btn" data-action="increase" data-id="${item.id}">+</button>
-            </div>
-          </div>
-          <div class="item-price">$${(item.price * item.quantity).toFixed(2)}</div>
-          <button class="remove-item" data-id="${item.id}">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      `).join('')}
-      ${cart.length > 3 ? `
-        <div class="text-center text-muted small mt-2">
-          +${cart.length - 3} más artículos...
-        </div>
-      ` : ''}
-    </div>
-  `;
-}
-
-function renderCartItems() {
-  if (cart.length === 0) {
-    return `
-      <div class="empty-cart">
-        <i class="fas fa-shopping-cart"></i>
-        <p>Tu carrito está vacío</p>
-        <button class="btn btn-outline-primary mt-3" data-bs-dismiss="modal">
-          Seguir comprando
-        </button>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="cart-items">
-      ${cart.map(item => `
-        <div class="cart-item" data-id="${item.id}">
-          <img src="${item.img}" alt="${item.name}" class="item-image">
-          <div class="item-details">
-            <div class="item-name">${item.name}</div>
-            <div class="item-price">$${item.price.toFixed(2)} c/u</div>
-            <div class="item-actions">
-              <div class="quantity-selector">
-                <button class="qty-btn" data-action="decrease" data-id="${item.id}">-</button>
-                <input type="number" value="${item.quantity}" min="1" class="qty-input" data-id="${item.id}">
-                <button class="qty-btn" data-action="increase" data-id="${item.id}">+</button>
-              </div>
-              <button class="btn btn-sm btn-outline-danger remove-item" data-id="${item.id}">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </div>
-          </div>
-          <div class="item-subtotal">
-            $${(item.price * item.quantity).toFixed(2)}
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function showCart() {
-  if (!cartModal) return;
-  
-  const modal = document.getElementById('cartModal');
-  modal.querySelector('#cartItemsList').innerHTML = renderCartItems();
-  updateCartModalTotal();
-  
-  // Setup event listeners for quantity buttons
-  modal.querySelectorAll('.btn-quantity').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const action = e.currentTarget.getAttribute('data-action');
-      const productId = parseInt(e.currentTarget.getAttribute('data-id'));
-      updateCartItemQuantity(productId, action === 'increase' ? 1 : -1);
-    });
-  });
-  
-  // Setup event listeners for remove buttons
-  modal.querySelectorAll('.btn-remove').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const productId = parseInt(e.currentTarget.getAttribute('data-id'));
-      removeFromCart(productId);
-    });
-  });
-  
-  cartModal.show();
-}
-
-function updateCartItemQuantity(productId, change) {
-  const itemIndex = cart.findIndex(item => item.id === productId);
-  if (itemIndex === -1) return;
-  
-  // Si el cambio es un número, establecer cantidad exacta, de lo contrario incrementar/decrementar
-  if (typeof change === 'number' && Math.abs(change) > 1) {
-    cart[itemIndex].quantity = Math.max(1, change);
-  } else {
-    cart[itemIndex].quantity = Math.max(1, cart[itemIndex].quantity + change);
-  }
-  
-  // Mostrar notificación solo si se está eliminando
-  if (cart[itemIndex].quantity <= 1 && change < 0) {
-    showNotification(`Cantidad actualizada: ${cart[itemIndex].quantity}`, true);
-  }
-  
-  updateCartDisplay();
-}
-
-function removeFromCart(productId, showNotification = true) {
-  const itemIndex = cart.findIndex(item => item.id === productId);
-  if (itemIndex === -1) return;
-  
-  const removedItem = cart[itemIndex];
-  cart.splice(itemIndex, 1);
-  
-  if (showNotification) {
-    const notification = showNotification(
-      `${removedItem.name} eliminado del carrito`,
-      false,
-      'Deshacer',
-      () => {
-        cart.push(removedItem);
-        updateCartDisplay();
-      }
-    );
-    
-    // Ocultar notificación después de 5 segundos
-    setTimeout(() => {
-      if (notification && notification.parentNode) {
-        notification.remove();
-      }
-    }, 5000);
-  }
-  
-  updateCartDisplay();
-  
-  // Cerrar el modal si no hay más artículos
-  if (cart.length === 0 && cartModal) {
-    cartModal.hide();
-  }
-  
-  return removedItem;
-}
-
 function addToCart(item) {
   const existing = cart.find(cartItem => cartItem.id === item.id);
-  
   if (existing) {
     existing.quantity += item.quantity;
   } else {
-    cart.push({...item});
+    cart.push(item);
   }
-  
-  saveCart();
-  updateCartDisplay();
-  showNotification(`${item.name} ${existing ? 'actualizado en' : 'añadido al'} carrito`, true);
-  
-  // Update the cart modal if it's open
-  if (document.querySelector('#cartModal.show')) {
-    showCart();
-  }
-}
 
-function saveCart() {
   localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+  updateCartDisplay();
+  showNotification(`${item.name} añadido al carrito`, true);
 }
 
 function updateCartDisplay() {
-  // Actualizar contadores
+  const countEl = document.getElementById('cartCount');
+  const totalEl = document.getElementById('cartTotal');
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = calculateTotal();
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-  // Actualizar widget flotante
-  const widget = document.getElementById('cartWidget');
-  if (widget) {
-    widget.querySelector('.cart-widget-count').textContent = totalItems;
-    widget.querySelector('.cart-widget-amount').textContent = `$${totalPrice.toFixed(2)}`;
-    widget.querySelector('.cart-widget-items').innerHTML = renderCartWidgetItems();
-    widget.querySelector('#checkoutBtn').disabled = totalItems === 0;
-  }
-
-  // Actualizar modal si está abierto
-  const modalItems = document.getElementById('cartItemsList');
-  if (modalItems) {
-    modalItems.innerHTML = renderCartItems();
-    setupCartItemListeners(modalItems);
-  }
-
-  // Actualizar total en el modal
-  const modalTotal = document.getElementById('cartModalTotal');
-  if (modalTotal) {
-    modalTotal.textContent = `$${totalPrice.toFixed(2)}`;
-  }
-
-  // Actualizar botón de checkout en el modal
-  const checkoutBtn = document.getElementById('cartCheckout');
-  if (checkoutBtn) {
-    checkoutBtn.disabled = totalItems === 0;
-  }
-
-  // Guardar en localStorage
-  saveCart();
-  
-  // Actualizar cualquier otro contador en la página
-  document.querySelectorAll('.cart-count').forEach(el => {
-    el.textContent = totalItems;
-  });
+  countEl.textContent = totalItems;
+  totalEl.textContent = `$${totalPrice.toFixed(2)}`;
 }
 
-function calculateTotal() {
-  return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-}
-
-function setupCartItemListeners(container) {
-  // Botones de cantidad
-  container.querySelectorAll('.qty-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const action = e.currentTarget.getAttribute('data-action');
-      const productId = parseInt(e.currentTarget.getAttribute('data-id'));
-      updateCartItemQuantity(productId, action === 'increase' ? 1 : -1);
-    });
-  });
-
-  // Inputs de cantidad
-  container.querySelectorAll('.qty-input').forEach(input => {
-    input.addEventListener('change', (e) => {
-      const productId = parseInt(e.target.getAttribute('data-id'));
-      const newQty = parseInt(e.target.value) || 1;
-      const item = cart.find(item => item.id === productId);
-      if (item) {
-        item.quantity = Math.max(1, newQty);
-        updateCartDisplay();
-      }
-    });
-  });
-
-  // Botones de eliminar
-  container.querySelectorAll('.remove-item').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const productId = parseInt(e.currentTarget.getAttribute('data-id'));
-      removeFromCart(productId);
-    });
-  });
-}
-
-function handleCheckout() {
-  if (cart.length === 0) {
-    showNotification('Tu carrito está vacío', false);
-    return;
-  }
-  
-  // Cerrar el modal del carrito si está abierto
-  if (cartModal) {
-    cartModal.hide();
-  }
-  
-  // Mostrar el modal de pago si está disponible
-  if (window.checkoutModal) {
-    window.checkoutModal.show({ items: [...cart] });
-  } else {
-    showNotification('Redirigiendo al proceso de pago...');
-    // Aquí iría la lógica de redirección al checkout
-    console.log('Proceder al pago con:', cart);
-  }
-}
-
-function updateCartModalTotal() {
-  const modalTotal = document.getElementById('cartModalTotal');
-  if (modalTotal) {
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    modalTotal.textContent = `$${totalPrice.toFixed(2)}`;
-  }
-}
-
-function showNotification(message, success = true, actionText = null, actionCallback = null) {
-  // Eliminar notificaciones existentes
-  const existingNotifications = document.querySelectorAll('.store-notification');
-  existingNotifications.forEach(notif => {
-    notif.style.opacity = '0';
-    setTimeout(() => notif.remove(), 300);
-  });
-
+function showNotification(message, success = true) {
   const notification = document.createElement('div');
   notification.className = `store-notification ${success ? 'success' : 'error'} glass`;
-  
-  let actionButton = '';
-  if (actionText && typeof actionCallback === 'function') {
-    actionButton = `<button class="btn btn-sm btn-outline-light ms-3">${actionText}</button>`;
-  }
-  
   notification.innerHTML = `
-    <div class="d-flex align-items-center">
-      <i class="fas ${success ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-      <span class="ms-2">${message}</span>
-      ${actionButton}
-    </div>
+    <i class="fas ${success ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+    <span>${message}</span>
   `;
 
-  // Estilos
   Object.assign(notification.style, {
     position: 'fixed',
     top: '20px',
@@ -904,67 +570,16 @@ function showNotification(message, success = true, actionText = null, actionCall
     borderRadius: '12px',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    transition: 'all 0.3s ease',
-    opacity: '0',
-    transform: 'translateX(120%)'
+    gap: '8px'
   });
 
   document.body.appendChild(notification);
-  
-  // Forzar reflow para que la animación funcione
-  void notification.offsetWidth;
-  
-  // Mostrar con animación
-  notification.style.opacity = '1';
-  notification.style.transform = 'translateX(0)';
-  
-  // Configurar acción del botón si existe
-  if (actionText && actionCallback) {
-    const btn = notification.querySelector('button');
-    if (btn) {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        actionCallback();
-        notification.remove();
-      });
-    }
-  }
 
-  // Ocultar después de 5 segundos (o 10 si tiene acción)
-  const timeout = actionText ? 10000 : 5000;
-  const timeoutId = setTimeout(() => {
-    if (notification.parentNode) {
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateX(120%)';
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
-      }, 300);
-    }
-  }, timeout);
-  
-  // Pausar el timeout al hacer hover
-  notification.addEventListener('mouseenter', () => {
-    clearTimeout(timeoutId);
-  });
-  
-  notification.addEventListener('mouseleave', () => {
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(120%)';
-        setTimeout(() => {
-          if (notification.parentNode) {
-            notification.remove();
-          }
-        }, 300);
-      }
-    }, 1000);
-  });
-  
-  return notification;
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(100%)';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
 }
 
 // Setup periodic registration prompts for non-registered users

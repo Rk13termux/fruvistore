@@ -1,20 +1,6 @@
+// Import required services
 import './scripts/services/supabaseService.js';
-// Supabase Configuration - Using Environment Variables
-const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL || window.__ENV__?.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-
-// Initialize Supabase
-let supabase;
-try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch (error) {
-    console.warn('Supabase no está configurado. Por favor, configura tus credenciales de Supabase.');
-}
-
-// Groq Configuration - Using Environment Variables
-const GROQ_API_BASE = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_DEFAULT_MODEL = 'llama3-8b-8192';
-const GROQ_API_KEY = import.meta.env?.VITE_GROQ_API_KEY || window.__ENV__?.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages';
+import './scripts/services/groqService.js';
 
 // Global Variables
 let currentStep = 1;
@@ -240,8 +226,8 @@ async function sendMessage() {
     
     try {
         let response;
-        // Always try Groq first
-        response = await generateGroqResponse(message, GROQ_API_KEY);
+        // Always try Groq first using the service
+        response = await window.chatCompletion(message);
         
         // Remove typing indicator
         removeTypingIndicator();
@@ -263,40 +249,7 @@ async function sendMessage() {
     }
 }
 
-// Generate AI Response using Groq API
-async function generateGroqResponse(message, apiKey) {
-    const systemPrompt = `Eres FreshBot, un asistente de una tienda de frutas llamada FreshFruits. Responde en español de manera clara, útil y concisa. Sé amable y específico. Si te preguntan por precios actuales, usa como referencia: manzanas $2.50/kg, plátanos $1.80/kg, naranjas $2.00/kg, fresas $4.50/kg (estos pueden variar por temporada). Brinda consejos de almacenamiento, selección y beneficios nutricionales cuando sea útil. Si no sabes algo, dilo con honestidad.`;
-
-    const body = {
-        model: GROQ_DEFAULT_MODEL,
-        messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-        ],
-        temperature: 0.3,
-        max_tokens: 600,
-        stream: false
-    };
-
-    const res = await fetch(GROQ_API_BASE, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(body)
-    });
-
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Groq API error ${res.status}: ${text}`);
-    }
-
-    const data = await res.json();
-    const content = data?.choices?.[0]?.message?.content;
-    if (!content) throw new Error('Groq API respondió sin contenido.');
-    return content;
-}
+// Groq service is now handled by groqService.js - function removed to avoid duplication
 
 // Generate AI Response using local rule-based assistant
 async function generateAIResponse(message) {

@@ -1,16 +1,33 @@
-// Registration Page (3 steps)
+// Registration Page (Temu-style 3 steps)
+// Funciones de Supabase disponibles en window:
+// window.insertCustomer, window.signUpWithEmail(email, password, metadata), window.upsertCustomer
+// Estas funciones están disponibles globalmente desde supabaseService.js
 import { chatCompletion } from '../services/groqService.js';
 
 export function renderRegistrationPage(root) {
   root.innerHTML = `
   <section class="registration">
     <div class="container">
-      <div class="registration__header">
-        <h2>Registro de Cliente</h2>
-        <p>Únete a Fruvi y recibe frutas premium en la puerta de tu casa.</p>
-      </div>
+      <h2>Registro de Cliente</h2>
+      <p>Únete a Fruvi y recibe frutas premium en la puerta de tu casa. Nuestro asistente te guiará en menos de 1 minuto.</p>
 
-      <div class="registration__form-wrapper">
+      <div class="registration__grid" style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:20px; align-items:start;">
+        <!-- AI Concierge -->
+        <div class="glass chat-container" id="aiConcierge" style="min-height:360px;">
+          <div class="chat-messages" id="aiMsgs">
+            <div class="message bot-message"><i class="fas fa-robot"></i><p>¡Hola! Soy tu asistente Fruvi. Te daré la bienvenida y te acompañaré en el registro. Beneficios:
+            • Entrega rápida a tu puerta
+            • Selección premium verificada
+            • Recomendaciones con IA según tus gustos
+            ¿Me indicas tu nombre para empezar?</p></div>
+          </div>
+          <div class="chat-input" style="border-top:1px solid var(--border); padding:10px; display:flex; gap:8px;">
+            <input type="text" id="aiInput" placeholder="Escribe aquí..." />
+            <button id="aiSend" class="btn-primary"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+
+        <!-- Form -->
         <form id="registrationForm" class="registration-form glass">
           <div class="form-step active" id="step1">
             <h3>Paso 1: Información Personal</h3>
@@ -35,7 +52,7 @@ export function renderRegistrationPage(root) {
                 </button>
               </div>
             </div>
-            <button type="button" class="btn-primary next-step" id="next1">Siguiente</button>
+            <button type="button" class="next-step" id="next1">Siguiente</button>
           </div>
 
           <div class="form-step" id="step2">
@@ -43,42 +60,42 @@ export function renderRegistrationPage(root) {
             <div class="form-group">
               <label for="address">Dirección *</label>
               <input type="text" id="address" name="address" required>
-            </div>
-            <div class="form-group">
-              <label for="zipCode">Código Postal *</label>
-              <input type="text" id="zipCode" name="zipCode" required>
-            </div>
-            <div class="form-buttons">
-              <button type="button" class="btn-secondary prev-step" id="prev2">Anterior</button>
-              <button type="button" class="btn-primary next-step" id="next2">Siguiente</button>
-            </div>
           </div>
+          <div class="form-group">
+            <label for="zipCode">Código Postal *</label>
+            <input type="text" id="zipCode" name="zipCode" required>
+          </div>
+          <div class="form-buttons">
+            <button type="button" class="prev-step" id="prev2">Anterior</button>
+            <button type="button" class="next-step" id="next2">Siguiente</button>
+          </div>
+        </div>
 
-          <div class="form-step" id="step3">
-            <h3>Paso 3: Preferencias</h3>
-            <div class="form-group">
-              <label>Frutas Favoritas (selecciona múltiples)</label>
-              <div class="checkbox-group">
-                ${['Manzanas','Plátanos','Naranjas','Fresas','Mango','Piña'].map((f,i)=>
-                  `<label><input type="checkbox" name="fruits" value="${f.toLowerCase()}"> ${f}</label>`
-                ).join('')}
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="frequency">Frecuencia de Compra</label>
-              <select id="frequency" name="frequency">
-                <option value="semanal">Semanal</option>
-                <option value="quincenal">Quincenal</option>
-                <option value="mensual">Mensual</option>
-                <option value="ocasional" selected>Ocasional</option>
-              </select>
-            </div>
-            <div class="form-buttons">
-              <button type="button" class="btn-secondary prev-step" id="prev3">Anterior</button>
-              <button type="submit" class="btn-primary submit-btn">Registrarse</button>
+        <div class="form-step" id="step3">
+          <h3>Paso 3: Preferencias</h3>
+          <div class="form-group">
+            <label>Frutas Favoritas (selecciona múltiples)</label>
+            <div class="checkbox-group">
+              ${['Manzanas','Plátanos','Naranjas','Fresas','Mango','Piña'].map((f,i)=>
+                `<label><input type="checkbox" name="fruits" value="${f.toLowerCase()}"> ${f}</label>`
+              ).join('')}
             </div>
           </div>
-        </form>
+          <div class="form-group">
+            <label for="frequency">Frecuencia de Compra</label>
+            <select id="frequency" name="frequency">
+              <option value="semanal">Semanal</option>
+              <option value="quincenal">Quincenal</option>
+              <option value="mensual">Mensual</option>
+              <option value="ocasional" selected>Ocasional</option>
+            </select>
+          </div>
+          <div class="form-buttons">
+            <button type="button" class="prev-step" id="prev3">Anterior</button>
+            <button type="submit" class="submit-btn">Registrarse</button>
+          </div>
+        </div>
+      </form>
       </div>
     </div>
   </section>
@@ -88,7 +105,6 @@ export function renderRegistrationPage(root) {
   const steps = [1,2,3];
   let currentStep = 1;
 
-  // Navigation between steps
   root.querySelector('#next1').addEventListener('click', () => moveTo(2));
   root.querySelector('#next2').addEventListener('click', () => moveTo(3));
   root.querySelector('#prev2').addEventListener('click', () => moveTo(1));
@@ -164,6 +180,57 @@ export function renderRegistrationPage(root) {
       showBanner(msg, false);
     }
   });
+
+  // --- AI Concierge ---
+  const aiMsgs = root.querySelector('#aiMsgs');
+  const aiInput = root.querySelector('#aiInput');
+  const aiSend = root.querySelector('#aiSend');
+  aiSend.addEventListener('click', sendToAI);
+  aiInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendToAI(); }});
+
+  function addMsg(text, sender='bot') {
+    const div = document.createElement('div');
+    div.className = `message ${sender}-message`;
+    const icon = sender==='user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+    div.innerHTML = `${icon}<p>${escapeHtml(text)}</p>`;
+    aiMsgs.appendChild(div);
+    aiMsgs.scrollTop = aiMsgs.scrollHeight;
+  }
+  function typing(on=true){
+    let t = root.querySelector('#aiTyping');
+    if(on){ if(!t){ t = document.createElement('div'); t.id='aiTyping'; t.className='message bot-message typing-indicator'; t.innerHTML='<i class="fas fa-robot"></i><p>Escribiendo <span class="loading"></span></p>'; aiMsgs.appendChild(t);} }
+    else { if(t) t.remove(); }
+    aiMsgs.scrollTop = aiMsgs.scrollHeight;
+  }
+
+  async function sendToAI(){
+    const text = (aiInput.value||'').trim();
+    if(!text) return;
+    addMsg(text,'user');
+    aiInput.value='';
+    // Simple extraction heuristics to auto-fill
+    extractAndFill(text);
+    typing(true);
+    try{
+      const prompt = `Actúa como un concierge de registro para una tienda de frutas premium llamada Fruvi. Saluda con empatía, recuerda beneficios (entrega a domicilio, selección premium, IA personaliza), y guía paso a paso. Si el usuario proporciona nombre, email, teléfono o dirección, confírmalo brevemente. Pide el siguiente dato pendiente hasta completar: nombre, email, teléfono, dirección, ciudad y código postal. Respuestas cortas (máx 2 oraciones). Usuario: ${text}`;
+      const reply = await chatCompletion(prompt);
+      typing(false);
+      addMsg(reply,'bot');
+    }catch(err){ typing(false); addMsg('Hubo un problema, intenta nuevamente.','bot'); }
+  }
+
+  function extractAndFill(text){
+    const nameMatch = text.match(/me llamo ([A-Za-zÁÉÍÓÚÑáéíóúñ ]{2,})/i) || text.match(/^([A-Za-zÁÉÍÓÚÑáéíóúñ ]{2,})$/);
+    if(nameMatch){ fullName.value = (nameMatch[1]||nameMatch[0]).trim(); }
+    const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    if(emailMatch){ email.value = emailMatch[0]; }
+    const phoneMatch = text.match(/[+]?\d[\d\s\-()]{8,}/);
+    if(phoneMatch){ phone.value = phoneMatch[0]; }
+    const addrMatch = text.match(/(calle|av\.|avenida|cra\.|carrera|cll\.|mz\.|manzana|#|numero|n°|nº)[^,\n]{3,}/i);
+    if(addrMatch){ address.value = (address.value||'') ? address.value : addrMatch[0]; }
+  }
+
+  function escapeHtml(s){ return s.replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
 
   function moveTo(step, force = false) {
     if (!force && step > currentStep && !validateStep(currentStep)) return;
