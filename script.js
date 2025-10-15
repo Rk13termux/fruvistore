@@ -16,6 +16,48 @@ function initializeApp() {
     setupRegistrationForm();
     setupAIAssistant();
     setupMobileMenu();
+    
+    // Initialize mobile menu visibility based on screen size
+    handleMobileMenuVisibility();
+    
+    // Add resize listener to handle orientation changes
+    window.addEventListener('resize', debounce(handleMobileMenuVisibility, 250));
+}
+
+// Handle mobile menu visibility based on screen size
+function handleMobileMenuVisibility() {
+    const mobileMenuBtn = document.querySelector('.mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (window.innerWidth <= 768) {
+        if (mobileMenuBtn) mobileMenuBtn.style.display = 'block';
+        if (navLinks) navLinks.style.display = 'none';
+    } else {
+        if (mobileMenuBtn) mobileMenuBtn.style.display = 'none';
+        if (navLinks) navLinks.style.display = 'flex';
+        
+        // Close mobile menu if it's open
+        const mobileNav = document.querySelector('.mobile-nav');
+        const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+        if (mobileNav && mobileNav.classList.contains('active')) {
+            mobileNav.classList.remove('active');
+            mobileNavOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+}
+
+// Debounce function to limit resize event frequency
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // Mobile Menu Setup
@@ -66,6 +108,59 @@ function setupMobileMenu() {
             closeMobileMenu();
         }
     });
+    
+    // Update mobile menu when desktop menu changes
+    updateMobileMenuContent();
+}
+
+// Update mobile menu content when navigation changes
+function updateMobileMenuContent() {
+    const mobileNavLinks = document.querySelector('.mobile-nav-links');
+    if (!mobileNavLinks) return;
+    
+    const desktopNavLinks = document.querySelectorAll('.nav-links a');
+    let navLinksHTML = '';
+    
+    const pageIcons = {
+        'Inicio': 'fas fa-home',
+        'Cajas': 'fas fa-box',
+        'Tienda': 'fas fa-store',
+        'Recetas': 'fas fa-utensils',
+        'Nutrición': 'fas fa-apple-alt',
+        'Asistente IA': 'fas fa-robot',
+        'Login': 'fas fa-sign-in-alt',
+        'Registro': 'fas fa-user-plus'
+    };
+    
+    desktopNavLinks.forEach(link => {
+        const href = link.getAttribute('href') || '#';
+        const text = link.textContent.trim();
+        const isActive = link.classList.contains('active') ? 'active' : '';
+        const icon = pageIcons[text] || 'fas fa-circle';
+        const parentLi = link.closest('li');
+        const isHidden = parentLi && parentLi.classList.contains('hidden');
+        
+        if (!isHidden) {
+            navLinksHTML += `<a href="${href}" class="${isActive}">
+                <i class="${icon}"></i>
+                ${text}
+            </a>`;
+        }
+    });
+    
+    mobileNavLinks.innerHTML = navLinksHTML;
+    
+    // Re-attach click events to new links
+    const newMobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
+    newMobileNavLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const mobileNav = document.querySelector('.mobile-nav');
+            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+            mobileNav.classList.remove('active');
+            mobileNavOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
 }
 
 // Create mobile navigation HTML
@@ -84,11 +179,33 @@ function createMobileNavigation() {
     const desktopNavLinks = document.querySelectorAll('.nav-links a');
     let navLinksHTML = '';
     
+    // Map of page icons
+    const pageIcons = {
+        'Inicio': 'fas fa-home',
+        'Cajas': 'fas fa-box',
+        'Tienda': 'fas fa-store',
+        'Recetas': 'fas fa-utensils',
+        'Nutrición': 'fas fa-apple-alt',
+        'Asistente IA': 'fas fa-robot',
+        'Login': 'fas fa-sign-in-alt',
+        'Registro': 'fas fa-user-plus'
+    };
+    
     desktopNavLinks.forEach(link => {
         const href = link.getAttribute('href') || '#';
-        const text = link.textContent;
+        const text = link.textContent.trim();
         const isActive = link.classList.contains('active') ? 'active' : '';
-        navLinksHTML += `<a href="${href}" class="${isActive}">${text}</a>`;
+        const icon = pageIcons[text] || 'fas fa-circle';
+        const parentLi = link.closest('li');
+        const isHidden = parentLi && parentLi.classList.contains('hidden');
+        
+        // Only add visible links to mobile menu
+        if (!isHidden) {
+            navLinksHTML += `<a href="${href}" class="${isActive}">
+                <i class="${icon}"></i>
+                ${text}
+            </a>`;
+        }
     });
     
     mobileNav.innerHTML = `
@@ -104,6 +221,11 @@ function createMobileNavigation() {
         <nav class="mobile-nav-links">
             ${navLinksHTML}
         </nav>
+        <div style="padding: 1.5rem; border-top: 1px solid var(--border); margin-top: auto;">
+            <p style="color: var(--muted); font-size: 0.9rem; text-align: center;">
+                © 2024 Fruvi - Frutas Premium
+            </p>
+        </div>
     `;
     
     body.appendChild(overlay);
