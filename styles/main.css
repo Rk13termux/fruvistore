@@ -27,6 +27,33 @@ body {
   font-family: var(--font-body);
 }
 
+/* Ensure all main sections have black background */
+section {
+  background-color: #000000 !important;
+  margin: 0 !important;
+}
+
+/* Remove gaps between sections */
+section + section {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Force no vertical spacing between all main sections */
+.hero-revolutionary,
+.features-showcase, 
+.mystery-boxes-showcase,
+.fruit-gallery,
+.smoothie-lab,
+.fruit-artistry,
+.how-it-works-interactive,
+.social-proof,
+.faq-modern,
+.final-cta-premium {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 body, button, input, select, textarea {
   font-family: var(--font-body);
 }
@@ -140,18 +167,109 @@ h1, h2, h3, h4, h5, h6,
   padding: 0.5rem;
   border-radius: 8px;
   transition: background 0.3s ease;
+  position: relative;
+  z-index: 1001;
 }
 .mobile-menu:hover {
   background: var(--surface);
 }
 
+.mobile-menu i {
+  font-size: 1.5rem;
+}
+
+/* Mobile Navigation Overlay */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+  opacity: 1;
+}
+
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  border-left: 1px solid var(--border);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+}
+
+.mobile-nav.active {
+  right: 0;
+}
+
+.mobile-nav-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-nav-close {
+  background: none;
+  border: none;
+  color: var(--txt);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.mobile-nav-close:hover {
+  background: var(--surface);
+}
+
+.mobile-nav-links {
+  padding: 1rem 0;
+}
+
+.mobile-nav-links a {
+  display: block;
+  color: var(--txt);
+  text-decoration: none;
+  padding: 1rem 1.5rem;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-links a:hover {
+  background: var(--surface);
+  color: var(--brand);
+  padding-left: 2rem;
+}
+
+.mobile-nav-links a.active {
+  background: var(--surface);
+  color: var(--brand);
+  border-left: 3px solid var(--brand);
+}
+
 /* Footer - black glass */
 .footer {
-  background: rgba(0,0,0,0.6) !important;
+  background: #000000 !important;
   border-top: 1px solid var(--border);
   backdrop-filter: blur(8px) saturate(130%);
   padding: 60px 0 30px;
-  margin-top: 80px;
+  margin-top: 0px !important;
 }
 .footer-content {
   display: grid;
@@ -465,6 +583,11 @@ h1, h2, h3, h4, h5, h6,
 
 /* Sections */
 .store, .nutrition, .registration, .ai-assistant { background: transparent !important; }
+
+/* Add bottom padding to auth pages for footer separation */
+.registration, .ai-assistant {
+  padding-bottom: 80px !important;
+}
 .nutrition-table { background: rgba(255,255,255,0.02); color: var(--txt); border-radius: 12px; overflow: hidden; }
 .nutrition-table th { background: linear-gradient(135deg, var(--brand-2), var(--brand)) !important; color: #ffffff !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem; }
 .nutrition-table td { color: var(--txt); border-bottom: 1px solid var(--border); transition: background 0.3s ease; }
@@ -614,16 +737,15 @@ h1, h2, h3, h4, h5, h6,
 
 .mystery-hero {
   position: relative;
-  padding: 160px 0 120px;
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 139, 211, 0.25), rgba(0, 0, 0, 0.92));
+  padding: 60px 0 0 0;
+  background: #000000 !important;
   overflow: hidden;
 }
 
 .mystery-hero__overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top right, rgba(139, 218, 1, 0.16), transparent 60%),
-              radial-gradient(circle at bottom left, rgba(255, 155, 64, 0.18), transparent 55%);
+  background: #000000 !important;
   z-index: 1;
   pointer-events: none;
 }
@@ -640,7 +762,7 @@ h1, h2, h3, h4, h5, h6,
 .mystery-hero__content {
   padding: clamp(2rem, 4vw, 3.2rem);
   border-radius: 24px;
-  background: rgba(12, 17, 25, 0.78) !important;
+  background: #000000 !important;
   border: 1px solid var(--glass-border) !important;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(16px) saturate(135%);
@@ -719,14 +841,13 @@ h1, h2, h3, h4, h5, h6,
 .mystery-hero__visual-glow {
   position: absolute;
   inset: -60px;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 155, 64, 0.3), transparent 60%),
-              radial-gradient(circle at 80% 80%, rgba(139, 218, 1, 0.28), transparent 60%);
+  background: #000000 !important;
   filter: blur(80px);
   z-index: -1;
 }
 
 .mystery-boxes {
-  padding: 110px 0 90px;
+  padding: 60px 0 0 0;
 }
 
 .mystery-section__header {
@@ -755,7 +876,7 @@ h1, h2, h3, h4, h5, h6,
 .mystery-card {
   padding: 1.8rem;
   border-radius: 24px;
-  background: rgba(12, 17, 25, 0.82) !important;
+  background: #000000 !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   display: flex;
@@ -949,8 +1070,8 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .mystery-steps {
-  padding: 110px 0;
-  background: linear-gradient(180deg, rgba(12, 17, 25, 0.95), rgba(12, 17, 25, 0.8));
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .mystery-steps__grid {
@@ -997,7 +1118,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .mystery-subscription {
-  padding: 110px 0 120px;
+  padding: 60px 0 0 0;
 }
 
 .mystery-subscription__card {
@@ -1286,7 +1407,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* Hero */
-.hero { background: radial-gradient(600px 300px at 20% 20%, rgba(255,155,64,0.1), transparent), radial-gradient(500px 300px at 80% 30%, rgba(139,218,1,0.12), transparent), var(--bg) !important; }
+.hero { background: #000000 !important; }
 .hero-content h1 { text-shadow: 0 0 20px rgba(139,218,1,0.25); }
 
 /* Chat */
@@ -1319,8 +1440,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Professional Auth Forms */
 .auth--login {
-  padding: 120px 0;
-  background: radial-gradient(120% 140% at 18% 20%, rgba(255,155,64,0.09) 0%, rgba(8,8,8,0.95) 55%, #040404 100%);
+  padding: 60px 0 80px 0;
+  background: #000000 !important;
 }
 
 .auth__wrap {
@@ -1564,7 +1685,7 @@ h1, h2, h3, h4, h5, h6,
 
 @media (max-width: 640px) {
   .auth--login {
-    padding: 96px 0;
+    padding: 60px 0 80px 0;
   }
   .auth__promo,
   .auth__card {
@@ -1584,7 +1705,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 /* Registration Required (Gate) */
-.registration-required-page { padding: 120px 0 80px; }
+.registration-required-page { padding: 60px 0 80px 0; }
 .registration-required-content {
   position: relative; border-radius: 20px;
   padding: 28px 32px; overflow: hidden;
@@ -2755,7 +2876,7 @@ h1, h2, h3, h4, h5, h6,
 /* Call to Action */
 .recipe-cta {
   padding: 4rem 0;
-  background: linear-gradient(135deg, #010101 0%, #090909 50%, #0f0f0f 100%);
+  background: #000000 !important;
   position: relative;
   overflow: hidden;
 }
@@ -3929,7 +4050,7 @@ h1, h2, h3, h4, h5, h6,
 /* Call to Action */
 .recipe-cta {
   padding: 4rem 0;
-  background: linear-gradient(135deg, #010101 0%, #090909 50%, #0f0f0f 100%);
+  background: #000000 !important;
   position: relative;
   overflow: hidden;
 }
@@ -4527,15 +4648,359 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
-/* Mobile menu color fix */
+/* ========================= */
+/* RESPONSIVE DESIGN SYSTEM */
+/* ========================= */
+
+/* Tablet and Mobile Navigation */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0 1.5rem;
+  }
+  
+  .nav-links {
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .nav-links { background: rgba(0,0,0,0.9) !important; }
+  /* Navigation */
+  .nav-links {
+    display: none;
+  }
+  
+  .mobile-menu {
+    display: block;
+  }
+  
+  .mobile-nav {
+    display: block;
+  }
+  
+  .mobile-nav-overlay {
+    display: block;
+  }
+  
+  .navbar {
+    padding: 0 1rem;
+  }
+  
+  /* Hero Section */
+  .hero-revolutionary {
+    padding: 40px 0 0 0;
+    min-height: 70vh;
+  }
+  
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .hero-revolutionary__title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-revolutionary__subtitle {
+    font-size: 1rem;
+  }
+  
+  /* Container padding */
+  .container {
+    padding: 0 1rem;
+  }
+  
+  /* All sections responsive padding */
+  .features-showcase,
+  .mystery-boxes-showcase,
+  .fruit-gallery,
+  .smoothie-lab,
+  .fruit-artistry,
+  .how-it-works-interactive,
+  .social-proof,
+  .faq-modern {
+    padding: 40px 0 0 0;
+  }
+  
+  .final-cta-premium {
+    padding: 40px 0 60px 0;
+  }
+  
+  /* Grid layouts */
+  .features-grid,
+  .mystery-grid,
+  .fruit-grid,
+  .smoothie-grid,
+  .artistry-grid,
+  .how-grid,
+  .testimonials-grid,
+  .faq-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  /* Cards */
+  .card,
+  .feature-card,
+  .mystery-card,
+  .fruit-card,
+  .smoothie-card,
+  .artistry-card,
+  .how-card,
+  .testimonial-card,
+  .faq-card {
+    padding: 1.5rem;
+  }
+  
+  /* Typography */
+  h1, .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  h2, .section-title {
+    font-size: 2rem;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+  }
+  
+  /* Auth pages */
+  .auth--login {
+    padding: 40px 0 60px 0;
+  }
+  
+  .auth__wrap {
+    padding: 0 1rem;
+  }
+  
+  .auth__promo,
+  .auth__card {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 480px) {
+  /* Navigation */
+  .mobile-nav {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .navbar {
+    padding: 0 0.5rem;
+  }
+  
+  .logo {
+    font-size: 1.3rem;
+  }
+  
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+  }
+  
+  /* Hero */
+  .hero-revolutionary {
+    padding: 20px 0 0 0;
+    min-height: 60vh;
+  }
+  
+  .hero-revolutionary__title {
+    font-size: 2rem;
+  }
+  
+  .hero-revolutionary__subtitle {
+    font-size: 0.9rem;
+  }
+  
+  /* Container */
+  .container {
+    padding: 0 0.5rem;
+  }
+  
+  /* Sections */
+  .features-showcase,
+  .mystery-boxes-showcase,
+  .fruit-gallery,
+  .smoothie-lab,
+  .fruit-artistry,
+  .how-it-works-interactive,
+  .social-proof,
+  .faq-modern {
+    padding: 30px 0 0 0;
+  }
+  
+  .final-cta-premium {
+    padding: 30px 0 40px 0;
+  }
+  
+  /* Cards */
+  .card,
+  .feature-card,
+  .mystery-card,
+  .fruit-card,
+  .smoothie-card,
+  .artistry-card,
+  .how-card,
+  .testimonial-card,
+  .faq-card {
+    padding: 1rem;
+  }
+  
+  /* Typography */
+  h1, .hero-title {
+    font-size: 2rem;
+  }
+  
+  h2, .section-title {
+    font-size: 1.8rem;
+  }
+  
+  h3 {
+    font-size: 1.3rem;
+  }
+  
+  /* Buttons */
+  .btn-primary,
+  .cta-button,
+  .add-to-cart {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+  
+  /* Auth pages */
+  .auth--login {
+    padding: 20px 0 40px 0;
+  }
+  
+  .auth__wrap {
+    padding: 0 0.5rem;
+  }
+  
+  .auth__promo,
+  .auth__card {
+    padding: 1rem;
+  }
+}
+
+/* Large screens optimization */
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  .hero-revolutionary__title {
+    font-size: 4rem;
+  }
+  
+  .hero-revolutionary__subtitle {
+    font-size: 1.3rem;
+  }
+}
+
+/* Additional responsive fixes */
+@media (max-width: 768px) {
+  /* Specific components */
+  .hero-pain-solution,
+  .hero-social-proof {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .hero-actions .btn-primary {
+    width: 100%;
+  }
+  
+  /* Footer */
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+  
+  /* Forms */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  /* Chat widget */
+  .chat-widget {
+    bottom: 1rem;
+    right: 1rem;
+    width: calc(100% - 2rem);
+    max-width: 350px;
+  }
+  
+  /* Modals */
+  .modal-content {
+    margin: 1rem;
+    width: calc(100% - 2rem);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Specific small mobile fixes */
+  .hero-revolutionary__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .proof-stat {
+    text-align: center;
+  }
+  
+  .cta-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Product cards */
+  .product-card {
+    margin-bottom: 1rem;
+  }
+  
+  /* Nutrition tables */
+  .nutrition-table-container {
+    overflow-x: auto;
+  }
+  
+  .nutrition-table {
+    min-width: 600px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .nav-links a:hover {
+    transform: none;
+  }
+  
+  .mobile-nav-links a:hover {
+    background: var(--surface);
+    padding-left: 1.5rem;
+  }
 }
 
 /* ========================= */
 /* Landing sections layouts  */
 /* ========================= */
-.hero { padding: 140px 0 80px !important; }
+.hero { padding: 60px 0 0 0 !important; }
 .hero__grid { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 60px; }
 .hero__actions { display:flex; gap:14px; align-items:center; margin-top:24px; }
 .hero__badges { display:flex; gap:10px; margin-top:16px; flex-wrap: wrap; }
@@ -4543,7 +5008,7 @@ h1, h2, h3, h4, h5, h6,
 .media-card { overflow:hidden; border-radius:18px; }
 .media-card img { width:100%; height: 380px; object-fit: cover; display:block; filter: saturate(1.05) contrast(1.02); }
 
-.section { padding: 100px 0; }
+.section { padding: 60px 0 0 0; }
 .section__title { text-align:center; font-size:2rem; margin-bottom: 26px; color: var(--txt); }
 
 .cards-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
@@ -5481,9 +5946,9 @@ h1, h2, h3, h4, h5, h6,
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #1a1a1a 100%);
+  background: #000000 !important;
   overflow: hidden;
-  padding: 120px 0 80px;
+  padding: 80px 0 0 0;
 }
 
 /* Video Background */
@@ -6607,8 +7072,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Features Showcase */
 .features-showcase {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #040404 0%, #0c0c0c 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .features-header {
@@ -6866,8 +7331,8 @@ h1, h2, h3, h4, h5, h6,
 /* Product Highlight */
 /* MYSTERY BOXES SHOWCASE */
 .mystery-boxes-showcase {
-  padding: 120px 0;
-  background: linear-gradient(135deg, #010101 0%, #050505 50%, #0a0a0a 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
   position: relative;
 }
 
@@ -7090,8 +7555,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Fruit Experience Gallery */
 .fruit-gallery {
-  padding: 110px 0;
-  background: linear-gradient(135deg, #020202 0%, #090909 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .section-header {
@@ -7345,8 +7810,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Smoothie Lab */
 .smoothie-lab {
-  padding: 110px 0;
-  background: linear-gradient(135deg, #020202 0%, #090909 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .smoothie-grid {
@@ -7457,8 +7922,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Fruit Artistry */
 .fruit-artistry {
-  padding: 110px 0;
-  background: linear-gradient(135deg, #030303 0%, #090909 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .artistry-grid {
@@ -7772,8 +8237,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* How It Works Interactive */
 .how-it-works-interactive {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #040404 0%, #0b0b0b 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .how-header {
@@ -7890,8 +8355,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Social Proof */
 .social-proof {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #030303 0%, #0a0a0a 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .proof-header {
@@ -8003,8 +8468,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* FAQ Modern */
 .faq-modern {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #030303 0%, #0a0a0a 100%);
+  padding: 60px 0 0 0;
+  background: #000000 !important;
 }
 
 .faq-header {
@@ -8104,8 +8569,8 @@ h1, h2, h3, h4, h5, h6,
 
 /* Final CTA Premium */
 .final-cta-premium {
-  padding: 100px 0;
-  background: linear-gradient(135deg, #010101 0%, #080808 50%, #0e0e0e 100%);
+  padding: 60px 0 80px 0;
+  background: #000000 !important;
   position: relative;
   overflow: hidden;
 }

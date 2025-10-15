@@ -20,21 +20,94 @@ function initializeApp() {
 
 // Mobile Menu Setup
 function setupMobileMenu() {
-    const mobileMenu = document.querySelector('.mobile-menu');
-    const navLinks = document.querySelector('.nav-links');
+    // Create mobile navigation HTML if it doesn't exist
+    if (!document.querySelector('.mobile-nav')) {
+        createMobileNavigation();
+    }
     
-    if (mobileMenu) {
-        mobileMenu.addEventListener('click', function() {
-            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-            navLinks.style.flexDirection = 'column';
-            navLinks.style.position = 'absolute';
-            navLinks.style.top = '100%';
-            navLinks.style.left = '0';
-            navLinks.style.right = '0';
-            navLinks.style.background = '#27ae60';
-            navLinks.style.padding = '1rem';
+    const mobileMenuBtn = document.querySelector('.mobile-menu');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
+    const mobileNavClose = document.querySelector('.mobile-nav-close');
+    
+    // Open mobile menu
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileNav.classList.add('active');
+            mobileNavOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
         });
     }
+    
+    // Close mobile menu
+    function closeMobileMenu() {
+        mobileNav.classList.remove('active');
+        mobileNavOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    if (mobileNavClose) {
+        mobileNavClose.addEventListener('click', closeMobileMenu);
+    }
+    
+    if (mobileNavOverlay) {
+        mobileNavOverlay.addEventListener('click', closeMobileMenu);
+    }
+    
+    // Close menu when clicking on a link
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
+    
+    // Handle escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+}
+
+// Create mobile navigation HTML
+function createMobileNavigation() {
+    const body = document.body;
+    
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-nav-overlay';
+    
+    // Create mobile nav
+    const mobileNav = document.createElement('div');
+    mobileNav.className = 'mobile-nav';
+    
+    // Get navigation links from desktop menu
+    const desktopNavLinks = document.querySelectorAll('.nav-links a');
+    let navLinksHTML = '';
+    
+    desktopNavLinks.forEach(link => {
+        const href = link.getAttribute('href') || '#';
+        const text = link.textContent;
+        const isActive = link.classList.contains('active') ? 'active' : '';
+        navLinksHTML += `<a href="${href}" class="${isActive}">${text}</a>`;
+    });
+    
+    mobileNav.innerHTML = `
+        <div class="mobile-nav-header">
+            <div class="logo">
+                <img src="/images/logo.png" alt="Fruvi" class="logo-mark" style="width: 32px; height: 32px;">
+                <span>Fruvi</span>
+            </div>
+            <button class="mobile-nav-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mobile-nav-links">
+            ${navLinksHTML}
+        </nav>
+    `;
+    
+    body.appendChild(overlay);
+    body.appendChild(mobileNav);
 }
 
 // Smooth Scrolling
