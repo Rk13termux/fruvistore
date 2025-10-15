@@ -25,7 +25,15 @@ function showSPA(rootEl, renderFn, ...args) {
 
 function showRegistrationRequiredPage(rootEl, pageName) {
   if (!rootEl) return;
-  const pageTitles = { nutricion: 'Nutrición', asistente: 'Asistente IA', recetas: 'Recetas', perfil: 'Perfil', receta: 'Receta', tienda: 'Tienda' };
+  const pageTitles = { 
+    nutricion: 'Nutrición', 
+    asistente: 'Asistente IA', 
+    recetas: 'Recetas', 
+    perfil: 'Perfil', 
+    receta: 'Receta', 
+    tienda: 'Tienda',
+    'cajas-misteriosas': 'Cajas Misteriosas'
+  };
   const pageTitle = pageTitles[pageName] || 'Esta página';
   rootEl.innerHTML = `
     <section class="registration-required-page">
@@ -50,7 +58,11 @@ function showRegistrationRequiredPage(rootEl, pageName) {
 
 registerRoute('/', (rootEl, params) => showSPA(rootEl, renderHomePage));
 registerRoute('', (rootEl, params) => showSPA(rootEl, renderHomePage));
-registerRoute('/cajas-misteriosas', (rootEl, params) => showSPA(rootEl, renderMysteryBoxesPage));
+registerRoute('/cajas-misteriosas', async (rootEl, params) => {
+  const userStatus = await window.getUserStatus();
+  if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'cajas-misteriosas');
+  else showSPA(rootEl, renderMysteryBoxesPage);
+});
 registerRoute('/tienda', async (rootEl, params) => {
   const userStatus = await window.getUserStatus();
   if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'tienda');
