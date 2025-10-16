@@ -12,199 +12,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    console.log('Initializing app...');
     setupEventListeners();
     setupRegistrationForm();
     setupAIAssistant();
     setupMobileMenu();
 }
 
-// Handle mobile menu visibility based on screen size
-function handleMobileMenuVisibility() {
-    const mobileMenuBtn = document.querySelector('.mobile-menu');
+// Mobile Menu Setup
+function setupMobileMenu() {
+    const mobileMenu = document.querySelector('.mobile-menu');
     const navLinks = document.querySelector('.nav-links');
     
-    if (window.innerWidth <= 768) {
-        if (mobileMenuBtn) mobileMenuBtn.style.display = 'block';
-        if (navLinks) navLinks.style.display = 'none';
-    } else {
-        if (mobileMenuBtn) mobileMenuBtn.style.display = 'none';
-        if (navLinks) navLinks.style.display = 'flex';
-        
-        // Close mobile menu if it's open
-        const mobileNav = document.querySelector('.mobile-nav');
-        const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-        if (mobileNav && mobileNav.classList.contains('active')) {
-            mobileNav.classList.remove('active');
-            mobileNavOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    }
-}
-
-// Debounce function to limit resize event frequency
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Mobile menu functionality
-function setupMobileMenu() {
-  console.log('Setting up mobile menu...');
-  
-  const mobileMenuBtn = document.querySelector('.mobile-menu');
-  const navLinks = document.querySelector('.nav-links');
-  
-  console.log('Mobile menu button:', mobileMenuBtn);
-  console.log('Nav links:', navLinks);
-  
-  if (!mobileMenuBtn) {
-    console.error('Mobile menu button not found');
-    return;
-  }
-  
-  if (!navLinks) {
-    console.error('Nav links not found');
-    return;
-  }
-  
-  // Create mobile navigation if it doesn't exist
-  let mobileNav = document.querySelector('.mobile-nav');
-  if (!mobileNav) {
-    mobileNav = createMobileNavigation();
-    console.log('Created mobile navigation:', mobileNav);
-  }
-  
-  // Toggle mobile menu
-  mobileMenuBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    console.log('Mobile menu button clicked');
-    
-    if (mobileNav.classList.contains('active')) {
-      mobileNav.classList.remove('active');
-      mobileMenuBtn.querySelector('i').className = 'fas fa-bars';
-      console.log('Mobile menu closed');
-    } else {
-      mobileNav.classList.add('active');
-      mobileMenuBtn.querySelector('i').className = 'fas fa-times';
-      console.log('Mobile menu opened');
-    }
-  });
-  
-  console.log('Mobile menu setup completed');
-}
-
-// Update mobile menu content when navigation changes
-function updateMobileMenuContent() {
-    const mobileNavLinks = document.querySelector('.mobile-nav-links');
-    if (!mobileNavLinks) return;
-    
-    const desktopNavLinks = document.querySelectorAll('.nav-links a');
-    let navLinksHTML = '';
-    
-    const pageIcons = {
-        'Inicio': 'fas fa-home',
-        'Cajas': 'fas fa-box',
-        'Tienda': 'fas fa-store',
-        'Recetas': 'fas fa-utensils',
-        'Nutrición': 'fas fa-apple-alt',
-        'Asistente IA': 'fas fa-robot',
-        'Login': 'fas fa-sign-in-alt',
-        'Registro': 'fas fa-user-plus'
-    };
-    
-    desktopNavLinks.forEach(link => {
-        const href = link.getAttribute('href') || '#';
-        const text = link.textContent.trim();
-        const isActive = link.classList.contains('active') ? 'active' : '';
-        const icon = pageIcons[text] || 'fas fa-circle';
-        const parentLi = link.closest('li');
-        const isHidden = parentLi && parentLi.classList.contains('hidden');
-        
-        if (!isHidden) {
-            navLinksHTML += `<a href="${href}" class="${isActive}">
-                <i class="${icon}"></i>
-                ${text}
-            </a>`;
-        }
-    });
-    
-    mobileNavLinks.innerHTML = navLinksHTML;
-    
-    // Re-attach click events to new links
-    const newMobileNavLinks = document.querySelectorAll('.mobile-nav-links a');
-    newMobileNavLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            const mobileNav = document.querySelector('.mobile-nav');
-            const mobileNavOverlay = document.querySelector('.mobile-nav-overlay');
-            mobileNav.classList.remove('active');
-            mobileNavOverlay.classList.remove('active');
-            document.body.style.overflow = '';
+    if (mobileMenu) {
+        mobileMenu.addEventListener('click', function() {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            navLinks.style.flexDirection = 'column';
+            navLinks.style.position = 'absolute';
+            navLinks.style.top = '100%';
+            navLinks.style.left = '0';
+            navLinks.style.right = '0';
+            navLinks.style.background = '#27ae60';
+            navLinks.style.padding = '1rem';
         });
-    });
-}
-
-// Create mobile navigation HTML
-function createMobileNavigation() {
-  console.log('Creating mobile navigation...');
-  
-  // Remove existing mobile nav if present
-  const existingMobileNav = document.querySelector('.mobile-nav');
-  if (existingMobileNav) {
-    existingMobileNav.remove();
-  }
-  
-  // Get navigation links from desktop menu
-  const navLinks = document.querySelector('.nav-links');
-  if (!navLinks) {
-    console.error('Nav links not found');
-    return null;
-  }
-  
-  // Create mobile navigation overlay
-  const mobileNav = document.createElement('div');
-  mobileNav.className = 'mobile-nav';
-  
-  // Create navigation list
-  const mobileNavList = document.createElement('ul');
-  mobileNavList.className = 'mobile-nav-list';
-  
-  // Copy links from desktop navigation
-  const links = navLinks.querySelectorAll('a');
-  links.forEach(link => {
-    const listItem = document.createElement('li');
-    const mobileLink = document.createElement('a');
-    mobileLink.href = link.href;
-    mobileLink.textContent = link.textContent;
-    mobileLink.className = 'mobile-nav-link';
-    
-    // Close mobile menu when link is clicked
-    mobileLink.addEventListener('click', () => {
-      mobileNav.classList.remove('active');
-      const mobileMenuBtn = document.querySelector('.mobile-menu');
-      if (mobileMenuBtn) {
-        mobileMenuBtn.querySelector('i').className = 'fas fa-bars';
-      }
-    });
-    
-    listItem.appendChild(mobileLink);
-    mobileNavList.appendChild(listItem);
-  });
-  
-  mobileNav.appendChild(mobileNavList);
-  
-  // Add to body
-  document.body.appendChild(mobileNav);
-  
-  console.log('Mobile navigation created and added to DOM');
-  return mobileNav;
+    }
 }
 
 // Smooth Scrolling

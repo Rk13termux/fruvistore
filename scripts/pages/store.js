@@ -190,6 +190,35 @@ export async function renderStorePage(root) {
 
   root.innerHTML = `
     <section class="store">
+      <!-- Hero Section -->
+      <div class="store-hero">
+        <div class="container">
+          <div class="hero-content">
+            <h1 class="hero-title">
+              <i class="fas fa-shopping-basket"></i>
+              Tienda de Frutas Premium
+            </h1>
+            <p class="hero-subtitle">
+              Descubre nuestra selección exclusiva de frutas frescas y orgánicas, cultivadas con pasión y entregadas con cuidado
+            </p>
+            <div class="hero-stats">
+              <div class="stat-item">
+                <span class="stat-number">${products.length}</span>
+                <span class="stat-label">Productos</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">${categories.length - 1}</span>
+                <span class="stat-label">Categorías</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Fresco</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="container">
         <!-- Header -->
         <div class="store-header">
@@ -511,6 +540,9 @@ function setupProductInteractions(products) {
 // Cart functionality
 let cart = JSON.parse(localStorage.getItem('fruvi_cart') || '[]');
 
+// Make cart globally available
+window.cart = cart;
+
 function setupCart() {
   updateCartDisplay();
 
@@ -551,6 +583,32 @@ function updateCartDisplay() {
 
   countEl.textContent = totalItems;
   totalEl.textContent = `$${totalPrice.toFixed(2)}`;
+}
+
+function updateCartItemQuantity(productId, newQuantity) {
+  const itemIndex = cart.findIndex(item => item.id === productId);
+  if (itemIndex !== -1) {
+    if (newQuantity <= 0) {
+      cart.splice(itemIndex, 1);
+      showNotification('Producto eliminado del carrito', true);
+    } else {
+      cart[itemIndex].quantity = newQuantity;
+      showNotification('Cantidad actualizada', true);
+    }
+    localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+    updateCartDisplay();
+  }
+}
+
+function removeCartItem(productId) {
+  const itemIndex = cart.findIndex(item => item.id === productId);
+  if (itemIndex !== -1) {
+    const itemName = cart[itemIndex].name;
+    cart.splice(itemIndex, 1);
+    localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+    updateCartDisplay();
+    showNotification(`${itemName} eliminado del carrito`, true);
+  }
 }
 
 function showNotification(message, success = true) {
@@ -652,3 +710,7 @@ function setupRegistrationPrompts() {
   // Show new prompt every 15 seconds
   setInterval(showNextPrompt, 15000);
 }
+
+// Make cart functions globally available
+window.updateCartItemQuantity = updateCartItemQuantity;
+window.removeCartItem = removeCartItem;

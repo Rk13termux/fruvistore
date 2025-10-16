@@ -118,6 +118,37 @@ export class CheckoutModal {
 
     // WhatsApp button
     document.getElementById('whatsappBtn')?.addEventListener('click', (e) => this.handleWhatsApp(e));
+
+    // Cart item controls
+    this.bindCartItemControls();
+  }
+
+  bindCartItemControls() {
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.quantity-btn.plus')) {
+        const productId = parseInt(e.target.closest('.quantity-btn').dataset.productId);
+        const currentItem = this.orderData.items.find(item => item.id === productId);
+        if (currentItem) {
+          window.updateCartItemQuantity(productId, currentItem.quantity + 1);
+          this.updateOrderSummary();
+        }
+      }
+
+      if (e.target.closest('.quantity-btn.minus')) {
+        const productId = parseInt(e.target.closest('.quantity-btn').dataset.productId);
+        const currentItem = this.orderData.items.find(item => item.id === productId);
+        if (currentItem) {
+          window.updateCartItemQuantity(productId, currentItem.quantity - 1);
+          this.updateOrderSummary();
+        }
+      }
+
+      if (e.target.closest('.remove-btn')) {
+        const productId = parseInt(e.target.closest('.remove-btn').dataset.productId);
+        window.removeCartItem(productId);
+        this.updateOrderSummary();
+      }
+    });
   }
 
   show(orderData) {
@@ -171,9 +202,14 @@ export class CheckoutModal {
     const subtotalEl = document.getElementById('orderSubtotal');
     const totalEl = document.getElementById('orderTotal');
 
-    if (!this.orderData || !this.orderData.items) return;
+    const items = window.cart || [];
+    if (items.length === 0) {
+      itemsList.innerHTML = '<p style="text-align: center; color: var(--muted);">Tu carrito está vacío</p>';
+      subtotalEl.textContent = '$0.00';
+      totalEl.textContent = '$5.00';
+      return;
+    }
 
-    const { items } = this.orderData;
     let subtotal = 0;
 
     itemsList.innerHTML = items.map(item => {
@@ -184,7 +220,19 @@ export class CheckoutModal {
         <div class="order-item">
           <div class="item-info">
             <h4>${item.name}</h4>
-            <p>Cantidad: ${item.quantity}kg × $${item.price.toFixed(2)}/kg</p>
+            <div class="item-controls">
+              <button class="quantity-btn minus" data-product-id="${item.id}">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="quantity-display">${item.quantity}kg</span>
+              <button class="quantity-btn plus" data-product-id="${item.id}">
+                <i class="fas fa-plus"></i>
+              </button>
+              <button class="remove-btn" data-product-id="${item.id}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <p>$${item.price.toFixed(2)}/kg</p>
           </div>
           <div class="item-total">
             $${itemTotal.toFixed(2)}
