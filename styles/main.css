@@ -2127,7 +2127,7 @@ h1, h2, h3, h4, h5, h6,
 .recipes-hero {
   background: linear-gradient(135deg, rgba(255,155,64,0.1), rgba(139,218,1,0.1)),
               radial-gradient(ellipse at top, rgba(255,139,211,0.1), transparent 60%);
-  padding: 80px 0 60px;
+  padding: 20px 0 20px;
   text-align: center;
   position: relative;
   overflow: hidden;
