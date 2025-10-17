@@ -88,11 +88,11 @@ export function renderHomePage(root) {
         </div>
       </div>
 
-      <div class="hero-premium__visual">
-        <div class="hero-showcase">
-          <div class="showcase-main">
-            <img src="https://images.unsplash.com/photo-1547514701-42782101795e?q=80&w=900&auto=format&fit=crop" alt="Frutas premium seleccionadas">
-            <div class="showcase-overlay">
+        <div class="hero-premium__visual">
+          <div class="hero-showcase">
+            <div class="showcase-main">
+              <video src="/video02.mp4" alt="Fruvi Premium Experience" autoplay muted loop class="hero-video-main"></video>
+              <div class="showcase-overlay">
               <div class="nutrition-badge">
                 <i class="fas fa-heartbeat"></i>
                 <span>Alta en Antioxidantes</span>
