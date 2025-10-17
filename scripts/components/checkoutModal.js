@@ -47,57 +47,10 @@ export class CheckoutModal {
                     <span id="orderTotal">$0.00</span>
                   </div>
                 </div>
-                <button id="downloadExcelBtn" class="btn-primary excel-btn">
-                  <i class="fas fa-file-excel"></i>
-                  Descargar Excel
+                <button id="whatsappBtn" class="btn-primary whatsapp-btn">
+                  <i class="fab fa-whatsapp"></i>
+                  Enviar Pedido por WhatsApp
                 </button>
-              </div>
-            </div>
-
-            <!-- Step 2: Instructions -->
-            <div id="step2" class="checkout-step">
-              <div class="instructions-content">
-                <h3>📋 Pasos para completar tu pedido</h3>
-                <div class="instructions-list">
-                  <div class="instruction-item">
-                    <div class="instruction-number">1</div>
-                    <div class="instruction-text">
-                      <strong>Revisa tu pedido</strong> en el archivo Excel descargado
-                    </div>
-                  </div>
-                  <div class="instruction-item">
-                    <div class="instruction-number">2</div>
-                    <div class="instruction-text">
-                      <strong>Envía el archivo Excel</strong> por WhatsApp a nuestro equipo
-                    </div>
-                  </div>
-                  <div class="instruction-item">
-                    <div class="instruction-number">3</div>
-                    <div class="instruction-text">
-                      <strong>Confirma el pago</strong> y recibe la confirmación
-                    </div>
-                  </div>
-                </div>
-
-                <div class="contact-info">
-                  <h4>📱 Contacto para pedidos:</h4>
-                  <div class="whatsapp-section">
-                    <p>Envía tu pedido por WhatsApp:</p>
-                    <a id="whatsappBtn" href="#" target="_blank" class="btn-whatsapp">
-                      <i class="fab fa-whatsapp"></i>
-                      Enviar por WhatsApp
-                    </a>
-                  </div>
-                </div>
-
-                <div class="additional-info">
-                  <h4>💳 Métodos de pago aceptados:</h4>
-                  <div class="payment-methods">
-                    <span class="payment-method">Efectivo</span>
-                    <span class="payment-method">Transferencia</span>
-                    <span class="payment-method">Tarjeta</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -112,9 +65,6 @@ export class CheckoutModal {
     // Close modal
     document.getElementById('closeCheckoutModal')?.addEventListener('click', () => this.close());
     document.querySelector('.checkout-backdrop')?.addEventListener('click', () => this.close());
-
-    // Download Excel
-    document.getElementById('downloadExcelBtn')?.addEventListener('click', () => this.downloadExcel());
 
     // WhatsApp button
     document.getElementById('whatsappBtn')?.addEventListener('click', (e) => this.handleWhatsApp(e));
@@ -165,7 +115,7 @@ export class CheckoutModal {
     document.body.style.overflow = 'hidden';
 
     // Update title
-    document.getElementById('checkoutTitle').textContent = 'Resumen del Pedido';
+    document.getElementById('checkoutTitle').textContent = 'Resumen del Pedido - Enviar por WhatsApp';
   }
 
   close() {
@@ -249,9 +199,7 @@ export class CheckoutModal {
   }
 
   updateWhatsAppLink() {
-    if (!this.orderData) return;
-
-    const phoneNumber = '1234567890'; // Cambiar por el número real
+    const phoneNumber = '+573125298577';
     const message = this.generateWhatsAppMessage();
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
@@ -262,9 +210,9 @@ export class CheckoutModal {
   }
 
   generateWhatsAppMessage() {
-    if (!this.orderData || !this.orderData.items) return '';
+    const items = window.cart || [];
+    if (items.length === 0) return '';
 
-    const { items } = this.orderData;
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const shipping = 5.00;
     const total = subtotal + shipping;
@@ -274,15 +222,24 @@ export class CheckoutModal {
 
     items.forEach(item => {
       message += `• ${item.name}\n`;
-      message += `  Cantidad: ${item.quantity}kg × $${item.price.toFixed(2)}/kg\n`;
-      message += `  Subtotal: $${(item.price * item.quantity).toFixed(2)}\n\n`;
+      if (item.weight) {
+        message += `  Caja: ${item.weight}kg × $${item.price.toFixed(2)}/kg\n`;
+        message += `  Subtotal: $${(item.price * item.quantity).toFixed(2)}\n`;
+        if (item.contents) {
+          message += `  Contiene: ${item.contents.join(', ')}\n`;
+        }
+      } else {
+        message += `  Cantidad: ${item.quantity}kg × $${item.price.toFixed(2)}/kg\n`;
+        message += `  Subtotal: $${(item.price * item.quantity).toFixed(2)}\n`;
+      }
+      message += '\n';
     });
 
     message += `*Resumen:*\n`;
     message += `Subtotal: $${subtotal.toFixed(2)}\n`;
     message += `Envío: $${shipping.toFixed(2)}\n`;
     message += `Total: $${total.toFixed(2)}\n\n`;
-    message += `✅ Acabo de descargar el archivo Excel con los detalles del pedido.`;
+    message += `✅ Listo para procesar el pedido. ¡Gracias por tu compra!`;
 
     return message;
   }

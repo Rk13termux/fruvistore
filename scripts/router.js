@@ -17,8 +17,11 @@ export function getCurrentPath() {
 }
 
 export function startRouter(rootEl, onNotFound) {
+  console.log('🚀 Starting router with rootEl:', rootEl, 'onNotFound:', typeof onNotFound);
   function render() {
     const path = getCurrentPath();
+    console.log('🔄 Router render called for path:', path);
+
     let matchFound = false;
 
     for (const [routePath, renderFn] of routes.entries()) {

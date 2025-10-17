@@ -1,5 +1,6 @@
 // Home Page - Fruvi Landing (AgroTech Experience)
 export function renderHomePage(root) {
+  console.log('🏠 renderHomePage called with root:', !!root, root?.tagName);
   root.innerHTML = `
   <!-- HERO SECTION - Premium Landing -->
   <section class="hero-premium">

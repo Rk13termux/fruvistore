@@ -538,23 +538,23 @@ function setupProductInteractions(products) {
 }
 
 // Cart functionality
-let cart = JSON.parse(localStorage.getItem('fruvi_cart') || '[]');
+let cartStore = JSON.parse(localStorage.getItem('fruvi_cart_store') || '[]');
 
-// Make cart globally available
-window.cart = cart;
+// Make cartStore globally available
+window.cartStore = cartStore;
 
 function setupCart() {
   updateCartDisplay();
 
   document.getElementById('cartCheckout')?.addEventListener('click', () => {
-    if (cart.length === 0) {
+    if (cartStore.length === 0) {
       showNotification('Tu carrito está vacío', false);
       return;
     }
 
     // Show checkout modal with cart data
-    if (window.checkoutModal) {
-      window.checkoutModal.show({ items: cart });
+    if (window.checkoutModalStore) {
+      window.checkoutModalStore.show({ items: cartStore });
     } else {
       showNotification('Error: Modal de checkout no disponible', false);
     }
@@ -562,14 +562,14 @@ function setupCart() {
 }
 
 function addToCart(item) {
-  const existing = cart.find(cartItem => cartItem.id === item.id);
+  const existing = cartStore.find(cartItem => cartItem.id === item.id);
   if (existing) {
     existing.quantity += item.quantity;
   } else {
-    cart.push(item);
+    cartStore.push(item);
   }
 
-  localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+  localStorage.setItem('fruvi_cart_store', JSON.stringify(cartStore));
   updateCartDisplay();
   showNotification(`${item.name} añadido al carrito`, true);
 }
@@ -578,34 +578,34 @@ function updateCartDisplay() {
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalItems = cartStore.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cartStore.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   countEl.textContent = totalItems;
   totalEl.textContent = `$${totalPrice.toFixed(2)}`;
 }
 
 function updateCartItemQuantity(productId, newQuantity) {
-  const itemIndex = cart.findIndex(item => item.id === productId);
+  const itemIndex = cartStore.findIndex(item => item.id === productId);
   if (itemIndex !== -1) {
     if (newQuantity <= 0) {
-      cart.splice(itemIndex, 1);
+      cartStore.splice(itemIndex, 1);
       showNotification('Producto eliminado del carrito', true);
     } else {
-      cart[itemIndex].quantity = newQuantity;
+      cartStore[itemIndex].quantity = newQuantity;
       showNotification('Cantidad actualizada', true);
     }
-    localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+    localStorage.setItem('fruvi_cart_store', JSON.stringify(cartStore));
     updateCartDisplay();
   }
 }
 
 function removeCartItem(productId) {
-  const itemIndex = cart.findIndex(item => item.id === productId);
+  const itemIndex = cartStore.findIndex(item => item.id === productId);
   if (itemIndex !== -1) {
-    const itemName = cart[itemIndex].name;
-    cart.splice(itemIndex, 1);
-    localStorage.setItem('fruvi_cart', JSON.stringify(cart));
+    const itemName = cartStore[itemIndex].name;
+    cartStore.splice(itemIndex, 1);
+    localStorage.setItem('fruvi_cart_store', JSON.stringify(cartStore));
     updateCartDisplay();
     showNotification(`${itemName} eliminado del carrito`, true);
   }
@@ -712,5 +712,5 @@ function setupRegistrationPrompts() {
 }
 
 // Make cart functions globally available
-window.updateCartItemQuantity = updateCartItemQuantity;
-window.removeCartItem = removeCartItem;
+window.updateCartStoreItemQuantity = updateCartItemQuantity;
+window.removeCartStoreItem = removeCartItem;

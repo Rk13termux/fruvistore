@@ -760,6 +760,10 @@ h1, h2, h3, h4, h5, h6,
 .stars { color: #ffd700; font-size: 0.9rem; }
 .rating-score { color: var(--muted); font-size: 0.9rem; }
 .product-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 12px; }
+.box-contents { margin-bottom: 8px; }
+.box-contents small { color: var(--muted); font-size: 0.8rem; }
+.product-weight { margin-bottom: 12px; }
+.weight-badge { background: var(--brand-2); color: #111; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
 .product-origin { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.85rem; margin-bottom: 12px; }
 .product-price { display: flex; align-items: baseline; gap: 4px; }
 .price-main { color: var(--brand); font-size: 1.4rem; font-weight: 700; }

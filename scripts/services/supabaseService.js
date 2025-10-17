@@ -84,13 +84,26 @@ if (typeof window !== 'undefined' && !supabaseClient) {
 
 // Función para obtener información de configuración (sin claves sensibles)
 window.getSupabaseConfig = function getSupabaseConfig() {
-  const { url } = getEnvironmentVariables();
-  const anonKey = getAnon();
+  const { url, anonKey } = getEnvironmentVariables();
   return {
     url: url,
     configured: isValidEnvVar(url) && isValidEnvVar(anonKey),
     initialized: supabaseClient !== null
   };
+};
+
+// Función para verificar configuración de Supabase
+window.checkSupabaseConfig = function checkSupabaseConfig() {
+  const config = getSupabaseConfig();
+  const result = {
+    valid: config.configured && config.initialized,
+    url: config.url,
+    configured: config.configured,
+    initialized: config.initialized
+  };
+
+  console.log('🔍 Verificación de configuración Supabase:', result);
+  return result;
 };
 
 // Función para configurar Supabase con credenciales reales
