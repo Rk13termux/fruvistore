@@ -603,7 +603,7 @@ function loadRecommendations() {
   if (recommendationsGrid) {
     recommendationsGrid.innerHTML = `
       <div class="recommendation-item">
-        <i class="fas fa-apple-alt"></i>
+        <i class="fas fa-apple-whole"></i>
         <span>Manzanas frescas</span>
       </div>
       <div class="recommendation-item">

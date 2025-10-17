@@ -16,7 +16,7 @@ export function renderAssistantPage(root) {
           <p class="ai-intro__subtitle">Tu experto en frutas, nutrición y bienestar</p>
           <div class="ai-intro__features">
             <div class="feature-item">
-              <i class="fas fa-apple-alt"></i>
+              <i class="fas fa-apple-whole"></i>
               <div>
                 <h3>Información Nutricional</h3>
                 <p>Datos detallados sobre vitaminas, minerales y beneficios de cada fruta.</p>
@@ -52,7 +52,7 @@ export function renderAssistantPage(root) {
         <div class="ai-intro__visual">
           <div class="ai-animation-container">
             <div class="floating-fruits">
-              <div class="fruit apple"><i class="fas fa-apple-alt"></i></div>
+              <div class="fruit apple"><i class="fas fa-apple-whole"></i></div>
               <div class="fruit banana"><i class="fas fa-lemon"></i></div>
               <div class="fruit orange"><i class="fas fa-circle"></i></div>
               <div class="fruit grape"><i class="fas fa-circle"></i></div>
@@ -78,7 +78,7 @@ export function renderAssistantPage(root) {
   <section class="fruvi-chatgpt" id="chatSection" style="display: none;">
     <header class="fruvi-chatgpt__header">
       <div class="container fruvi-chatgpt__header__inner">
-        <div class="brand"><i class="fas fa-apple-alt"></i><span>Fruvi</span></div>
+        <div class="brand"><i class="fas fa-apple-whole"></i><span>Fruvi</span></div>
         <div class="subtitle">Asistente IA especializado en frutas</div>
         <button class="btn-secondary back-to-intro" id="backToIntroBtn">
           <i class="fas fa-arrow-left"></i>

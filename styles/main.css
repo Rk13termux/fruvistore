@@ -988,7 +988,14 @@ h1, h2, h3, h4, h5, h6,
   justify-content: center;
 }
 
-.auth__brand i { color: var(--brand-2); font-size: 1.7rem; }
+.auth__brand .auth__logo { 
+  width: 1.7rem; 
+  height: 1.7rem; 
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
 .auth__brand span { color: white; font-weight: 800; letter-spacing: .4px; font-size: 1.5rem; }
 
 .auth__card h3 {
@@ -1241,8 +1248,13 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: 0.06em;
 }
 
-.registration__brand i {
-  color: #8bda01;
+.registration__brand .registration__logo {
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  border-radius: 4px;
 }
 
 .registration__intro h2 {

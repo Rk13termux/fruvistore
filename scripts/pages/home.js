@@ -101,7 +101,7 @@ export function renderHomePage(root) {
           </div>
           <div class="showcase-secondary">
             <div class="mini-card">
-              <i class="fas fa-apple-alt"></i>
+              <i class="fas fa-apple-whole"></i>
               <span>Manzanas Orgánicas</span>
             </div>
             <div class="mini-card">

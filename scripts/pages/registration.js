@@ -5,7 +5,7 @@ export function renderRegistrationPage(root) {
       <div class="registration__layout">
         <aside class="registration__intro glass fade-in-up">
           <div class="registration__brand">
-            <i class="fas fa-apple-alt"></i>
+            <img src="/logo.png" alt="Fruvi Logo" class="registration__logo">
             <span>Fruvi Prime</span>
           </div>
           <h2>Activa tu perfil AgroTech</h2>
