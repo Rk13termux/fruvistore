@@ -5047,6 +5047,13 @@ h1, h2, h3, h4, h5, h6,
   transition: transform 0.3s ease;
 }
 
+.highlight-image .hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
 .highlight-image:hover img {
   transform: scale(1.05);
 }

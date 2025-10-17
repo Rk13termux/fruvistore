@@ -270,7 +270,7 @@ export function renderHomePage(root) {
 
         <div class="highlight-visual">
           <div class="highlight-image">
-            <img src="https://images.unsplash.com/photo-1607877411656-e1e4e9f7f4a2?q=80&w=900&auto=format&fit=crop" alt="Naranjas de Valencia premium">
+            <video src="/video01.mp4" alt="Fruvi Experience" autoplay muted loop class="hero-video"></video>
             <div class="image-overlay"></div>
           </div>
           <div class="highlight-decoration">
