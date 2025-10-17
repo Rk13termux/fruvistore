@@ -989,7 +989,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .auth__brand i { color: var(--brand-2); font-size: 1.7rem; }
-.auth__brand span { color: var(--brand); font-weight: 800; letter-spacing: .4px; font-size: 1.5rem; }
+.auth__brand span { color: white; font-weight: 800; letter-spacing: .4px; font-size: 1.5rem; }
 
 .auth__card h3 {
   text-align: center;
@@ -1236,7 +1236,7 @@ h1, h2, h3, h4, h5, h6,
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(139,218,1,0.2);
   width: fit-content;
-  color: rgba(255,255,255,0.85);
+  color: white;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
