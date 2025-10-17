@@ -717,7 +717,7 @@ h1, h2, h3, h4, h5, h6,
 .store-hero {
   background: linear-gradient(135deg, rgba(255,155,64,0.1), rgba(139,218,1,0.1)),
               radial-gradient(ellipse at top, rgba(255,139,211,0.1), transparent 60%);
-  padding: 80px 0 60px;
+  padding: 20px 0 20px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -731,7 +731,7 @@ h1, h2, h3, h4, h5, h6,
   animation: float 20s ease-in-out infinite;
 }
 
-.store { padding: 60px 0; }
+.store { padding: 20px 0; }
 .store-header { text-align: center; margin-bottom: 40px; }
 .store-header h2 { color: var(--txt); text-shadow: 0 0 18px rgba(255,155,64,0.18); margin-bottom: 12px; }
 .store-subtitle { color: var(--muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
@@ -4080,7 +4080,7 @@ h1, h2, h3, h4, h5, h6,
   align-items: center;
   background: linear-gradient(135deg, #010101 0%, #090909 50%, #0f0f0f 100%);
   overflow: hidden;
-  padding: 120px 0 80px;
+  padding: 20px 0 20px;
 }
 
 .hero-particles {
