@@ -25,7 +25,7 @@ export function renderLoginPage(root) {
 
         <div class="auth__card glass fade-in-up auth__card--login">
           <div class="auth__brand">
-            <i class="fas fa-apple-alt"></i>
+            <img src="/images/logo.png" alt="Fruvi Logo" class="auth__logo">
             <span>Fruvi</span>
           </div>
           <h3>Bienvenido de nuevo</h3>
