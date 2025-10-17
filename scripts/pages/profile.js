@@ -7,7 +7,7 @@ export async function renderProfilePage(root) {
   const user = await window.getUser();
   if (!user) {
     root.innerHTML = `
-      <section class="container" style="padding:80px 0;">
+      <section class="container" style="padding:20px 0;">
         <h2>Necesitas iniciar sesión</h2>
         <p>Para ver tu perfil, por favor <a href="#/login">inicia sesión</a>.</p>
       </section>

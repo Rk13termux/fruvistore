@@ -1581,7 +1581,7 @@ h1, h2, h3, h4, h5, h6,
 .glow-pulse { animation: glowPulse 2.2s ease-in-out infinite; }
 
 /* App root spacing (header fixed) */
-.app-root { padding-top: 100px; min-height: 60vh; }
+.app-root { padding-top: 0px; min-height: 60vh; }
 
 /* ========================= */
 /* Fruvi ChatGPT Fullscreen  */

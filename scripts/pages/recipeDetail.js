@@ -186,7 +186,7 @@ export function renderRecipeDetailPage(root, recipeId) {
 
   if (!recipe) {
     root.innerHTML = `
-      <section class="container" style="padding:80px 0;">
+      <section class="container" style="padding:20px 0;">
         <h2>Receta no encontrada</h2>
         <p>La receta que buscas no existe.</p>
         <p><a href="#/recetas">Volver al blog de recetas</a></p>

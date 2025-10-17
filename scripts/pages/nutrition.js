@@ -72,7 +72,7 @@ export function renderNutritionPage(root) {
     <div id="nutritionError" class="ai-nutrition__error" style="display:none;"></div>
   </section>
 
-  <section class="nutrition container" style="padding-top: 20px;">
+  <section class="nutrition container" style="padding-top: 5px;">
     <h2 class="section__title">Biblioteca de Datos Nutricionales</h2>
     <div class="filters-container glass" style="margin-bottom: 20px;">
         <div class="filter-item">
