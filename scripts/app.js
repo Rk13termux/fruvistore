@@ -6,7 +6,7 @@ let startRouter, registerRoute, getCurrentPath;
 let renderHomePage, renderStorePage, renderBoxesPage;
 let renderNutritionPage, renderAssistantPage, renderRegistrationPage, renderLoginPage;
 let renderProfilePage, renderRecipesBlogPage, renderRecipeDetailPage;
-let initChatWidget, CheckoutModalStore, CheckoutModalBoxes;
+let renderDashboardPage, initChatWidget, CheckoutModalStore, CheckoutModalBoxes;
 
 async function loadModules() {
   try {
@@ -45,6 +45,9 @@ async function loadModules() {
 
     const recipeDetailModule = await import('./pages/recipeDetail.js');
     ({ renderRecipeDetailPage } = recipeDetailModule);
+
+    const dashboardModule = await import('./pages/dashboard.js');
+    ({ renderDashboardPage } = dashboardModule);
 
     console.log('📦 Loading component modules...');
     const chatWidgetModule = await import('./components/chatWidget.js');
@@ -88,54 +91,105 @@ async function loadModules() {
   console.log('renderProfilePage:', typeof renderProfilePage);
   console.log('renderRecipesBlogPage:', typeof renderRecipesBlogPage);
   console.log('renderRecipeDetailPage:', typeof renderRecipeDetailPage);
+  console.log('renderDashboardPage:', typeof renderDashboardPage);
   console.log('CheckoutModalStore:', typeof CheckoutModalStore);
   console.log('CheckoutModalBoxes:', typeof CheckoutModalBoxes);
+
+  // Add development helper for dashboard testing
+  console.log('🔧 Adding development helpers...');
+  window.enableDashboardDev = function() {
+    localStorage.setItem('fruvi_user', JSON.stringify({
+      id: 'dev-user-123',
+      email: 'dev@fruvi.com',
+      user_metadata: { full_name: 'Usuario Demo' }
+    }));
+    console.log('✅ Demo user enabled. Navigating to dashboard...');
+    location.hash = '#/';
+    location.reload();
+  };
+  window.disableDashboardDev = function() {
+    localStorage.removeItem('fruvi_user');
+    console.log('✅ Demo user disabled. Navigating to home...');
+    location.hash = '#/';
+    location.reload();
+  };
+  window.testLogin = function() {
+    console.log('🧪 Testing login flow...');
+    window.enableDashboardDev();
+  };
+  console.log('💡 Development helpers available:');
+  console.log('  - window.enableDashboardDev() // Test dashboard');
+  console.log('  - window.disableDashboardDev() // Back to guest');
+  console.log('  - window.testLogin() // Quick login test');
 
   // --- Route Registration ---
 
   console.log('📋 Registrando rutas...');
-  registerRoute('/', (rootEl, params) => {
-    console.log('🏠 Routing to home page');
+  registerRoute('/', async (rootEl, params) => {
     try {
-      console.log('🔍 Verificando renderHomePage:', typeof renderHomePage);
-      showSPA(rootEl, renderHomePage);
+      console.log('🔍 Checking user status for root route...');
+      
+      // Check if getUserStatus is available
+      if (typeof window.getUserStatus !== 'function') {
+        console.warn('⚠️ getUserStatus not available, defaulting to home page');
+        showSPA(rootEl, renderHomePage);
+        return;
+      }
+
+      const userStatus = await window.getUserStatus();
+      console.log('👤 User status:', userStatus);
+      
+      if (userStatus.isGuest) {
+        console.log('🏠 Routing to home page (guest user)');
+        showSPA(rootEl, renderHomePage);
+      } else {
+        console.log('📊 Routing to dashboard (registered user)');
+        showSPA(rootEl, renderDashboardPage);
+      }
     } catch (error) {
-      console.error('❌ Error rendering home page:', error);
-      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
-        <h2>❌ Error cargando página de inicio</h2>
-        <p><strong>Error:</strong> ${error.message}</p>
-        <p><strong>Stack:</strong> ${error.stack}</p>
-        <p>Revisa la consola para más detalles.</p>
-      </div>`;
+      console.error('❌ Error rendering home/dashboard page:', error);
+      console.log('🏠 Fallback to home page due to error');
+      showSPA(rootEl, renderHomePage);
     }
   });
-  registerRoute('', (rootEl, params) => {
-    console.log('🏠 Routing to empty path (home)');
+  registerRoute('', async (rootEl, params) => {
     try {
-      console.log('🔍 Verificando renderHomePage:', typeof renderHomePage);
-      showSPA(rootEl, renderHomePage);
+      console.log('🔍 Checking user status for empty route...');
+      
+      // Check if getUserStatus is available
+      if (typeof window.getUserStatus !== 'function') {
+        console.warn('⚠️ getUserStatus not available, defaulting to home page');
+        showSPA(rootEl, renderHomePage);
+        return;
+      }
+
+      const userStatus = await window.getUserStatus();
+      console.log('👤 User status:', userStatus);
+      
+      if (userStatus.isGuest) {
+        console.log('🏠 Routing to home page (guest user)');
+        showSPA(rootEl, renderHomePage);
+      } else {
+        console.log('📊 Routing to dashboard (registered user)');
+        showSPA(rootEl, renderDashboardPage);
+      }
     } catch (error) {
-      console.error('❌ Error rendering home page:', error);
-      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
-        <h2>❌ Error cargando página de inicio</h2>
-        <p><strong>Error:</strong> ${error.message}</p>
-        <p><strong>Stack:</strong> ${error.stack}</p>
-        <p>Revisa la consola para más detalles.</p>
-      </div>`;
+      console.error('❌ Error rendering home/dashboard page:', error);
+      console.log('🏠 Fallback to home page due to error');
+      showSPA(rootEl, renderHomePage);
     }
   });
   registerRoute('/tienda', async (rootEl, params) => {
     try {
       const userStatus = await window.getUserStatus();
-      if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'tienda');
-      else showSPA(rootEl, renderStorePage);
+      if (userStatus && userStatus.isGuest) {
+        showRegistrationRequiredPage(rootEl, 'tienda');
+      } else {
+        showSPA(rootEl, renderStorePage);
+      }
     } catch (error) {
       console.error('❌ Error en ruta /tienda:', error);
-      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
-        <h2>❌ Error cargando tienda</h2>
-        <p><strong>Error:</strong> ${error.message}</p>
-        <p>Revisa la consola para más detalles.</p>
-      </div>`;
+      showRegistrationRequiredPage(rootEl, 'tienda');
     }
   });
   registerRoute('/cajas', async (rootEl, params) => {
@@ -185,6 +239,20 @@ async function loadModules() {
       console.error('❌ Error en ruta /nutricion:', error);
       rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
         <h2>❌ Error cargando nutrición</h2>
+        <p><strong>Error:</strong> ${error.message}</p>
+        <p>Revisa la consola para más detalles.</p>
+      </div>`;
+    }
+  });
+  registerRoute('/dashboard', async (rootEl, params) => {
+    try {
+      const userStatus = await window.getUserStatus();
+      if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'dashboard');
+      else showSPA(rootEl, renderDashboardPage);
+    } catch (error) {
+      console.error('❌ Error en ruta /dashboard:', error);
+      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
+        <h2>❌ Error cargando dashboard</h2>
         <p><strong>Error:</strong> ${error.message}</p>
         <p>Revisa la consola para más detalles.</p>
       </div>`;
@@ -360,7 +428,15 @@ function setupMobileNav() {
 async function renderAuthNav() {
   const nav = document.querySelector('.nav-links');
   if (!nav) return;
-  const user = await window.getUser();
+  
+  console.log('🔄 Rendering auth navigation...');
+  
+  let user = null;
+  try {
+    user = await window.getUser();
+  } catch (error) {
+    console.warn('⚠️ Error getting user for nav:', error);
+  }
 
   // Limpia elementos de cuenta previos (dropdown de cuenta y similares)
   nav.querySelectorAll('[data-auth-item]').forEach(el => el.remove());
@@ -369,10 +445,30 @@ async function renderAuthNav() {
   const basicTabs = nav.querySelectorAll('.basic-tab');
   const premiumTabs = nav.querySelectorAll('.premium-tab');
 
+  console.log('👤 User for nav:', user ? 'authenticated' : 'guest');
+  console.log('📊 Basic tabs found:', basicTabs.length);
+  console.log('📊 Premium tabs found:', premiumTabs.length);
+
   if (user) {
-    // Usuario autenticado: ocultar básicas, mostrar premium
-    basicTabs.forEach(el => { el.classList.add('hidden'); el.style.display = 'none'; });
-    premiumTabs.forEach(el => { el.classList.remove('hidden'); el.style.display = 'list-item'; });
+    // Usuario autenticado: ocultar básicas (excepto inicio), mostrar premium
+    basicTabs.forEach(el => {
+      const link = el.querySelector('a');
+      const href = link ? link.getAttribute('href') : '';
+      if (href === '#/' || href === '#/inicio') {
+        // Mantener "Inicio" visible pero cambiar texto a "Dashboard"
+        if (link) link.textContent = 'Dashboard';
+        el.classList.remove('hidden');
+        el.style.display = '';
+      } else {
+        // Ocultar Login y Registro
+        el.classList.add('hidden');
+        el.style.display = 'none';
+      }
+    });
+    premiumTabs.forEach(el => { 
+      el.classList.remove('hidden'); 
+      el.style.display = ''; 
+    });
 
     // Agregar menú de cuenta (con ARIA)
     const display = user.user_metadata?.full_name || user.email || 'Mi Cuenta';
@@ -385,47 +481,53 @@ async function renderAuthNav() {
           ${escapeHtml(display)} <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </button>
         <div class="account-menu glass" role="menu" aria-labelledby="${btnId}">
-          <a href="#/perfil" class="account-link" role="menuitem">Mi Cuenta</a>
-          <button id="navSignOut" class="account-link btn-linklike" role="menuitem">Salir</button>
+          <a href="#/perfil" class="account-link" role="menuitem">Mi Perfil</a>
+          <button id="navSignOut" class="account-link btn-linklike" role="menuitem">Cerrar Sesión</button>
         </div>
       </div>
     `;
     nav.appendChild(li);
+    
     // Manejar sign-out con protección doble click
     const signOutBtn = li.querySelector('#navSignOut');
     signOutBtn.addEventListener('click', async () => {
       try {
         signOutBtn.disabled = true;
-        await window.signOut();
+        if (typeof window.signOut === 'function') {
+          await window.signOut();
+        }
+        // Limpiar datos locales
+        localStorage.removeItem('fruvi_user');
+        console.log('✅ User signed out');
+      } catch (error) {
+        console.error('❌ Error signing out:', error);
       } finally {
         location.hash = '#/';
-        signOutBtn.disabled = false;
+        location.reload(); // Forzar recarga para limpiar estado
       }
     });
   } else {
     // Invitado: mostrar básicas, ocultar premium
-    basicTabs.forEach(el => { el.classList.remove('hidden'); el.style.display = ''; });
-    premiumTabs.forEach(el => { el.classList.add('hidden'); el.style.display = 'none'; });
-    // No agregamos Login/Registro aquí para evitar duplicados; ya existen como .basic-tab en index.html
-  }
-
-  // Fallback: explicitly toggle Login/Registro by href in case classes are missing or overridden
-  const loginA = nav.querySelector('a[href="#/login"]');
-  const registroA = nav.querySelector('a[href="#/registro"]');
-  const loginLi = loginA ? loginA.closest('li') : null;
-  const registroLi = registroA ? registroA.closest('li') : null;
-  if (loginLi && registroLi) {
-    if (user) {
-      loginLi.style.display = 'none';
-      registroLi.style.display = 'none';
-    } else {
-      loginLi.style.display = '';
-      registroLi.style.display = '';
-    }
+    basicTabs.forEach(el => { 
+      const link = el.querySelector('a');
+      const href = link ? link.getAttribute('href') : '';
+      if (href === '#/' || href === '#/inicio') {
+        // Restaurar texto "Inicio" para invitados
+        if (link) link.textContent = 'Inicio';
+      }
+      el.classList.remove('hidden'); 
+      el.style.display = ''; 
+    });
+    premiumTabs.forEach(el => { 
+      el.classList.add('hidden'); 
+      el.style.display = 'none'; 
+    });
   }
 
   // Inicializar controlador global del dropdown (una sola vez)
   setupAccountDropdown();
+  
+  console.log('✅ Auth navigation rendered');
 }
 
 // --- Global Initializers ---
@@ -471,20 +573,53 @@ function showRegistrationRequiredPage(rootEl, pageName) {
     perfil: 'Perfil', 
     receta: 'Receta', 
     tienda: 'Tienda',
-    cajas: 'Cajas'
+    cajas: 'Cajas',
+    dashboard: 'Dashboard'
   };
   const pageTitle = pageTitles[pageName] || 'Esta página';
+  const pageDescriptions = {
+    tienda: 'comprar frutas premium',
+    cajas: 'suscribirte a cajas de frutas',
+    nutricion: 'obtener planes nutricionales personalizados',
+    asistente: 'usar nuestro asistente de IA',
+    recetas: 'acceder a recetas exclusivas',
+    dashboard: 'ver tu panel de control personalizado'
+  };
+  const pageDesc = pageDescriptions[pageName] || 'acceder a esta función';
+  
   rootEl.innerHTML = `
     <section class="registration-required-page">
       <div class="container">
         <div class="registration-required-content glass">
           <div class="required-icon"><i class="fas fa-user-lock"></i></div>
-          <h2>¡Esta función requiere registro!</h2>
-          <p class="required-message">Para acceder a <strong>${pageTitle}</strong> necesitas crear una cuenta en Fruvi.</p>
-          <div class="required-actions">
-            <button class="btn-primary register-now" onclick="window.location.hash='#/registro'"><i class="fas fa-user-plus"></i> Crear Cuenta Gratis</button>
-            <button class="btn-outline back-to-store" onclick="window.location.hash='#/tienda'"><i class="fas fa-store"></i> Ver Tienda</button>
+          <h2>¡Únete a Fruvi!</h2>
+          <p class="required-message">Para ${pageDesc} necesitas crear una cuenta gratuita.</p>
+          <div class="required-benefits">
+            <div class="benefit-item">
+              <i class="fas fa-check-circle"></i>
+              <span>Acceso completo a la tienda premium</span>
+            </div>
+            <div class="benefit-item">
+              <i class="fas fa-check-circle"></i>
+              <span>Dashboard personalizado con estadísticas</span>
+            </div>
+            <div class="benefit-item">
+              <i class="fas fa-check-circle"></i>
+              <span>Asistente de IA y planes nutricionales</span>
+            </div>
           </div>
+          <div class="required-actions">
+            <button class="btn-primary register-now" onclick="window.location.hash='#/registro'">
+              <i class="fas fa-user-plus"></i> Crear Cuenta Gratis
+            </button>
+            <button class="btn-outline has-account" onclick="window.location.hash='#/login'">
+              <i class="fas fa-sign-in-alt"></i> Ya tengo cuenta
+            </button>
+          </div>
+          <p class="required-note">
+            <i class="fas fa-info-circle"></i>
+            El registro es 100% gratuito y toma menos de 1 minuto
+          </p>
         </div>
       </div>
     </section>

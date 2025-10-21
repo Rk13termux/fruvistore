@@ -26,16 +26,16 @@
         <span>Fruvi</span>
       </div>
             <ul class="nav-links">
-                <li><a href="#/">Inicio</a></li>
-                <li><a href="#/tienda">Tienda</a></li>
-                <li><a href="#/cajas">Cajas</a></li>
-                <!-- Pestañas premium ocultas inicialmente -->
+                <!-- Pestañas básicas para invitados -->
+                <li class="basic-tab"><a href="#/">Inicio</a></li>
+                <li class="basic-tab"><a href="#/login">Login</a></li>
+                <li class="basic-tab"><a href="#/registro">Registro</a></li>
+                <!-- Pestañas premium (solo para usuarios registrados) -->
+                <li class="premium-tab hidden" data-tab="tienda"><a href="#/tienda">Tienda</a></li>
+                <li class="premium-tab hidden" data-tab="cajas"><a href="#/cajas">Cajas</a></li>
                 <li class="premium-tab hidden" data-tab="recetas"><a href="#/recetas">Recetas</a></li>
                 <li class="premium-tab hidden" data-tab="nutricion"><a href="#/nutricion">Nutrición</a></li>
                 <li class="premium-tab hidden" data-tab="asistente"><a href="#/asistente">Asistente IA</a></li>
-                <!-- Pestañas básicas siempre visibles -->
-                <li class="basic-tab"><a href="#/login">Login</a></li>
-                <li class="basic-tab"><a href="#/registro">Registro</a></li>
             </ul>
             <div class="mobile-menu">
                 <i class="fas fa-bars"></i>

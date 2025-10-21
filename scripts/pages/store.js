@@ -11,182 +11,33 @@ export async function renderStorePage(root) {
 
   const categories = ['Todas', 'Cítricas', 'Tropicales', 'Bayas', 'Manzanas', 'Uvas'];
 
-  const products = [
-    // Cítricas
-    {
-      id: 1,
-      category: 'Cítricas',
-      img: `${imagePrefix}/images/products/naranja_valecia.png`,
-      name: 'Naranja Valencia',
-      desc: 'Jugosa, dulce y rica en vitamina C. Perfecta para jugos y postres.',
-      priceKg: 2.50,
-      organic: true,
-      rating: 4.8,
-      origin: 'España'
-    },
-    {
-      id: 2,
-      category: 'Cítricas',
-      img: `${imagePrefix}/images/products/limon-eureka.png`,
-      name: 'Limón Eureka',
-      desc: 'Ácido y aromático. Ideal para bebidas, marinados y repostería.',
-      priceKg: 3.20,
-      organic: false,
-      rating: 4.6,
-      origin: 'México'
-    },
-    {
-      id: 3,
-      category: 'Cítricas',
-      img: `${imagePrefix}/images/products/mandarina-clementina.png`,
-      name: 'Mandarina Clementina',
-      desc: 'Fácil de pelar, muy dulce y sin semillas. Snack perfecto.',
-      priceKg: 4.10,
-      organic: true,
-      rating: 4.9,
-      origin: 'Marruecos'
-    },
+  // Get products from Supabase instead of hardcoded data
+  let products = [];
+  try {
+    console.log('📦 Loading products from database...');
+    products = await window.getStoreProducts();
+    console.log(`✅ Loaded ${products.length} products from database`);
+  } catch (error) {
+    console.error('❌ Error loading products from database:', error);
+    // Fallback to basic products if database fails
+    products = [
+      {
+        id: 1,
+        category: 'Cítricas',
+        img: `${imagePrefix}/images/products/naranja_valecia.png`,
+        name: 'Naranja Valencia',
+        desc: 'Jugosa, dulce y rica en vitamina C.',
+        priceKg: 2.50,
+        organic: true,
+        rating: 4.8,
+        origin: 'España'
+      }
+    ];
+  }
 
-    // Tropicales
-    {
-      id: 4,
-      category: 'Tropicales',
-      img: `${imagePrefix}/images/products/mango-ataulfo.png`,
-      name: 'Mango Ataulfo',
-      desc: 'Carne cremosa, sabor intenso y tropical. Premium quality.',
-      priceKg: 5.90,
-      organic: true,
-      rating: 4.9,
-      origin: 'Perú'
-    },
-    {
-      id: 5,
-      category: 'Tropicales',
-      img: `${imagePrefix}/images/products/pina-golden.jpg`,
-      name: 'Piña Golden',
-      desc: 'Dulce, jugosa y muy aromática. Perfecta para postres.',
-      priceKg: 3.80,
-      organic: false,
-      rating: 4.7,
-      origin: 'Costa Rica'
-    },
-    {
-      id: 6,
-      category: 'Tropicales',
-      img: `${imagePrefix}/images/products/kiwi-zespri.jpg`,
-      name: 'Kiwi Zespri',
-      desc: 'Equilibrio perfecto entre ácido y dulce. Alto en vitamina C.',
-      priceKg: 6.50,
-      organic: true,
-      rating: 4.8,
-      origin: 'Nueva Zelanda'
-    },
+  const origins = [...new Set(products.map(p => p.origin))].sort();
 
-    // Bayas
-    {
-      id: 7,
-      category: 'Bayas',
-      img: `${imagePrefix}/images/products/fresa-premium.jpg`,
-      name: 'Fresa Premium',
-      desc: 'Dulce, fragante y rica en antioxidantes. Selección superior.',
-      priceKg: 7.20,
-      organic: true,
-      rating: 4.9,
-      origin: 'California, USA'
-    },
-    {
-      id: 8,
-      category: 'Bayas',
-      img: `${imagePrefix}/images/products/arandanos-azules.jpg`,
-      name: 'Arándanos Azules',
-      desc: 'Superfood rica en antioxidantes. Perfectos para smoothies.',
-      priceKg: 12.50,
-      organic: true,
-      rating: 4.8,
-      origin: 'Oregon, USA'
-    },
-    {
-      id: 9,
-      category: 'Bayas',
-      img: `${imagePrefix}/images/products/frambuesas.jpg`,
-      name: 'Frambuesas',
-      desc: 'Delicadas y aromáticas. Ideales para postres y decoración.',
-      priceKg: 15.80,
-      organic: true,
-      rating: 4.7,
-      origin: 'Colombia'
-    },
-
-    // Manzanas
-    {
-      id: 10,
-      category: 'Manzanas',
-      img: `${imagePrefix}/images/products/manzana-honeycrisp.jpg`,
-      name: 'Manzana Honeycrisp',
-      desc: 'Crujiente, jugosa y perfectamente equilibrada. Premium.',
-      priceKg: 4.20,
-      organic: false,
-      rating: 4.8,
-      origin: 'Washington, USA'
-    },
-    {
-      id: 11,
-      category: 'Manzanas',
-      img: `${imagePrefix}/images/products/manzana-granny-smith.jpg`,
-      name: 'Manzana Granny Smith',
-      desc: 'Ácida y crujiente. Perfecta para tartas y ensaladas.',
-      priceKg: 3.50,
-      organic: true,
-      rating: 4.6,
-      origin: 'Chile'
-    },
-    {
-      id: 12,
-      category: 'Manzanas',
-      img: `${imagePrefix}/images/products/manzana-gala.jpg`,
-      name: 'Manzana Gala',
-      desc: 'Dulce y suave. Ideal para snacks y niños.',
-      priceKg: 3.80,
-      organic: false,
-      rating: 4.5,
-      origin: 'Italia'
-    },
-
-    // Uvas
-    {
-      id: 13,
-      category: 'Uvas',
-      img: `${imagePrefix}/images/products/uva-roja-sin-semillas.jpg`,
-      name: 'Uva Roja Sin Semillas',
-      desc: 'Dulce, crujiente y fácil de comer. Perfecta para picnics.',
-      priceKg: 5.90,
-      organic: true,
-      rating: 4.7,
-      origin: 'California, USA'
-    },
-    {
-      id: 14,
-      category: 'Uvas',
-      img: `${imagePrefix}/images/products/uva-blanca-thompson.jpg`,
-      name: 'Uva Blanca Thompson',
-      desc: 'Dulce y refrescante. Ideal para vinos y consumo directo.',
-      priceKg: 4.50,
-      organic: false,
-      rating: 4.6,
-      origin: 'España'
-    },
-    {
-      id: 15,
-      category: 'Uvas',
-      img: `${imagePrefix}/images/products/uva-negra-concord.jpg`,
-      name: 'Uva Negra Concord',
-      desc: 'Intenso sabor a uva. Perfecta para jugos y mermeladas.',
-      priceKg: 6.20,
-      organic: true,
-      rating: 4.8,
-      origin: 'Michigan, USA'
-    }
-  ];
+  const bestSellers = products.slice(0, 10);
 
   root.innerHTML = `
     <section class="store">
@@ -214,6 +65,34 @@ export async function renderStorePage(root) {
                 <span class="stat-number">100%</span>
                 <span class="stat-label">Fresco</span>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Best Sellers Gallery -->
+        <div class="best-sellers-gallery">
+          <h2 class="gallery-title">Frutas Más Vendidas</h2>
+          <div class="gallery-scroll infinite-scroll">
+            <div class="gallery-track">
+              ${bestSellers.map(product => `
+                <div class="gallery-item">
+                  <img src="${product.img}" alt="${product.name}" loading="lazy">
+                  <div class="gallery-item-info">
+                    <h4>${product.name}</h4>
+                    <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
+                  </div>
+                </div>
+              `).join('')}
+              <!-- Duplicate for infinite scroll -->
+              ${bestSellers.map(product => `
+                <div class="gallery-item">
+                  <img src="${product.img}" alt="${product.name}" loading="lazy">
+                  <div class="gallery-item-info">
+                    <h4>${product.name}</h4>
+                    <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
+                  </div>
+                </div>
+              `).join('')}
             </div>
           </div>
         </div>
@@ -281,7 +160,7 @@ export async function renderStorePage(root) {
           <div class="filter-group">
             <label>Ordenar por:</label>
             <select id="sortFilter">
-              <option value="name">Nombre</option>
+              <option value="name" selected>Nombre</option>
               <option value="price-low">Precio (Menor a Mayor)</option>
               <option value="price-high">Precio (Mayor a Menor)</option>
               <option value="rating">Calificación</option>
@@ -291,6 +170,30 @@ export async function renderStorePage(root) {
             <label>
               <input type="checkbox" id="organicFilter"> Solo Orgánicas
             </label>
+          </div>
+          <div class="filter-group">
+            <label>Precio mínimo:</label>
+            <input type="number" id="priceMinFilter" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="filter-group">
+            <label>Precio máximo:</label>
+            <input type="number" id="priceMaxFilter" placeholder="20.00" step="0.01" min="0">
+          </div>
+          <div class="filter-group">
+            <label>Calificación mínima:</label>
+            <select id="ratingMinFilter">
+              <option value="">Todas</option>
+              <option value="4.5">4.5+</option>
+              <option value="4.0">4.0+</option>
+              <option value="3.5">3.5+</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Origen:</label>
+            <select id="originFilter">
+              <option value="">Todos</option>
+              ${origins.map(origin => `<option value="${origin}">${origin}</option>`).join('')}
+            </select>
           </div>
         </div>
 
@@ -400,13 +303,16 @@ export async function renderStorePage(root) {
   if (userStatus.isGuest) {
     setupRegistrationPrompts();
   }
-}
 
 // Filter and sort functionality
 function setupFilters(products) {
   const categoryFilter = document.getElementById('categoryFilter');
   const sortFilter = document.getElementById('sortFilter');
   const organicFilter = document.getElementById('organicFilter');
+  const priceMinFilter = document.getElementById('priceMinFilter');
+  const priceMaxFilter = document.getElementById('priceMaxFilter');
+  const ratingMinFilter = document.getElementById('ratingMinFilter');
+  const originFilter = document.getElementById('originFilter');
   const grid = document.getElementById('productsGrid');
 
   function applyFilters() {
@@ -421,6 +327,21 @@ function setupFilters(products) {
     // Organic filter
     if (organicFilter.checked) {
       filtered = filtered.filter(p => p.organic);
+    }
+
+    // Price range filter
+    const priceMin = parseFloat(priceMinFilter.value) || 0;
+    const priceMax = parseFloat(priceMaxFilter.value) || Infinity;
+    filtered = filtered.filter(p => p.priceKg >= priceMin && p.priceKg <= priceMax);
+
+    // Rating min filter
+    const ratingMin = parseFloat(ratingMinFilter.value) || 0;
+    filtered = filtered.filter(p => p.rating >= ratingMin);
+
+    // Origin filter
+    const origin = originFilter.value;
+    if (origin) {
+      filtered = filtered.filter(p => p.origin === origin);
     }
 
     // Sort
@@ -486,6 +407,10 @@ function setupFilters(products) {
   categoryFilter.addEventListener('change', applyFilters);
   sortFilter.addEventListener('change', applyFilters);
   organicFilter.addEventListener('change', applyFilters);
+  priceMinFilter.addEventListener('input', applyFilters);
+  priceMaxFilter.addEventListener('input', applyFilters);
+  ratingMinFilter.addEventListener('change', applyFilters);
+  originFilter.addEventListener('change', applyFilters);
 }
 
 // Product interactions (quantity, add to cart)
@@ -714,3 +639,4 @@ function setupRegistrationPrompts() {
 // Make cart functions globally available
 window.updateCartStoreItemQuantity = updateCartItemQuantity;
 window.removeCartStoreItem = removeCartItem;
+}

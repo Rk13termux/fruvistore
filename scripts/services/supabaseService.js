@@ -458,12 +458,12 @@ return false;
 // Función para obtener el estado del usuario (registrado/no registrado)
 window.getUserStatus = async function getUserStatus() {
   const isRegistered = await isUserRegistered();
-return {
-isRegistered,
-isGuest: !isRegistered,
-canPurchase: isRegistered,
-showRegistrationPrompts: !isRegistered
-};
+  return {
+    isRegistered: isRegistered,
+    isGuest: !isRegistered,
+    canPurchase: isRegistered,
+    showRegistrationPrompts: !isRegistered
+  };
 }
 
 // Función para mostrar beneficios de registro
@@ -550,4 +550,232 @@ window.ensureSupabaseFunctions = ensureSupabaseFunctions;
 
 console.log('🚀 Sistema de verificación de funciones iniciado');
 console.log('💡 Usa ensureSupabaseFunctions() en consola para verificar manualmente');
+
+// ===== DASHBOARD FUNCTIONS =====
+
+// Get current user data
+window.getCurrentUser = async function getCurrentUser() {
+  try {
+    if (!supabaseClient) {
+      // Development fallback: return user stored in localStorage (if any)
+      try {
+        const local = JSON.parse(localStorage.getItem('fruvi_user') || 'null');
+        if (local) return local;
+      } catch (e) {
+        // ignore parse errors
+      }
+      return null;
+    }
+
+    const { data: { user }, error } = await supabaseClient.auth.getUser();
+    if (error) throw error;
+    return user;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
+};
+
+// Get user orders
+window.getUserOrders = async function getUserOrders(userId) {
+  try {
+    if (!supabaseClient) {
+      // Fallback to localStorage orders for development
+      try {
+        const orders = JSON.parse(localStorage.getItem('fruvi_user_orders') || '[]');
+        return userId ? orders.filter(o => String(o.user_id) === String(userId)) : orders;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    const { data, error } = await supabaseClient
+      .from('user_orders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error getting user orders:', error);
+    return [];
+  }
+};
+
+// Get user statistics
+window.getUserStats = async function getUserStats(userId) {
+  try {
+    // If supabase client is not initialized, return sensible fallback/demo data
+    if (!supabaseClient) {
+      try {
+        const orders = JSON.parse(localStorage.getItem('fruvi_user_orders') || '[]')
+          .filter(o => String(o.user_id) === String(userId));
+
+        const totalOrders = orders.length;
+        const totalSpent = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+        const pendingOrders = orders.filter(o => o.status === 'pending').length;
+
+        // Simple aggregation for monthly data from orders (group by month)
+        const monthlyMap = {};
+        orders.forEach(o => {
+          const d = new Date(o.created_at);
+          const label = d.toLocaleString('es-ES', { month: 'short' });
+          monthlyMap[label] = (monthlyMap[label] || 0) + (o.total || 0);
+        });
+        const monthlyLabels = Object.keys(monthlyMap).slice(-6);
+        const monthlyData = monthlyLabels.map(l => monthlyMap[l]);
+
+        const topCategories = JSON.parse(localStorage.getItem('fruvi_top_categories') || '[]');
+        const categoryLabels = topCategories.map(c => c.name).slice(0,5);
+        const categoryData = topCategories.map(c => c.spent).slice(0,5);
+
+        const recentActivity = orders.slice(0,5).map(o => ({ icon: 'fa-shopping-cart', description: `Pedido #${o.id} - $${o.total.toFixed(2)}`, time: formatDate(o.created_at) }));
+
+        return {
+          totalOrders,
+          totalSpent,
+          pendingOrders,
+          favoriteProducts: JSON.parse(localStorage.getItem('fruvi_favorite_count') || '5'),
+          monthlyLabels: monthlyLabels.length ? monthlyLabels : ['Ene','Feb','Mar','Abr','May','Jun'],
+          monthlyData: monthlyData.length ? monthlyData : [120,150,180,200,170,190],
+          categoryLabels: categoryLabels.length ? categoryLabels : ['Cítricas','Tropicales','Bayas','Manzanas','Exóticas'],
+          categoryData: categoryData.length ? categoryData : [30,25,20,15,10],
+          recentActivity
+        };
+      } catch (e) {
+        // Return demo values on any failure
+        return {
+          totalOrders: 0,
+          totalSpent: 0,
+          pendingOrders: 0,
+          favoriteProducts: 0,
+          monthlyLabels: ['Ene','Feb','Mar','Abr','May','Jun'],
+          monthlyData: [120,150,180,200,170,190],
+          categoryLabels: ['Cítricas','Tropicales','Bayas','Manzanas','Exóticas'],
+          categoryData: [30,25,20,15,10],
+          recentActivity: []
+        };
+      }
+    }
+
+    // Get orders count and total spent from Supabase
+    const { data: orders, error: ordersError } = await supabaseClient
+      .from('user_orders')
+      .select('total, status, created_at')
+      .eq('user_id', userId);
+
+    if (ordersError) throw ordersError;
+
+    const totalOrders = orders?.length || 0;
+    const totalSpent = orders?.reduce((sum, order) => sum + (order.total || 0), 0) || 0;
+    const pendingOrders = orders?.filter(order => order.status === 'pending').length || 0;
+
+    // Mock data for charts (in a real app, this would come from analytics)
+    const monthlyLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+    const monthlyData = [120, 150, 180, 200, 170, 190];
+    const categoryLabels = ['Cítricas', 'Tropicales', 'Bayas', 'Manzanas', 'Exóticas'];
+    const categoryData = [30, 25, 20, 15, 10];
+
+    // Mock recent activity
+    const recentActivity = [
+      { icon: 'fa-shopping-cart', description: 'Compra realizada: Naranja Valencia', time: '2 horas atrás' },
+      { icon: 'fa-truck', description: 'Pedido #123 entregado', time: '1 día atrás' },
+      { icon: 'fa-star', description: 'Producto favorito agregado', time: '3 días atrás' }
+    ];
+
+    return {
+      totalOrders,
+      totalSpent,
+      pendingOrders,
+      favoriteProducts: 5, // Mock data
+      monthlyLabels,
+      monthlyData,
+      categoryLabels,
+      categoryData,
+      recentActivity
+    };
+  } catch (error) {
+    console.error('Error getting user stats:', error);
+    return {
+      totalOrders: 0,
+      totalSpent: 0,
+      pendingOrders: 0,
+      favoriteProducts: 0,
+      monthlyLabels: [],
+      monthlyData: [],
+      categoryLabels: [],
+      categoryData: [],
+      recentActivity: []
+    };
+  }
+};
+
+// Logout function
+window.logout = async function logout() {
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) throw error;
+
+    // Clear local storage
+    localStorage.removeItem('fruvi_cart_store');
+
+    // Redirect to home
+    window.location.hash = '#/';
+    window.location.reload();
+  } catch (error) {
+    console.error('Error logging out:', error);
+    showNotification('Error al cerrar sesión', false);
+  }
+};
+
+// Get store products from database
+window.getStoreProducts = async function getStoreProducts() {
+  try {
+    console.log('🔄 Fetching products from Supabase...');
+
+    const { data, error } = await supabaseClient
+      .from('management_products')
+      .select(`
+        id,
+        name,
+        category,
+        description,
+        image_url,
+        management_product_prices!inner (
+          price_per_kg,
+          is_organic,
+          rating,
+          origin
+        )
+      `)
+      .eq('is_active', true)
+      .eq('management_product_prices.is_current', true);
+
+    if (error) {
+      console.error('❌ Error fetching products:', error);
+      throw error;
+    }
+
+    // Transform data to match store format
+    const products = data.map(product => ({
+      id: product.id,
+      category: product.category,
+      img: product.image_url || '/images/products/placeholder.jpg',
+      name: product.name,
+      desc: product.description || '',
+      priceKg: parseFloat(product.management_product_prices[0]?.price_per_kg || 0),
+      organic: product.management_product_prices[0]?.is_organic || false,
+      rating: parseFloat(product.management_product_prices[0]?.rating || 4.0),
+      origin: product.management_product_prices[0]?.origin || 'Desconocido'
+    }));
+
+    console.log(`✅ Successfully loaded ${products.length} products from database`);
+    return products;
+
+  } catch (error) {
+    console.error('❌ Error in getStoreProducts:', error);
+    throw error;
+  }
+};
 
