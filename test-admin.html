@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Test - Fruvi Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0f14;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .test-card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .link {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background: #ff9b40;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .link:hover {
+            background: #8bda01;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-card">
+        <h1>🔧 Fruvi Store - Admin Test</h1>
+        <p>Esta página confirma que GitHub Pages está funcionando correctamente.</p>
+        
+        <h3>📍 Enlaces disponibles:</h3>
+        <div>
+            <a href="./admin-login.html" class="link">🔐 Login Admin</a>
+            <a href="./admin.html" class="link">🎛️ Panel Admin</a>
+            <a href="./admin/" class="link">📁 Admin Directory</a>
+            <a href="./index.html" class="link">🏠 Tienda Principal</a>
+        </div>
+        
+        <h3>🌐 URLs de prueba:</h3>
+        <div style="text-align: left; margin: 20px 0;">
+            <p><strong>Con dominio personalizado:</strong></p>
+            <ul>
+                <li>https://fruvi.store/admin-login.html</li>
+                <li>https://fruvi.store/admin.html</li>
+            </ul>
+            
+            <p><strong>Con GitHub Pages directo:</strong></p>
+            <ul>
+                <li>https://rk13termux.github.io/fruvistore/admin-login.html</li>
+                <li>https://rk13termux.github.io/fruvistore/admin.html</li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 15px; background: rgba(139, 218, 1, 0.2); border-radius: 5px;">
+            <p><strong>💡 Si ves esta página, GitHub Pages funciona correctamente!</strong></p>
+            <p>Credenciales Admin: <code>admin</code> / <code>fruvi2024</code></p>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 12px; opacity: 0.7;">
+            Generado: <span id="timestamp"></span>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
