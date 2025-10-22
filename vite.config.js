@@ -26,8 +26,19 @@ export default defineConfig({
   },
   // Configure static file serving
   publicDir: 'public',
-  // Ensure proper MIME types
+  // Ensure proper MIME types and environment variables
   define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
-  }
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    // Inject Supabase environment variables for runtime access
+    '__ENV__': {
+      VITE_SUPABASE_URL: JSON.stringify(process.env.VITE_SUPABASE_URL || ''),
+      VITE_SUPABASE_ANON_KEY: JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || ''),
+      VITE_SUPABASE_PRODUCTS_URL: JSON.stringify(process.env.VITE_SUPABASE_PRODUCTS_URL || ''),
+      VITE_SUPABASE_PRODUCTS_ANON_KEY: JSON.stringify(process.env.VITE_SUPABASE_PRODUCTS_ANON_KEY || ''),
+      VITE_GROQ_API_KEY: JSON.stringify(process.env.VITE_GROQ_API_KEY || ''),
+      VITE_ADMIN_API_KEY: JSON.stringify(process.env.VITE_ADMIN_API_KEY || '')
+    }
+  },
+  // Load environment variables from .env file
+  envPrefix: 'VITE_'
 });

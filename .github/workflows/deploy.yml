@@ -33,11 +33,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Create environment file
+      - name: Create environment file with all secrets
         run: |
-          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL || 'https://your-project.supabase.co' }}" > .env.local
-          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY || 'your-anon-key' }}" >> .env.local
-          echo "VITE_GROQ_API_KEY=${{ secrets.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages' }}" >> .env.local
+          echo "# Fruvi Store - Production Environment Variables" > .env.local
+          echo "# Generated automatically by GitHub Actions with secrets" >> .env.local
+          echo "" >> .env.local
+          echo "# Supabase Users Database (Original)" >> .env.local
+          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL || 'https://your-users-project.supabase.co' }}" >> .env.local
+          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY || 'your-users-anon-key' }}" >> .env.local
+          echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.VITE_SUPABASE_SERVICE_ROLE_KEY || 'your-users-service-key' }}" >> .env.local
+          echo "" >> .env.local
+          echo "# Supabase Products Database (New)" >> .env.local
+          echo "VITE_SUPABASE_PRODUCTS_URL=${{ secrets.VITE_SUPABASE_PRODUCTS_URL || 'https://your-products-project.supabase.co' }}" >> .env.local
+          echo "VITE_SUPABASE_PRODUCTS_ANON_KEY=${{ secrets.VITE_SUPABASE_PRODUCTS_ANON_KEY || 'your-products-anon-key' }}" >> .env.local
+          echo "VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY=${{ secrets.VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY || 'your-products-service-key' }}" >> .env.local
+          echo "" >> .env.local
+          echo "# AI Services Configuration" >> .env.local
+          echo "VITE_GROQ_API_KEY=${{ secrets.VITE_GROQ_API_KEY || 'placeholder-groq-key' }}" >> .env.local
+          echo "VITE_GROQ_MODEL=${{ secrets.VITE_GROQ_MODEL || 'llama3-8b-8192' }}" >> .env.local
+          echo "" >> .env.local
+          echo "# Telegram Integration" >> .env.local
+          echo "VITE_TELEGRAM_BOT_TOKEN=${{ secrets.VITE_TELEGRAM_BOT_TOKEN || 'placeholder-telegram-bot-token' }}" >> .env.local
+          echo "VITE_TELEGRAM_CHAT_ID=${{ secrets.VITE_TELEGRAM_CHAT_ID || 'placeholder-telegram-chat-id' }}" >> .env.local
+          echo "" >> .env.local
+          echo "# Admin Panel Security" >> .env.local
+          echo "VITE_ADMIN_API_KEY=${{ secrets.VITE_ADMIN_API_KEY || 'placeholder-admin-key' }}" >> .env.local
+          echo "VITE_ADMIN_PASSWORD_HASH=${{ secrets.VITE_ADMIN_PASSWORD_HASH || 'placeholder-hash' }}" >> .env.local
+          echo "VITE_ENABLE_ADMIN_PANEL=${{ secrets.VITE_ENABLE_ADMIN_PANEL || 'true' }}" >> .env.local
 
       - name: Build
         run: npm run build
@@ -55,3 +77,33 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+# ============================================================================
+# INSTRUCCIONES PARA CONFIGURAR GITHUB SECRETS
+# ============================================================================
+# 
+# Para que tu web funcione correctamente en GitHub Pages, necesitas configurar
+# estos secrets en tu repositorio:
+#
+# 1. Ve a: https://github.com/tu-usuario/tu-repo/settings/secrets/actions
+# 2. Click "New repository secret" para cada variable:
+#
+# 🔧 SUPABASE (Base de datos - REQUERIDO):
+#    VITE_SUPABASE_URL = https://tu-proyecto.supabase.co
+#    VITE_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+#
+# 🤖 GROQ AI (Asistente inteligente - REQUERIDO):
+#    VITE_GROQ_API_KEY = gsk_xxxxxxxxxxxxxxxxxxxx
+#
+# 📱 TELEGRAM (Notificaciones - OPCIONAL):
+#    VITE_TELEGRAM_BOT_TOKEN = 1234567890:AAAA-BBBBccccDDDDeeeeFFFfgggHHH
+#    VITE_TELEGRAM_CHAT_ID = -1001234567890
+#
+# 🔐 ADMIN (Panel administrativo - OPCIONAL):
+#    VITE_ADMIN_API_KEY = tu_clave_secreta_para_admin
+#
+# 3. Activa GitHub Pages:
+#    Settings → Pages → Source: GitHub Actions
+#
+# 4. Push a main branch para desplegar automáticamente
+# ============================================================================

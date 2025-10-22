@@ -9,7 +9,7 @@ export async function renderStorePage(root) {
   // Obtener estado del usuario desde el objeto global window
   const userStatus = await window.getUserStatus();
 
-  const categories = ['Todas', 'Cítricas', 'Tropicales', 'Bayas', 'Manzanas', 'Uvas'];
+  const categories = ['Todas', 'Cítricas', 'Tropicales', 'Bananos', 'Uvas', 'Bayas', 'Frutas Dulces', 'Exóticas'];
 
   // Get products from Supabase instead of hardcoded data
   let products = [];
@@ -19,20 +19,8 @@ export async function renderStorePage(root) {
     console.log(`✅ Loaded ${products.length} products from database`);
   } catch (error) {
     console.error('❌ Error loading products from database:', error);
-    // Fallback to basic products if database fails
-    products = [
-      {
-        id: 1,
-        category: 'Cítricas',
-        img: `${imagePrefix}/images/products/naranja_valecia.png`,
-        name: 'Naranja Valencia',
-        desc: 'Jugosa, dulce y rica en vitamina C.',
-        priceKg: 2.50,
-        organic: true,
-        rating: 4.8,
-        origin: 'España'
-      }
-    ];
+    // Fallback to Colombian fruits if database fails
+    products = getColombianFruits(imagePrefix);
   }
 
   const origins = [...new Set(products.map(p => p.origin))].sort();
@@ -634,6 +622,829 @@ function setupRegistrationPrompts() {
 
   // Show new prompt every 15 seconds
   setInterval(showNextPrompt, 15000);
+}
+
+// Colombian Fruits Database
+function getColombianFruits(imagePrefix = '') {
+  return [
+    // BAYAS (Alfabético)
+    {
+      id: 1,
+      category: 'Bayas',
+      img: `${imagePrefix}/images/products/agraz.jpg`,
+      name: 'Agraz',
+      desc: 'Pequeña baya azulada andina, rica en antioxidantes.',
+      priceKg: 18.000,
+      organic: true,
+      rating: 4.6,
+      origin: 'Boyacá',
+      season: 'Junio-Agosto'
+    },
+    {
+      id: 2,
+      category: 'Bayas',
+      img: `${imagePrefix}/images/products/arandano.jpg`,
+      name: 'Arándano',
+      desc: 'Arándano azul cultivado en altura, superfood.',
+      priceKg: 25.000,
+      organic: true,
+      rating: 4.9,
+      origin: 'Antioquia',
+      season: 'Octubre-Diciembre'
+    },
+    {
+      id: 3,
+      category: 'Bayas',
+      img: `${imagePrefix}/images/products/frambuesa.jpg`,
+      name: 'Frambuesa',
+      desc: 'Frambuesa roja delicada de clima frío.',
+      priceKg: 32.000,
+      organic: true,
+      rating: 4.8,
+      origin: 'Cundinamarca',
+      season: 'Noviembre-Febrero'
+    },
+    {
+      id: 4,
+      category: 'Bayas',
+      img: `${imagePrefix}/images/products/fresa.jpg`,
+      name: 'Fresa',
+      desc: 'Fresas rojas dulces de clima frío.',
+      priceKg: 12.500,
+      organic: true,
+      rating: 4.9,
+      origin: 'Cundinamarca',
+      season: 'Diciembre-Abril'
+    },
+    {
+      id: 5,
+      category: 'Bayas',
+      img: `${imagePrefix}/images/products/mora.jpg`,
+      name: 'Mora de Castilla',
+      desc: 'Mora andina dulce-ácida, rica en antioxidantes.',
+      priceKg: 8.000,
+      organic: true,
+      rating: 4.7,
+      origin: 'Cundinamarca',
+      season: 'Junio-Septiembre'
+    },
+    {
+      id: 6,
+      category: 'Bayas',
+      img: `${imagePrefix}/images/products/uchuva.jpg`,
+      name: 'Uchuva',
+      desc: 'Fruta dorada andina dulce y nutritiva.',
+      priceKg: 15.000,
+      organic: true,
+      rating: 4.8,
+      origin: 'Boyacá',
+      season: 'Todo el año'
+    },
+
+    // BANANOS (Alfabético)
+    {
+      id: 7,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/banano_bocadillo.jpg`,
+      name: 'Banano Bocadillo',
+      desc: 'Banano pequeño y muy dulce, ideal para postres.',
+      priceKg: 3.500,
+      organic: true,
+      rating: 4.9,
+      origin: 'Quindío',
+      season: 'Todo el año'
+    },
+    {
+      id: 8,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/banano_criollo.jpg`,
+      name: 'Banano Criollo',
+      desc: 'Banano tradicional colombiano, resistente.',
+      priceKg: 2.800,
+      organic: false,
+      rating: 4.5,
+      origin: 'Córdoba',
+      season: 'Todo el año'
+    },
+    {
+      id: 9,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/banano_guineo.jpg`,
+      name: 'Banano Guineo',
+      desc: 'Banano corto y grueso, muy nutritivo.',
+      priceKg: 3.200,
+      organic: false,
+      rating: 4.6,
+      origin: 'Chocó',
+      season: 'Todo el año'
+    },
+    {
+      id: 10,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/banano_uraba.jpg`,
+      name: 'Banano Urabá',
+      desc: 'Banano premium de la región de Urabá, dulce y cremoso.',
+      priceKg: 2.200,
+      organic: false,
+      rating: 4.8,
+      origin: 'Antioquia',
+      season: 'Todo el año'
+    },
+    {
+      id: 11,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/platano_dominico.jpg`,
+      name: 'Plátano Dominico',
+      desc: 'Plátano dulce maduro, excelente para freír.',
+      priceKg: 2.000,
+      organic: false,
+      rating: 4.6,
+      origin: 'Magdalena',
+      season: 'Todo el año'
+    },
+    {
+      id: 12,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/platano_hartón.jpg`,
+      name: 'Plátano Hartón',
+      desc: 'Plátano verde tradicional, perfecto para cocinar.',
+      priceKg: 1.800,
+      organic: false,
+      rating: 4.7,
+      origin: 'Valle del Cauca',
+      season: 'Todo el año'
+    },
+    {
+      id: 13,
+      category: 'Bananos',
+      img: `${imagePrefix}/images/products/platano_popocho.jpg`,
+      name: 'Plátano Popocho',
+      desc: 'Plátano gigante para cocción, típico de la costa.',
+      priceKg: 1.500,
+      organic: false,
+      rating: 4.4,
+      origin: 'Atlántico',
+      season: 'Todo el año'
+    },
+
+    // CÍTRICAS (Alfabético)
+    {
+      id: 14,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/bergamota.jpg`,
+      name: 'Bergamota',
+      desc: 'Cítrico aromático usado para aceites esenciales.',
+      priceKg: 12.000,
+      organic: true,
+      rating: 4.3,
+      origin: 'Risaralda',
+      season: 'Enero-Marzo'
+    },
+    {
+      id: 15,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/cidra.jpg`,
+      name: 'Cidra',
+      desc: 'Cítrico grande aromático, usado en conservas.',
+      priceKg: 5.500,
+      organic: false,
+      rating: 4.2,
+      origin: 'Santander',
+      season: 'Mayo-Julio'
+    },
+    {
+      id: 16,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/lima_acida.jpg`,
+      name: 'Lima Ácida',
+      desc: 'Lima pequeña muy ácida, ideal para aderezos.',
+      priceKg: 4.800,
+      organic: false,
+      rating: 4.4,
+      origin: 'Bolívar',
+      season: 'Todo el año'
+    },
+    {
+      id: 17,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/limon_comun.jpg`,
+      name: 'Limón Común',
+      desc: 'Limón amarillo tradicional, muy ácido.',
+      priceKg: 3.800,
+      organic: false,
+      rating: 4.5,
+      origin: 'Tolima',
+      season: 'Todo el año'
+    },
+    {
+      id: 18,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/limon_mandarino.jpg`,
+      name: 'Limón Mandarino',
+      desc: 'Híbrido cítrico, mezcla de limón y mandarina.',
+      priceKg: 5.200,
+      organic: true,
+      rating: 4.6,
+      origin: 'Quindío',
+      season: 'Febrero-Abril'
+    },
+    {
+      id: 19,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/limon_tahiti.jpg`,
+      name: 'Limón Tahití',
+      desc: 'Limón verde aromático, perfecto para bebidas.',
+      priceKg: 4.500,
+      organic: true,
+      rating: 4.9,
+      origin: 'Caldas',
+      season: 'Todo el año'
+    },
+    {
+      id: 20,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/mandarina_oneco.jpg`,
+      name: 'Mandarina Oneco',
+      desc: 'Mandarina tradicional colombiana, fácil de pelar.',
+      priceKg: 3.200,
+      organic: false,
+      rating: 4.8,
+      origin: 'Valle del Cauca',
+      season: 'Abril-Junio'
+    },
+    {
+      id: 21,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/mandarina_arrayana.jpg`,
+      name: 'Mandarina Arrayana',
+      desc: 'Mandarina dulce de temporada, muy jugosa.',
+      priceKg: 3.800,
+      organic: false,
+      rating: 4.7,
+      origin: 'Caldas',
+      season: 'Mayo-Julio'
+    },
+    {
+      id: 22,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/naranja_ombligo.jpg`,
+      name: 'Naranja Ombligo',
+      desc: 'Naranja sin semillas, dulce y fácil de pelar.',
+      priceKg: 2.800,
+      organic: false,
+      rating: 4.6,
+      origin: 'Santander',
+      season: 'Enero-Abril'
+    },
+    {
+      id: 23,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/naranja_valencia.jpg`,
+      name: 'Naranja Valencia',
+      desc: 'Naranja jugosa del Valle, rica en vitamina C.',
+      priceKg: 2.500,
+      organic: false,
+      rating: 4.7,
+      origin: 'Valle del Cauca',
+      season: 'Marzo-Agosto'
+    },
+    {
+      id: 24,
+      category: 'Cítricas',
+      img: `${imagePrefix}/images/products/toronja.jpg`,
+      name: 'Toronja Rosada',
+      desc: 'Toronja jugosa con pulpa rosada, refrescante.',
+      priceKg: 3.000,
+      organic: false,
+      rating: 4.4,
+      origin: 'Valle del Cauca',
+      season: 'Febrero-Mayo'
+    },
+
+    // EXÓTICAS (Alfabético)
+    {
+      id: 25,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/araza.jpg`,
+      name: 'Arazá',
+      desc: 'Fruta amazónica ácida, muy aromática.',
+      priceKg: 22.000,
+      organic: true,
+      rating: 4.5,
+      origin: 'Amazonas',
+      season: 'Septiembre-Noviembre'
+    },
+    {
+      id: 26,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/borojó.jpg`,
+      name: 'Borojó',
+      desc: 'Superfruit del Pacífico, energizante natural.',
+      priceKg: 8.500,
+      organic: true,
+      rating: 4.4,
+      origin: 'Chocó',
+      season: 'Abril-Agosto'
+    },
+    {
+      id: 27,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/caimito.jpg`,
+      name: 'Caimito',
+      desc: 'Fruta morada cremosa con sabor dulce único.',
+      priceKg: 14.500,
+      organic: false,
+      rating: 4.6,
+      origin: 'Córdoba',
+      season: 'Marzo-Mayo'
+    },
+    {
+      id: 28,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/chirimoya.jpg`,
+      name: 'Chirimoya',
+      desc: 'Fruta cremosa y dulce de clima frío.',
+      priceKg: 12.000,
+      organic: false,
+      rating: 4.8,
+      origin: 'Nariño',
+      season: 'Abril-Junio'
+    },
+    {
+      id: 29,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/copoazu.jpg`,
+      name: 'Copoazú',
+      desc: 'Prima del cacao, pulpa cremosa y aromática.',
+      priceKg: 16.000,
+      organic: true,
+      rating: 4.7,
+      origin: 'Vaupés',
+      season: 'Junio-Agosto'
+    },
+    {
+      id: 30,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/feijoa.jpg`,
+      name: 'Feijoa',
+      desc: 'Fruta aromática andina, sabor único.',
+      priceKg: 9.500,
+      organic: false,
+      rating: 4.7,
+      origin: 'Cundinamarca',
+      season: 'Marzo-Mayo'
+    },
+    {
+      id: 31,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/gulupa.jpg`,
+      name: 'Gulupa',
+      desc: 'Fruta de la pasión morada, dulce y aromática.',
+      priceKg: 8.200,
+      organic: true,
+      rating: 4.8,
+      origin: 'Huila',
+      season: 'Todo el año'
+    },
+    {
+      id: 32,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/mangostino.jpg`,
+      name: 'Mangostino',
+      desc: 'Reina de las frutas, pulpa blanca exquisita.',
+      priceKg: 45.000,
+      organic: true,
+      rating: 4.9,
+      origin: 'Chocó',
+      season: 'Octubre-Diciembre'
+    },
+    {
+      id: 33,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/nispero.jpg`,
+      name: 'Níspero',
+      desc: 'Fruta dulce de árbol perenne, muy nutritiva.',
+      priceKg: 7.800,
+      organic: false,
+      rating: 4.4,
+      origin: 'Valle del Cauca',
+      season: 'Enero-Marzo'
+    },
+    {
+      id: 34,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/pitahaya.jpg`,
+      name: 'Pitahaya',
+      desc: 'Fruta del dragón, refrescante y exótica.',
+      priceKg: 18.500,
+      organic: true,
+      rating: 4.6,
+      origin: 'Magdalena',
+      season: 'Julio-Octubre'
+    },
+    {
+      id: 35,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/rambutan.jpg`,
+      name: 'Rambután',
+      desc: 'Fruta peluda asiática cultivada en Colombia.',
+      priceKg: 28.000,
+      organic: true,
+      rating: 4.5,
+      origin: 'Putumayo',
+      season: 'Agosto-Octubre'
+    },
+    {
+      id: 36,
+      category: 'Exóticas',
+      img: `${imagePrefix}/images/products/zapote.jpg`,
+      name: 'Zapote',
+      desc: 'Fruta tropical cremosa, sabor a chocolate.',
+      priceKg: 11.500,
+      organic: false,
+      rating: 4.6,
+      origin: 'Magdalena',
+      season: 'Mayo-Julio'
+    },
+
+    // FRUTAS DULCES (Alfabético) 
+    {
+      id: 37,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/breva.jpg`,
+      name: 'Breva',
+      desc: 'Higo grande y dulce de clima frío.',
+      priceKg: 11.000,
+      organic: false,
+      rating: 4.7,
+      origin: 'Cundinamarca',
+      season: 'Noviembre-Enero'
+    },
+    {
+      id: 38,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/ciruela.jpg`,
+      name: 'Ciruela',
+      desc: 'Ciruela tropical dulce y jugosa.',
+      priceKg: 6.500,
+      organic: false,
+      rating: 4.5,
+      origin: 'Tolima',
+      season: 'Febrero-Abril'
+    },
+    {
+      id: 39,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/curuba.jpg`,
+      name: 'Curuba',
+      desc: 'Fruta andina ácida, ideal para jugos.',
+      priceKg: 5.500,
+      organic: true,
+      rating: 4.6,
+      origin: 'Nariño',
+      season: 'Marzo-Agosto'
+    },
+    {
+      id: 40,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/durazno.jpg`,
+      name: 'Durazno',
+      desc: 'Durazno de clima frío, dulce y aromático.',
+      priceKg: 9.500,
+      organic: false,
+      rating: 4.7,
+      origin: 'Boyacá',
+      season: 'Diciembre-Febrero'
+    },
+    {
+      id: 41,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/granadilla.jpg`,
+      name: 'Granadilla',
+      desc: 'Fruta dulce de pulpa gelatinosa y aromática.',
+      priceKg: 7.200,
+      organic: false,
+      rating: 4.9,
+      origin: 'Cundinamarca',
+      season: 'Todo el año'
+    },
+    {
+      id: 42,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/lulo.jpg`,
+      name: 'Lulo',
+      desc: 'Fruta ácida tradicional, perfecta para jugos.',
+      priceKg: 6.800,
+      organic: false,
+      rating: 4.8,
+      origin: 'Nariño',
+      season: 'Todo el año'
+    },
+    {
+      id: 43,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/manzana_anna.jpg`,
+      name: 'Manzana Anna',
+      desc: 'Manzana tropical cultivada en Colombia.',
+      priceKg: 7.500,
+      organic: false,
+      rating: 4.3,
+      origin: 'Boyacá',
+      season: 'Diciembre-Febrero'
+    },
+    {
+      id: 44,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/pera.jpg`,
+      name: 'Pera',
+      desc: 'Pera jugosa de clima templado.',
+      priceKg: 8.200,
+      organic: false,
+      rating: 4.4,
+      origin: 'Cundinamarca',
+      season: 'Noviembre-Enero'
+    },
+    {
+      id: 45,
+      category: 'Frutas Dulces',
+      img: `${imagePrefix}/images/products/tomate_arbol.jpg`,
+      name: 'Tomate de Árbol',
+      desc: 'Fruta ácida perfecta para jugos y salsas.',
+      priceKg: 4.500,
+      organic: true,
+      rating: 4.6,
+      origin: 'Cundinamarca',
+      season: 'Todo el año'
+    },
+
+    // TROPICALES (Alfabético)
+    {
+      id: 46,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/aguacate_fortuna.jpg`,
+      name: 'Aguacate Fortuna',
+      desc: 'Aguacate grande tradicional colombiano.',
+      priceKg: 4.200,
+      organic: false,
+      rating: 4.6,
+      origin: 'Tolima',
+      season: 'Febrero-Mayo'
+    },
+    {
+      id: 47,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/aguacate_hass.jpg`,
+      name: 'Aguacate Hass',
+      desc: 'Aguacate cremoso de exportación.',
+      priceKg: 6.800,
+      organic: true,
+      rating: 4.9,
+      origin: 'Caldas',
+      season: 'Todo el año'
+    },
+    {
+      id: 48,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/anon.jpg`,
+      name: 'Anón',
+      desc: 'Fruta cremosa dulce, prima de la chirimoya.',
+      priceKg: 9.800,
+      organic: false,
+      rating: 4.5,
+      origin: 'Atlántico',
+      season: 'Abril-Junio'
+    },
+    {
+      id: 49,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/badea.jpg`,
+      name: 'Badea',
+      desc: 'Fruta de la pasión gigante, refrescante.',
+      priceKg: 3.800,
+      organic: false,
+      rating: 4.3,
+      origin: 'Valle del Cauca',
+      season: 'Marzo-Junio'
+    },
+    {
+      id: 50,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/banano_morado.jpg`,
+      name: 'Banano Morado',
+      desc: 'Banano exótico de piel morada, muy dulce.',
+      priceKg: 5.500,
+      organic: true,
+      rating: 4.8,
+      origin: 'Quindío',
+      season: 'Todo el año'
+    },
+    {
+      id: 51,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/carambolo.jpg`,
+      name: 'Carambolo',
+      desc: 'Fruta estrella, decorativa y refrescante.',
+      priceKg: 8.500,
+      organic: false,
+      rating: 4.2,
+      origin: 'Meta',
+      season: 'Agosto-Octubre'
+    },
+    {
+      id: 52,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/coco.jpg`,
+      name: 'Coco',
+      desc: 'Coco fresco de la costa, agua natural.',
+      priceKg: 2.500,
+      organic: false,
+      rating: 4.5,
+      origin: 'Atlántico',
+      season: 'Todo el año'
+    },
+    {
+      id: 53,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/guama.jpg`,
+      name: 'Guama',
+      desc: 'Vaina dulce tropical, pulpa algodonosa.',
+      priceKg: 4.200,
+      organic: false,
+      rating: 4.4,
+      origin: 'Casanare',
+      season: 'Enero-Marzo'
+    },
+    {
+      id: 54,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/guanabana.jpg`,
+      name: 'Guanábana',
+      desc: 'Fruta grande cremosa, ideal para jugos.',
+      priceKg: 6.500,
+      organic: true,
+      rating: 4.7,
+      origin: 'Tolima',
+      season: 'Todo el año'
+    },
+    {
+      id: 55,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/guayaba_pera.jpg`,
+      name: 'Guayaba Pera',
+      desc: 'Guayaba aromática, perfecta para jugos.',
+      priceKg: 4.000,
+      organic: false,
+      rating: 4.7,
+      origin: 'Boyacá',
+      season: 'Octubre-Febrero'
+    },
+    {
+      id: 56,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/guayaba_agria.jpg`,
+      name: 'Guayaba Agria',
+      desc: 'Guayaba ácida pequeña, rica en vitamina C.',
+      priceKg: 3.500,
+      organic: false,
+      rating: 4.3,
+      origin: 'Santander',
+      season: 'Septiembre-Noviembre'
+    },
+    {
+      id: 57,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/mango_azucar.jpg`,
+      name: 'Mango Azúcar',
+      desc: 'Mango pequeño muy dulce, variedad criolla.',
+      priceKg: 3.200,
+      organic: false,
+      rating: 4.8,
+      origin: 'Sucre',
+      season: 'Abril-Junio'
+    },
+    {
+      id: 58,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/mango_keitt.jpg`,
+      name: 'Mango Keitt',
+      desc: 'Mango grande y jugoso, de larga duración.',
+      priceKg: 3.800,
+      organic: false,
+      rating: 4.7,
+      origin: 'Cundinamarca',
+      season: 'Agosto-Octubre'
+    },
+    {
+      id: 59,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/mango_tommy.jpg`,
+      name: 'Mango Tommy',
+      desc: 'Mango dulce y jugoso, variedad premium.',
+      priceKg: 4.200,
+      organic: false,
+      rating: 4.9,
+      origin: 'Magdalena',
+      season: 'Marzo-Junio'
+    },
+    {
+      id: 60,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/maracuya.jpg`,
+      name: 'Maracuyá',
+      desc: 'Fruta de la pasión, intensa y aromática.',
+      priceKg: 6.500,
+      organic: true,
+      rating: 4.9,
+      origin: 'Huila',
+      season: 'Todo el año'
+    },
+    {
+      id: 61,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/papaya_maradol.jpg`,
+      name: 'Papaya Maradol',
+      desc: 'Papaya grande y dulce, rica en enzimas.',
+      priceKg: 2.800,
+      organic: false,
+      rating: 4.6,
+      origin: 'Santander',
+      season: 'Todo el año'
+    },
+    {
+      id: 62,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/papaya_hawaiana.jpg`,
+      name: 'Papaya Hawaiana',
+      desc: 'Papaya pequeña muy dulce, pulpa anaranjada.',
+      priceKg: 3.500,
+      organic: true,
+      rating: 4.8,
+      origin: 'Valle del Cauca',
+      season: 'Todo el año'
+    },
+    {
+      id: 63,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/pina_md2.jpg`,
+      name: 'Piña MD2',
+      desc: 'Piña extra dulce, variedad premium.',
+      priceKg: 3.500,
+      organic: true,
+      rating: 4.8,
+      origin: 'Meta',
+      season: 'Todo el año'
+    },
+    {
+      id: 64,
+      category: 'Tropicales',
+      img: `${imagePrefix}/images/products/pina_perolera.jpg`,
+      name: 'Piña Perolera',
+      desc: 'Piña tradicional colombiana, muy aromática.',
+      priceKg: 2.800,
+      organic: false,
+      rating: 4.5,
+      origin: 'Santander',
+      season: 'Todo el año'
+    },
+
+    // UVAS (Alfabético)
+    {
+      id: 65,
+      category: 'Uvas',
+      img: `${imagePrefix}/images/products/uva_roja.jpg`,
+      name: 'Uva Roja Isabella',
+      desc: 'Uva roja dulce y jugosa, cultivada en clima frío.',
+      priceKg: 8.500,
+      organic: false,
+      rating: 4.8,
+      origin: 'Boyacá',
+      season: 'Noviembre-Febrero'
+    },
+    {
+      id: 66,
+      category: 'Uvas',
+      img: `${imagePrefix}/images/products/uva_verde.jpg`,
+      name: 'Uva Verde Thompson',
+      desc: 'Uva verde sin semillas, crujiente y dulce.',
+      priceKg: 9.200,
+      organic: true,
+      rating: 4.7,
+      origin: 'Boyacá',
+      season: 'Diciembre-Marzo'
+    },
+    {
+      id: 67,
+      category: 'Uvas',
+      img: `${imagePrefix}/images/products/uva_negra.jpg`,
+      name: 'Uva Negra',
+      desc: 'Uva oscura dulce, rica en antioxidantes.',
+      priceKg: 9.800,
+      organic: true,
+      rating: 4.6,
+      origin: 'Cundinamarca',
+      season: 'Enero-Marzo'
+    }
+  ];
 }
 
 // Make cart functions globally available

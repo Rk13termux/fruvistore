@@ -1,1 +1,0 @@
-console.log("Testing basic routing..."); document.addEventListener("DOMContentLoaded", () => { const appRoot = document.getElementById("app-root"); if (appRoot) { appRoot.innerHTML = "<h1>Test Content</h1><p>If you see this, routing works!</p>"; console.log("Content injected successfully"); } else { console.error("app-root not found"); } });
