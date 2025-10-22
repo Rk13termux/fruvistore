@@ -6,6 +6,35 @@
     <title>Admin Panel - Fruvi Store</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <script>
+        // Verificar autenticación de admin
+        function checkAdminAuth() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn');
+            const loginTime = localStorage.getItem('adminLoginTime');
+            const now = Date.now();
+            const oneHour = 60 * 60 * 1000; // 1 hora
+            
+            if (!isLoggedIn || !loginTime || (now - loginTime) > oneHour) {
+                // Redirigir al login si no está autenticado o la sesión expiró
+                window.location.href = './admin-login.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Verificar auth al cargar la página
+        if (!checkAdminAuth()) {
+            // Si no está autenticado, detener la carga
+            document.body.style.display = 'none';
+        }
+        
+        // Función para cerrar sesión
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminLoginTime');
+            window.location.href = './admin-login.html';
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700&display=swap');
 
@@ -1241,11 +1270,28 @@
     <div class="admin-container">
         <!-- Header -->
         <div class="admin-header">
-            <h1>
-                <i class="fas fa-store"></i>
-                Panel de Administración - Fruvi Store
-            </h1>
-            <p>Gestión completa de productos, precios e inventario</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>
+                        <i class="fas fa-store"></i>
+                        Panel de Administración - Fruvi Store
+                    </h1>
+                    <p>Gestión completa de productos, precios e inventario</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline" onclick="logout()" title="Cerrar Sesión" style="
+                        background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        color: var(--txt);
+                        padding: 8px 16px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    ">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
             <!-- Emergency close button -->
             <button onclick="closeModal()" style="
                 position: absolute;
