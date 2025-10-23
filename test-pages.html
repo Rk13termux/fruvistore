@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test GitHub Pages - Fruvi Store</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ff9b40, #8bda01);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .links {
+            margin-top: 2rem;
+        }
+        .link {
+            display: block;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .status {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); }
+        .error { background: rgba(239, 68, 68, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍎 Fruvi Store - GitHub Pages Status</h1>
+        <p>Testing GitHub Pages deployment...</p>
+        
+        <div class="status success">
+            ✅ GitHub Pages está funcionando correctamente
+        </div>
+        
+        <div class="links">
+            <h3>📝 Enlaces de Prueba:</h3>
+            
+            <a href="./index.html" class="link">
+                🏠 Página Principal (index.html)
+            </a>
+            
+            <a href="./admin-login.html" class="link">
+                🔐 Login de Admin (admin-login.html)
+            </a>
+            
+            <a href="./admin.html" class="link">
+                🎛️ Panel de Admin (admin.html)
+            </a>
+            
+            <a href="./admin/" class="link">
+                📁 Admin Directory (admin/)
+            </a>
+        </div>
+        
+        <div class="status" id="timestamp">
+            ⏰ Desplegado: <span id="deployTime"></span>
+        </div>
+    </div>
+    
+    <script>
+        // Mostrar timestamp actual
+        document.getElementById('deployTime').textContent = new Date().toLocaleString('es-ES');
+        
+        // Verificar enlaces
+        const links = document.querySelectorAll('.link');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                this.style.background = 'rgba(59, 130, 246, 0.3)';
+                this.innerHTML += ' <small>(Cargando...)</small>';
+            });
+        });
+    </script>
+</body>
+</html>

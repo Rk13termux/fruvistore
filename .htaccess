@@ -1,0 +1,30 @@
+# Bloquear acceso a archivos de admin antiguos
+<Files "admin.html">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files "admin-login.html">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Bloquear acceso directo a scripts sensibles
+<FilesMatch "^(productManager|storeService)\.js$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Bloquear archivos de configuración
+<Files ".env*">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Headers de seguridad
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
