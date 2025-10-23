@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /
+
+# Bloquear completamente la indexación del admin
+# No queremos que aparezca en Google ni otros buscadores

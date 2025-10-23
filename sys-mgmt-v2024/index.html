@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Restringido - Sistema</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --bg: #0a0e13;
+            --surface: rgba(255,255,255,0.03);
+            --border: rgba(255,255,255,0.08);
+            --txt: #e9eef5;
+            --muted: #6c757d;
+            --brand: #ff6b35;
+            --brand-2: #4ecdc4;
+            --danger: #ff4757;
+            --success: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 107, 53, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .access-container {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .security-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .security-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--danger), #ff6b35);
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .security-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+        }
+
+        .security-subtitle {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .auth-form {
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--txt);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--txt);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            margin-top: 12px;
+        }
+
+        .access-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--danger), #ff6b35);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .access-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.3);
+        }
+
+        .access-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-msg {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: var(--danger);
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .attempts-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .security-footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* Animación de bloqueo */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="security-bg"></div>
+    
+    <div class="access-container">
+        <div class="security-header">
+            <div class="security-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1 class="security-title">Área Restringida</h1>
+            <p class="security-subtitle">Acceso autorizado únicamente</p>
+        </div>
+        
+        <form class="auth-form" id="secureAuthForm">
+            <div class="form-group">
+                <label class="form-label">Usuario Autorizado</label>
+                <div style="position: relative;">
+                    <i class="fas fa-user-shield input-icon"></i>
+                    <input 
+                        type="text" 
+                        id="secureUser" 
+                        class="form-input"
+                        placeholder="Identificación de acceso"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Clave de Seguridad</label>
+                <div style="position: relative;">
+                    <i class="fas fa-key input-icon"></i>
+                    <input 
+                        type="password" 
+                        id="securePass" 
+                        class="form-input"
+                        placeholder="Clave de autorización"
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+            
+            <button type="submit" class="access-btn" id="accessBtn">
+                <i class="fas fa-unlock-alt"></i> Verificar Acceso
+            </button>
+            
+            <div class="error-msg" id="errorMsg">
+                <i class="fas fa-exclamation-triangle"></i>
+                Credenciales incorrectas. Acceso denegado.
+            </div>
+            
+            <div class="attempts-warning" id="attemptsWarning">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="attemptsText"></span>
+            </div>
+        </form>
+        
+        <div class="security-footer">
+            <i class="fas fa-lock"></i>
+            Sistema protegido con autenticación multi-factor
+        </div>
+    </div>
+
+    <script>
+        // Sistema de seguridad avanzado
+        const MAX_ATTEMPTS = 3;
+        const LOCKOUT_TIME = 300000; // 5 minutos en milisegundos
+        const SECURE_CREDENTIALS = {
+            // Usuario y contraseña seguras (cambiar en producción)
+            user: 'fruvi_admin_2024',
+            pass: 'FruviStore@Secure#2024!'
+        };
+
+        let attempts = parseInt(localStorage.getItem('adminAttempts') || '0');
+        let lastAttempt = parseInt(localStorage.getItem('lastAttemptTime') || '0');
+        let isLocked = false;
+
+        // Verificar si está bloqueado
+        function checkLockout() {
+            const now = Date.now();
+            if (attempts >= MAX_ATTEMPTS && (now - lastAttempt) < LOCKOUT_TIME) {
+                isLocked = true;
+                const remainingTime = Math.ceil((LOCKOUT_TIME - (now - lastAttempt)) / 1000 / 60);
+                showError(`Sistema bloqueado. Intente en ${remainingTime} minutos.`);
+                document.getElementById('accessBtn').disabled = true;
+                return true;
+            } else if (attempts >= MAX_ATTEMPTS) {
+                // Resetear después del tiempo de bloqueo
+                attempts = 0;
+                localStorage.setItem('adminAttempts', '0');
+            }
+            return false;
+        }
+
+        // Mostrar error
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+            document.querySelector('.access-container').classList.add('shake');
+            
+            setTimeout(() => {
+                document.querySelector('.access-container').classList.remove('shake');
+            }, 500);
+        }
+
+        // Mostrar advertencia de intentos
+        function showAttemptsWarning() {
+            const warning = document.getElementById('attemptsWarning');
+            const remaining = MAX_ATTEMPTS - attempts;
+            document.getElementById('attemptsText').textContent = 
+                `Quedan ${remaining} intentos antes del bloqueo temporal`;
+            warning.style.display = 'block';
+        }
+
+        // Verificar autenticación
+        function authenticate(user, pass) {
+            return user === SECURE_CREDENTIALS.user && pass === SECURE_CREDENTIALS.pass;
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('secureAuthForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (isLocked || checkLockout()) {
+                return;
+            }
+
+            const user = document.getElementById('secureUser').value;
+            const pass = document.getElementById('securePass').value;
+
+            if (authenticate(user, pass)) {
+                // Acceso concedido
+                localStorage.removeItem('adminAttempts');
+                localStorage.removeItem('lastAttemptTime');
+                localStorage.setItem('adminAuthenticated', 'true');
+                localStorage.setItem('adminAuthTime', Date.now().toString());
+                localStorage.setItem('adminUser', user);
+                
+                // Redirigir al admin real
+                window.location.href = './panel.html';
+            } else {
+                // Acceso denegado
+                attempts++;
+                lastAttempt = Date.now();
+                localStorage.setItem('adminAttempts', attempts.toString());
+                localStorage.setItem('lastAttemptTime', lastAttempt.toString());
+
+                if (attempts < MAX_ATTEMPTS) {
+                    showAttemptsWarning();
+                }
+
+                showError('Credenciales incorrectas. Acceso denegado.');
+                
+                // Limpiar campos
+                document.getElementById('secureUser').value = '';
+                document.getElementById('securePass').value = '';
+                
+                checkLockout();
+            }
+        });
+
+        // Verificar bloqueo al cargar
+        checkLockout();
+
+        // Auto-focus en el primer campo
+        document.getElementById('secureUser').focus();
+
+        // Ocultar mensajes al escribir
+        document.getElementById('secureUser').addEventListener('input', function() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('attemptsWarning').style.display = 'none';
+        });
+
+        document.getElementById('securePass').addEventListener('input', function() {
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('attemptsWarning').style.display = 'none';
+        });
+
+        // Prevenir inspección (básico)
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                showError('Acceso a herramientas de desarrollo restringido.');
+            }
+        });
+
+        // Prevenir clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
