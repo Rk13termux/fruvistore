@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FruviStore - Base de Datos Nutricional</title>
+    <meta name="description" content="Base de datos completa de productos y información nutricional">
+    <link rel="icon" href="./images/favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header normal del sitio */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        .logout-btn {
+            background: #ff4757;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Contenido principal */
+        .main-content {
+            padding: 2rem 0;
+        }
+        
+        .panel-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+        
+        .panel-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 300;
+        }
+        
+        /* Controles del panel */
+        .panel-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: #2ed573;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Formulario de productos */
+        .product-form {
+            display: none;
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* Tabla de productos */
+        .products-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .table-content {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .products-grid {
+            display: grid;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        
+        .product-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2ed573;
+        }
+        
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-edit {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Estados */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        
+        /* Footer normal */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            margin-top: 2rem;
+            text-align: center;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .panel-controls {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header normal del sitio -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">🍎 FruviStore</div>
+                <ul class="nav-links">
+                    <li><a href="./index.html">Inicio</a></li>
+                    <li><a href="#productos">Base de Datos</a></li>
+                    <li><a href="#estadisticas">Estadísticas</a></li>
+                    <li><button class="logout-btn" onclick="logout()">Cerrar Sesión</button></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Panel de control -->
+            <div class="panel-container">
+                <h1 class="panel-title">Base de Datos Nutricional - Panel de Gestión</h1>
+                
+                <div class="panel-controls">
+                    <button class="control-btn btn-primary" onclick="toggleProductForm()">
+                        <span id="formToggleText">➕ Agregar Producto</span>
+                    </button>
+                    <button class="control-btn btn-success" onclick="loadProducts()">🔄 Actualizar Lista</button>
+                    <button class="control-btn btn-warning" onclick="exportData()">📊 Exportar Datos</button>
+                    <button class="control-btn btn-primary" onclick="showStats()">📈 Ver Estadísticas</button>
+                </div>
+
+                <!-- Formulario de productos -->
+                <div class="product-form" id="productForm">
+                    <h3 style="margin-bottom: 1rem; color: #333;">Información del Producto</h3>
+                    <form id="productFormData">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productName">Nombre del Producto:</label>
+                                <input type="text" id="productName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productPrice">Precio (COP):</label>
+                                <input type="number" id="productPrice" name="price" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productCategory">Categoría:</label>
+                                <select id="productCategory" name="category" required>
+                                    <option value="">Seleccionar categoría</option>
+                                    <option value="frutas">Frutas</option>
+                                    <option value="verduras">Verduras</option>
+                                    <option value="proteinas">Proteínas</option>
+                                    <option value="lacteos">Lácteos</option>
+                                    <option value="granos">Granos</option>
+                                    <option value="otros">Otros</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="productStock">Stock:</label>
+                                <input type="number" id="productStock" name="stock" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productImage">URL de Imagen:</label>
+                                <input type="url" id="productImage" name="image_url">
+                            </div>
+                            <div class="form-group">
+                                <label for="productOrigin">Origen:</label>
+                                <input type="text" id="productOrigin" name="origin">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productDescription">Descripción:</label>
+                                <textarea id="productDescription" name="description" placeholder="Descripción detallada del producto"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="productNutrition">Información Nutricional:</label>
+                                <textarea id="productNutrition" name="nutrition_info" placeholder="Información nutricional detallada"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                            <button type="submit" class="control-btn btn-success">
+                                <span id="submitBtnText">✅ Guardar Producto</span>
+                            </button>
+                            <button type="button" class="control-btn btn-warning" onclick="clearForm()">🗑️ Limpiar</button>
+                            <button type="button" class="control-btn btn-danger" onclick="cancelEdit()">❌ Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Mensajes -->
+                <div id="messages"></div>
+            </div>
+
+            <!-- Tabla de productos -->
+            <div class="products-table">
+                <div class="table-header">
+                    📋 Lista de Productos en Base de Datos
+                </div>
+                <div class="table-content">
+                    <div class="products-grid" id="productsGrid">
+                        <div class="loading">Cargando productos...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer normal -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 FruviStore. Base de Datos Nutricional - Sistema de Gestión Interno.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { storeService } from './scripts/services/supabaseService.js';
+        
+        let isEditing = false;
+        let editingProductId = null;
+        
+        // Verificar autenticación
+        function checkAuth() {
+            const isAuthenticated = localStorage.getItem('nutritionAuthenticated');
+            const authTime = parseInt(localStorage.getItem('nutritionAuthTime') || '0');
+            const SESSION_DURATION = 30 * 60 * 1000; // 30 minutos
+            
+            if (!isAuthenticated || (Date.now() - authTime) > SESSION_DURATION) {
+                window.location.href = './nutrition-info.html';
+                return false;
+            }
+            return true;
+        }
+        
+        // Logout
+        window.logout = function() {
+            localStorage.removeItem('nutritionAuthenticated');
+            localStorage.removeItem('nutritionAuthTime');
+            window.location.href = './nutrition-info.html';
+        };
+        
+        // Mostrar mensaje
+        function showMessage(message, type = 'success') {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                messagesDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Toggle formulario
+        window.toggleProductForm = function() {
+            const form = document.getElementById('productForm');
+            const toggleText = document.getElementById('formToggleText');
+            
+            if (form.style.display === 'none' || !form.style.display) {
+                form.style.display = 'block';
+                toggleText.textContent = '📋 Ocultar Formulario';
+            } else {
+                form.style.display = 'none';
+                toggleText.textContent = '➕ Agregar Producto';
+                cancelEdit();
+            }
+        };
+        
+        // Limpiar formulario
+        window.clearForm = function() {
+            document.getElementById('productFormData').reset();
+            isEditing = false;
+            editingProductId = null;
+            document.getElementById('submitBtnText').textContent = '✅ Guardar Producto';
+        };
+        
+        // Cancelar edición
+        window.cancelEdit = function() {
+            clearForm();
+            const form = document.getElementById('productForm');
+            form.style.display = 'none';
+            document.getElementById('formToggleText').textContent = '➕ Agregar Producto';
+        };
+        
+        // Cargar productos
+        window.loadProducts = async function() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '<div class="loading">Cargando productos...</div>';
+            
+            try {
+                const products = await storeService.getAllProducts();
+                
+                if (products.length === 0) {
+                    grid.innerHTML = '<div class="loading">No hay productos en la base de datos.</div>';
+                    return;
+                }
+                
+                grid.innerHTML = products.map(product => `
+                    <div class="product-card">
+                        <div class="product-header">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-price">$${parseFloat(product.price).toLocaleString('es-CO')}</div>
+                        </div>
+                        <div class="product-details">
+                            <div><strong>Categoría:</strong> ${product.category || 'No especificada'}</div>
+                            <div><strong>Stock:</strong> ${product.stock || 0}</div>
+                            <div><strong>Origen:</strong> ${product.origin || 'No especificado'}</div>
+                            <div><strong>ID:</strong> ${product.id}</div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="action-btn btn-edit" onclick="editProduct(${product.id})">✏️ Editar</button>
+                            <button class="action-btn btn-delete" onclick="deleteProduct(${product.id}, '${product.name}')">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                showMessage(`${products.length} productos cargados correctamente.`);
+            } catch (error) {
+                console.error('Error cargando productos:', error);
+                grid.innerHTML = '<div class="error">Error al cargar productos. Verifica la conexión a la base de datos.</div>';
+                showMessage('Error al cargar productos: ' + error.message, 'error');
+            }
+        };
+        
+        // Editar producto
+        window.editProduct = async function(id) {
+            try {
+                const products = await storeService.getAllProducts();
+                const product = products.find(p => p.id === id);
+                
+                if (!product) {
+                    showMessage('Producto no encontrado.', 'error');
+                    return;
+                }
+                
+                // Llenar formulario
+                document.getElementById('productName').value = product.name || '';
+                document.getElementById('productPrice').value = product.price || '';
+                document.getElementById('productCategory').value = product.category || '';
+                document.getElementById('productStock').value = product.stock || '';
+                document.getElementById('productImage').value = product.image_url || '';
+                document.getElementById('productOrigin').value = product.origin || '';
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productNutrition').value = product.nutrition_info || '';
+                
+                // Configurar modo edición
+                isEditing = true;
+                editingProductId = id;
+                document.getElementById('submitBtnText').textContent = '✅ Actualizar Producto';
+                document.getElementById('formToggleText').textContent = '📋 Editando Producto';
+                document.getElementById('productForm').style.display = 'block';
+                
+                showMessage(`Editando producto: ${product.name}`, 'success');
+            } catch (error) {
+                console.error('Error cargando producto para editar:', error);
+                showMessage('Error al cargar producto para edición: ' + error.message, 'error');
+            }
+        };
+        
+        // Eliminar producto
+        window.deleteProduct = async function(id, name) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar "${name}"?`)) {
+                return;
+            }
+            
+            try {
+                await storeService.deleteProduct(id);
+                showMessage(`Producto "${name}" eliminado correctamente.`);
+                loadProducts();
+            } catch (error) {
+                console.error('Error eliminando producto:', error);
+                showMessage('Error al eliminar producto: ' + error.message, 'error');
+            }
+        };
+        
+        // Exportar datos
+        window.exportData = async function() {
+            try {
+                const products = await storeService.getAllProducts();
+                const dataStr = JSON.stringify(products, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `fruvistore-productos-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showMessage('Datos exportados correctamente.');
+            } catch (error) {
+                console.error('Error exportando datos:', error);
+                showMessage('Error al exportar datos: ' + error.message, 'error');
+            }
+        };
+        
+        // Mostrar estadísticas
+        window.showStats = async function() {
+            try {
+                const products = await storeService.getAllProducts();
+                const totalProducts = products.length;
+                const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
+                const totalValue = products.reduce((sum, p) => sum + (parseFloat(p.price) || 0), 0);
+                
+                const statsMessage = `
+                    📊 Estadísticas de la Base de Datos:
+                    • Total de productos: ${totalProducts}
+                    • Categorías: ${categories.length} (${categories.join(', ')})
+                    • Valor total inventario: $${totalValue.toLocaleString('es-CO')}
+                `;
+                
+                alert(statsMessage);
+            } catch (error) {
+                console.error('Error calculando estadísticas:', error);
+                showMessage('Error al calcular estadísticas: ' + error.message, 'error');
+            }
+        };
+        
+        // Manejar formulario
+        document.getElementById('productFormData').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const productData = {
+                name: formData.get('name'),
+                price: parseFloat(formData.get('price')),
+                category: formData.get('category'),
+                stock: parseInt(formData.get('stock')),
+                image_url: formData.get('image_url'),
+                origin: formData.get('origin'),
+                description: formData.get('description'),
+                nutrition_info: formData.get('nutrition_info')
+            };
+            
+            try {
+                if (isEditing && editingProductId) {
+                    await storeService.updateCompleteProduct(editingProductId, productData);
+                    showMessage(`Producto "${productData.name}" actualizado correctamente.`);
+                } else {
+                    await storeService.createProduct(productData);
+                    showMessage(`Producto "${productData.name}" creado correctamente.`);
+                }
+                
+                clearForm();
+                loadProducts();
+                toggleProductForm();
+            } catch (error) {
+                console.error('Error guardando producto:', error);
+                showMessage('Error al guardar producto: ' + error.message, 'error');
+            }
+        });
+        
+        // Inicializar
+        if (checkAuth()) {
+            loadProducts();
+        }
+    </script>
+</body>
+</html>

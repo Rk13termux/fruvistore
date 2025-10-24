@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FruviStore - Información Nutricional</title>
+    <meta name="description" content="Información detallada sobre el valor nutricional de nuestros productos frescos">
+    <link rel="icon" href="./images/favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header normal del sitio */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        /* Contenido principal */
+        .main-content {
+            padding: 4rem 0;
+        }
+        
+        .nutrition-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .nutrition-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .nutrition-info {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 3rem;
+        }
+        
+        /* Sección de login oculta */
+        .access-section {
+            border-top: 1px solid #eee;
+            padding-top: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .access-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 400;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .access-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .access-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .access-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .attempts-info {
+            text-align: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Footer normal */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header normal del sitio -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">🍎 FruviStore</div>
+                <ul class="nav-links">
+                    <li><a href="./index.html">Inicio</a></li>
+                    <li><a href="./scripts/pages/store.js">Tienda</a></li>
+                    <li><a href="./scripts/pages/recipes.js">Recetas</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <div class="container">
+            <div class="nutrition-container">
+                <h1 class="nutrition-title">Información Nutricional</h1>
+                
+                <div class="nutrition-info">
+                    <p>En FruviStore nos comprometemos con ofrecerte los productos más frescos y nutritivos. 
+                    Nuestros alimentos están cuidadosamente seleccionados para brindarte el máximo valor nutricional.</p>
+                    
+                    <p>Todos nuestros productos cuentan con certificaciones de calidad y son sometidos a 
+                    rigurosos controles para garantizar su frescura y propiedades nutricionales óptimas.</p>
+                </div>
+
+                <!-- Sección de acceso administrativo (oculta) -->
+                <div class="access-section">
+                    <h2 class="access-title">Acceso a Datos Nutricionales Detallados</h2>
+                    
+                    <form class="login-form" id="nutritionAccess">
+                        <div class="form-group">
+                            <label for="userCode">Código de Usuario:</label>
+                            <input type="text" id="userCode" name="userCode" placeholder="Ingresa tu código de acceso" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="accessKey">Clave de Acceso:</label>
+                            <input type="password" id="accessKey" name="accessKey" placeholder="Ingresa tu clave de acceso" required>
+                        </div>
+                        
+                        <button type="submit" class="access-btn" id="accessBtn">Acceder a Base de Datos</button>
+                    </form>
+                    
+                    <div class="message" id="messageDiv"></div>
+                    <div class="attempts-info" id="attemptsInfo"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer normal -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 FruviStore. Todos los derechos reservados. | Comprometidos con tu salud y nutrición.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Configuración de seguridad
+        const CORRECT_USERNAME = 'fruvi_admin_2024';
+        const CORRECT_PASSWORD = 'FruviStore@Secure#2024!';
+        const MAX_ATTEMPTS = 3;
+        const BLOCK_TIME = 5 * 60 * 1000; // 5 minutos
+        const SESSION_DURATION = 30 * 60 * 1000; // 30 minutos
+        
+        // Estado de intentos
+        let attempts = parseInt(localStorage.getItem('nutritionAttempts') || '0');
+        let blockedUntil = parseInt(localStorage.getItem('nutritionBlockedUntil') || '0');
+        
+        const form = document.getElementById('nutritionAccess');
+        const accessBtn = document.getElementById('accessBtn');
+        const messageDiv = document.getElementById('messageDiv');
+        const attemptsInfo = document.getElementById('attemptsInfo');
+        
+        function showMessage(message, type) {
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+        
+        function hideMessage() {
+            messageDiv.style.display = 'none';
+        }
+        
+        function updateAttemptsDisplay() {
+            if (attempts > 0) {
+                attemptsInfo.textContent = `Intentos: ${attempts}/${MAX_ATTEMPTS}`;
+                attemptsInfo.style.display = 'block';
+            } else {
+                attemptsInfo.style.display = 'none';
+            }
+        }
+        
+        function isBlocked() {
+            const now = Date.now();
+            if (blockedUntil > now) {
+                const remainingTime = Math.ceil((blockedUntil - now) / 1000 / 60);
+                showMessage(`Acceso temporalmente restringido. Intenta en ${remainingTime} minuto(s).`, 'warning');
+                accessBtn.disabled = true;
+                return true;
+            }
+            
+            if (blockedUntil > 0 && blockedUntil <= now) {
+                // Resetear después del bloqueo
+                attempts = 0;
+                blockedUntil = 0;
+                localStorage.removeItem('nutritionAttempts');
+                localStorage.removeItem('nutritionBlockedUntil');
+                accessBtn.disabled = false;
+                hideMessage();
+            }
+            
+            return false;
+        }
+        
+        // Verificar estado al cargar
+        if (isBlocked()) {
+            updateAttemptsDisplay();
+        }
+        
+        // Verificar si ya está autenticado
+        const isAuthenticated = localStorage.getItem('nutritionAuthenticated');
+        const authTime = parseInt(localStorage.getItem('nutritionAuthTime') || '0');
+        
+        if (isAuthenticated === 'true' && (Date.now() - authTime) < SESSION_DURATION) {
+            window.location.href = './nutrition-panel.html';
+        }
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (isBlocked()) {
+                return;
+            }
+            
+            const userCode = document.getElementById('userCode').value;
+            const accessKey = document.getElementById('accessKey').value;
+            
+            if (userCode === CORRECT_USERNAME && accessKey === CORRECT_PASSWORD) {
+                // Login exitoso
+                localStorage.setItem('nutritionAuthenticated', 'true');
+                localStorage.setItem('nutritionAuthTime', Date.now().toString());
+                localStorage.removeItem('nutritionAttempts');
+                localStorage.removeItem('nutritionBlockedUntil');
+                
+                showMessage('Acceso autorizado. Cargando base de datos...', 'success');
+                setTimeout(() => {
+                    window.location.href = './nutrition-panel.html';
+                }, 1500);
+            } else {
+                // Login fallido
+                attempts++;
+                localStorage.setItem('nutritionAttempts', attempts.toString());
+                
+                if (attempts >= MAX_ATTEMPTS) {
+                    blockedUntil = Date.now() + BLOCK_TIME;
+                    localStorage.setItem('nutritionBlockedUntil', blockedUntil.toString());
+                    showMessage('Máximo de intentos alcanzado. Acceso bloqueado temporalmente.', 'error');
+                    accessBtn.disabled = true;
+                } else {
+                    const remaining = MAX_ATTEMPTS - attempts;
+                    showMessage(`Código de acceso incorrecto. Intentos restantes: ${remaining}`, 'error');
+                }
+                
+                updateAttemptsDisplay();
+                
+                // Limpiar campos
+                document.getElementById('userCode').value = '';
+                document.getElementById('accessKey').value = '';
+            }
+        });
+        
+        updateAttemptsDisplay();
+    </script>
+</body>
+</html>
