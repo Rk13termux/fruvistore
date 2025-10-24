@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FruviStore - Panel de Control</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .header {
+            background: rgba(255,255,255,0.95);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #333; }
+        .logout { background: #ff4757; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .panel { background: rgba(255,255,255,0.95); padding: 2rem; border-radius: 15px; margin-bottom: 2rem; }
+        .title { color: #333; margin-bottom: 2rem; text-align: center; }
+        .controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .btn { 
+            padding: 0.8rem 1.5rem; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #2ed573; color: white; }
+        .btn-danger { background: #ff4757; color: white; }
+        .form-container { 
+            display: none; 
+            background: #f8f9fa; 
+            padding: 2rem; 
+            border-radius: 10px; 
+            margin-bottom: 2rem; 
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 0.5rem; color: #555; font-weight: bold; }
+        .form-group input, .form-group textarea, .form-group select { 
+            padding: 10px; 
+            border: 2px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 14px; 
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
+            border-color: #667eea; 
+            outline: none; 
+        }
+        .products-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 1rem; 
+            margin-top: 2rem; 
+        }
+        .product-card { 
+            background: white; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 1rem; 
+            transition: transform 0.2s; 
+        }
+        .product-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .product-name { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 0.5rem; }
+        .product-price { font-size: 1.1rem; color: #2ed573; font-weight: bold; margin-bottom: 1rem; }
+        .product-details { font-size: 0.9rem; color: #666; margin-bottom: 1rem; }
+        .product-actions { display: flex; gap: 0.5rem; }
+        .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .message { 
+            padding: 1rem; 
+            border-radius: 5px; 
+            margin: 1rem 0; 
+            text-align: center; 
+            display: none; 
+        }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        .loading { text-align: center; padding: 2rem; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🍎 FruviStore Admin</div>
+        <button class="logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h1 class="title">Panel de Administración</h1>
+            
+            <div class="controls">
+                <button class="btn btn-primary" onclick="toggleForm()">➕ Agregar Producto</button>
+                <button class="btn btn-success" onclick="loadProducts()">🔄 Cargar Productos</button>
+                <button class="btn btn-success" onclick="exportData()">📊 Exportar</button>
+            </div>
+
+            <div class="form-container" id="productForm">
+                <form id="productFormData">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre:</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Precio:</label>
+                            <input type="number" id="price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoría:</label>
+                            <select id="category" required>
+                                <option value="">Seleccionar</option>
+                                <option value="frutas">Frutas</option>
+                                <option value="verduras">Verduras</option>
+                                <option value="proteinas">Proteínas</option>
+                                <option value="lacteos">Lácteos</option>
+                                <option value="granos">Granos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Stock:</label>
+                            <input type="number" id="stock" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Imagen URL:</label>
+                            <input type="url" id="image_url">
+                        </div>
+                        <div class="form-group">
+                            <label>Origen:</label>
+                            <input type="text" id="origin">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción:</label>
+                        <textarea id="description" rows="3"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-success">✅ Guardar</button>
+                        <button type="button" class="btn btn-danger" onclick="clearForm()">🗑️ Limpiar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="message" id="message"></div>
+        </div>
+
+        <div class="panel">
+            <h2 class="title">Lista de Productos</h2>
+            <div id="productsContainer">
+                <div class="loading">Cargando productos...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Verificar autenticación
+        const auth = localStorage.getItem('adminAuth');
+        const authTime = localStorage.getItem('authTime');
+        if (!auth || !authTime || (Date.now() - parseInt(authTime)) > 1800000) { // 30 min
+            window.location.href = './privacy.html';
+        }
+
+        // Importar servicio
+        import { storeService } from './scripts/services/supabaseService.js';
+        
+        let editingId = null;
+
+        window.logout = () => {
+            localStorage.removeItem('adminAuth');
+            localStorage.removeItem('authTime');
+            window.location.href = './privacy.html';
+        };
+
+        window.toggleForm = () => {
+            const form = document.getElementById('productForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        };
+
+        window.clearForm = () => {
+            document.getElementById('productFormData').reset();
+            editingId = null;
+        };
+
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 5000);
+        }
+
+        window.loadProducts = async () => {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<div class="loading">Cargando productos...</div>';
+            
+            try {
+                const products = await storeService.getAllProducts();
+                if (products.length === 0) {
+                    container.innerHTML = '<div class="loading">No hay productos.</div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="products-grid">
+                        ${products.map(p => `
+                            <div class="product-card">
+                                <div class="product-name">${p.name}</div>
+                                <div class="product-price">$${parseFloat(p.price).toLocaleString('es-CO')}</div>
+                                <div class="product-details">
+                                    <div><strong>Categoría:</strong> ${p.category || 'N/A'}</div>
+                                    <div><strong>Stock:</strong> ${p.stock || 0}</div>
+                                    <div><strong>Origen:</strong> ${p.origin || 'N/A'}</div>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-primary btn-small" onclick="editProduct(${p.id})">✏️ Editar</button>
+                                    <button class="btn btn-danger btn-small" onclick="deleteProduct(${p.id}, '${p.name}')">🗑️ Eliminar</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                showMessage(`${products.length} productos cargados.`);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar productos.</div>';
+                showMessage('Error: ' + error.message, 'error');
+            }
+        };
+
+        window.editProduct = async (id) => {
+            try {
+                const products = await storeService.getAllProducts();
+                const product = products.find(p => p.id === id);
+                if (!product) return;
+
+                document.getElementById('name').value = product.name || '';
+                document.getElementById('price').value = product.price || '';
+                document.getElementById('category').value = product.category || '';
+                document.getElementById('stock').value = product.stock || '';
+                document.getElementById('image_url').value = product.image_url || '';
+                document.getElementById('origin').value = product.origin || '';
+                document.getElementById('description').value = product.description || '';
+                
+                editingId = id;
+                document.getElementById('productForm').style.display = 'block';
+                showMessage(`Editando: ${product.name}`);
+            } catch (error) {
+                showMessage('Error al cargar producto: ' + error.message, 'error');
+            }
+        };
+
+        window.deleteProduct = async (id, name) => {
+            if (!confirm(`¿Eliminar "${name}"?`)) return;
+            
+            try {
+                await storeService.deleteProduct(id);
+                showMessage(`"${name}" eliminado.`);
+                loadProducts();
+            } catch (error) {
+                showMessage('Error al eliminar: ' + error.message, 'error');
+            }
+        };
+
+        window.exportData = async () => {
+            try {
+                const products = await storeService.getAllProducts();
+                const dataStr = JSON.stringify(products, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `productos-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                showMessage('Datos exportados.');
+            } catch (error) {
+                showMessage('Error al exportar: ' + error.message, 'error');
+            }
+        };
+
+        // Manejar formulario
+        document.getElementById('productFormData').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                name: document.getElementById('name').value,
+                price: parseFloat(document.getElementById('price').value),
+                category: document.getElementById('category').value,
+                stock: parseInt(document.getElementById('stock').value),
+                image_url: document.getElementById('image_url').value,
+                origin: document.getElementById('origin').value,
+                description: document.getElementById('description').value
+            };
+            
+            try {
+                if (editingId) {
+                    await storeService.updateCompleteProduct(editingId, data);
+                    showMessage(`"${data.name}" actualizado.`);
+                } else {
+                    await storeService.createProduct(data);
+                    showMessage(`"${data.name}" creado.`);
+                }
+                
+                clearForm();
+                toggleForm();
+                loadProducts();
+            } catch (error) {
+                showMessage('Error: ' + error.message, 'error');
+            }
+        });
+
+        // Cargar productos al inicio
+        loadProducts();
+    </script>
+</body>
+</html>
