@@ -601,9 +601,9 @@ window.getUserOrders = async function getUserOrders(userId) {
     }
 
     const { data, error } = await supabaseClient
-      .from('user_orders')
+      .from('orders')
       .select('*')
-      .eq('user_id', userId)
+      .eq('customer_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -672,9 +672,9 @@ window.getUserStats = async function getUserStats(userId) {
 
     // Get orders count and total spent from Supabase
     const { data: orders, error: ordersError } = await supabaseClient
-      .from('user_orders')
+      .from('orders')
       .select('total, status, created_at')
-      .eq('user_id', userId);
+      .eq('customer_id', userId);
 
     if (ordersError) throw ordersError;
 
