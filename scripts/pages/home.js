@@ -91,7 +91,7 @@ export function renderHomePage(root) {
         <div class="hero-premium__visual">
           <div class="hero-showcase">
             <div class="showcase-main">
-              <video src="/video02.mp4" alt="Fruvi Premium Experience" autoplay muted loop class="hero-video-main"></video>
+              <video src="/video/video02.mp4" alt="Fruvi Premium Experience" autoplay muted loop class="hero-video-main"></video>
               <div class="showcase-overlay">
               <div class="nutrition-badge">
                 <i class="fas fa-heartbeat"></i>
@@ -270,7 +270,7 @@ export function renderHomePage(root) {
 
         <div class="highlight-visual">
           <div class="highlight-image">
-            <video src="/video01.mp4" alt="Fruvi Experience" autoplay muted loop class="hero-video"></video>
+            <video src="/video/video01.mp4" alt="Fruvi Experience" autoplay muted loop class="hero-video"></video>
             <div class="image-overlay"></div>
           </div>
           <div class="highlight-decoration">
