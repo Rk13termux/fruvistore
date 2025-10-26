@@ -79,18 +79,47 @@ window.initializeSupabase = function initializeSupabase() {
 }
 
 function getEnvironmentVariables() {
-  const url = localStorage.getItem('fruvi_supabase_url') || SUPABASE_URL;
-  const anonKey = localStorage.getItem('fruvi_supabase_anon') || SUPABASE_ANON_KEY;
+  // First priority: window.__ENV__ (injected by build process)
+  const envUrl = window.__ENV__?.VITE_SUPABASE_URL;
+  const envKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY;
+
+  // Second priority: localStorage (for manual configuration)
+  const localUrl = localStorage.getItem('fruvi_supabase_url');
+  const localKey = localStorage.getItem('fruvi_supabase_anon');
+
+  // Use env vars if available and valid, otherwise localStorage
+  const url = (envUrl && isValidEnvVar(envUrl)) ? envUrl :
+              (localUrl && isValidEnvVar(localUrl)) ? localUrl :
+              'https://ipjkpgmptexkhilrjnsl.supabase.co';
+
+  const anonKey = (envKey && isValidEnvVar(envKey)) ? envKey :
+                  (localKey && isValidEnvVar(localKey)) ? localKey :
+                  'your-anon-key';
+
   return { url, anonKey };
 }
 
 // Initialize Supabase client
 let supabaseClient = null;
 
-// Auto-initialize when service loads
-if (typeof window !== 'undefined' && !supabaseClient) {
-  console.log('🔄 Inicializando Supabase automáticamente...');
-  initializeSupabase();
+// Auto-initialize when service loads and DOM is ready
+function initializeSupabaseIfReady() {
+  if (typeof window !== 'undefined' && window.__ENV__) {
+    console.log('🔄 Inicializando Supabase automáticamente...');
+    initializeSupabase();
+  } else {
+    // Retry after a short delay if __ENV__ is not ready yet
+    setTimeout(initializeSupabaseIfReady, 100);
+  }
+}
+
+// Start initialization process
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeSupabaseIfReady);
+  } else {
+    initializeSupabaseIfReady();
+  }
 }
 
 // Función para obtener información de configuración (sin claves sensibles)

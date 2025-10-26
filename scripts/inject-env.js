@@ -46,7 +46,9 @@ console.log('🖥️ Variables de sistema:', Object.keys(systemEnvVars).length >
 const envVars = {
   VITE_SUPABASE_URL: allEnvVars.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co',
   VITE_SUPABASE_ANON_KEY: allEnvVars.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
-  VITE_GROQ_API_KEY: allEnvVars.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages'
+  VITE_GROQ_API_KEY: allEnvVars.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages',
+  VITE_SUPABASE_PRODUCTS_URL: allEnvVars.VITE_SUPABASE_PRODUCTS_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co',
+  VITE_SUPABASE_PRODUCTS_ANON_KEY: allEnvVars.VITE_SUPABASE_PRODUCTS_ANON_KEY || 'your-anon-key'
 }
 
 console.log('📋 Variables finales a inyectar:')
