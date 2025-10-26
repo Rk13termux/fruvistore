@@ -7184,3 +7184,9 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
+/* Dark background for select dropdown options */
+select option {
+  background-color: black;
+  color: var(--txt);
+}
+
