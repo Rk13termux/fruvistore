@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - Fruvi Store</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .login-title {
+            text-align: center;
+            color: var(--txt);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            color: var(--txt);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            color: var(--txt);
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--brand);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            color: #0b0f14;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,155,64,0.3);
+        }
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">
+            <i class="fas fa-lock"></i>
+            Acceso al Panel de Administración
+        </h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="password">Contraseña de Acceso</label>
+                <input type="password" id="password" name="password" required placeholder="Ingresa la contraseña">
+            </div>
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </button>
+        </form>
+        <div id="errorMessage" class="error-message">
+            Contraseña incorrecta. Inténtalo de nuevo.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Contraseña secreta (cámbiala por algo único que solo tú sepas)
+            const correctPassword = 'admin2024';  // Cambia esto por una contraseña segura
+
+            if (password === correctPassword) {
+                // Redirige al panel de admin
+                window.location.href = 'admin.html';
+            } else {
+                // Muestra mensaje de error
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);  // Oculta después de 3 segundos
+            }
+        });
+    </script>
+</body>
+</html>
