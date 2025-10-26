@@ -24,6 +24,17 @@ function isValidEnvVar(value) {
   return true;
 }
 
+// Utility function to format dates
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleString('es-CO', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
 // Función para inicializar Supabase manualmente (para desarrollo)
 window.initializeSupabase = function initializeSupabase() {
   try {
