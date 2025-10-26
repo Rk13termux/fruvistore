@@ -123,7 +123,7 @@ function initializeAdmin() {
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const password = document.getElementById('password').value;
-        const correctPassword = 'admin2024';  // Change this to your secure password
+        const correctPassword = 'admin';  // Temporal para probar
 
         if (password === correctPassword) {
             localStorage.setItem('adminLoggedIn', 'true');
