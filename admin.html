@@ -7,10 +7,104 @@
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/admin.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
+    <style>
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        .login-container {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        .login-title {
+            text-align: center;
+            color: var(--txt);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            color: var(--txt);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            color: var(--txt);
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--brand);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            color: #0b0f14;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,155,64,0.3);
+        }
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
 </head>
 <body class="admin-body is-hidden">
-    <div class="admin-container">
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-container">
+            <h2 class="login-title">
+                <i class="fas fa-lock"></i>
+                Acceso al Panel de Administración
+            </h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Contraseña de Acceso</label>
+                    <input type="password" id="password" name="password" required placeholder="Ingresa la contraseña">
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+            <div id="errorMessage" class="error-message">
+                Contraseña incorrecta. Inténtalo de nuevo.
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container" id="adminContent" style="display: none;">
         <!-- Header -->
         <div class="admin-header">
             <div class="header-content">
@@ -510,5 +604,51 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script type="module" src="./scripts/pages/adminDashboard.js"></script>
+
+    <script>
+        // Login functionality
+        const loginModal = document.getElementById('loginModal');
+        const adminContent = document.getElementById('adminContent');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Check if user is logged in
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+            if (isLoggedIn) {
+                loginModal.style.display = 'none';
+                adminContent.style.display = 'block';
+            } else {
+                loginModal.style.display = 'flex';
+                adminContent.style.display = 'none';
+            }
+        }
+
+        // Login form submit
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const correctPassword = 'admin2024';  // Change this to your secure password
+
+            if (password === correctPassword) {
+                localStorage.setItem('adminLoggedIn', 'true');
+                checkLogin();
+            } else {
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Logout function (override if exists)
+        window.logout = function() {
+            localStorage.removeItem('adminLoggedIn');
+            checkLogin();
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', checkLogin);
+    </script>
 </body>
 </html>
