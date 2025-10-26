@@ -55,6 +55,7 @@ function setupEventListeners() {
             if (href.startsWith('#/')) {
                 e.preventDefault();
                 window.location.hash = href;
+                handleRoute(href);
                 return;
             }
             // Anchor scroll
@@ -62,6 +63,11 @@ function setupEventListeners() {
             const targetId = href.substring(1);
             scrollToSection(targetId);
         });
+    });
+
+    // Handle hash changes for SPA routing
+    window.addEventListener('hashchange', function() {
+        handleRoute(window.location.hash);
     });
 
     // Add to cart buttons
@@ -72,6 +78,72 @@ function setupEventListeners() {
             addToCart(productName);
         });
     });
+}
+
+// Handle SPA Routes
+function handleRoute(hash) {
+    const appRoot = document.getElementById('app-root');
+    const adminPanel = document.getElementById('admin-panel');
+
+    if (hash === '#/admin') {
+        // Show admin panel
+        appRoot.style.display = 'none';
+        adminPanel.style.display = 'block';
+        document.body.classList.add('admin-body');
+        initializeAdmin();
+    } else {
+        // Show normal app
+        appRoot.style.display = 'block';
+        adminPanel.style.display = 'none';
+        document.body.classList.remove('admin-body');
+    }
+}
+
+// Initialize Admin Panel
+function initializeAdmin() {
+    // Login functionality
+    const loginModal = document.getElementById('loginModal');
+    const adminContent = document.getElementById('adminContent');
+    const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Check if user is logged in
+    function checkLogin() {
+        const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+        if (isLoggedIn) {
+            loginModal.style.display = 'none';
+            adminContent.style.display = 'block';
+        } else {
+            loginModal.style.display = 'flex';
+            adminContent.style.display = 'none';
+        }
+    }
+
+    // Login form submit
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const password = document.getElementById('password').value;
+        const correctPassword = 'admin2024';  // Change this to your secure password
+
+        if (password === correctPassword) {
+            localStorage.setItem('adminLoggedIn', 'true');
+            checkLogin();
+        } else {
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+        }
+    });
+
+    // Logout function
+    window.logout = function() {
+        localStorage.removeItem('adminLoggedIn');
+        checkLogin();
+    };
+
+    // Initialize
+    checkLogin();
 }
 
 // Add to Cart Function
