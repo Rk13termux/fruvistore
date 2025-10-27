@@ -88,6 +88,108 @@
                 }, 300);
             }
         }
+
+        // 🔔 SISTEMA DE NOTIFICACIONES PUSH
+        let notificationQueue = [];
+        let notificationId = 0;
+
+        // Función principal para mostrar notificaciones
+        function showNotification(type, title, message, duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            if (!container) return;
+
+            const notification = createNotificationElement(type, title, message, duration);
+            container.appendChild(notification);
+
+            // Mostrar con animación
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            // Auto-cerrar
+            if (duration > 0) {
+                notification.classList.add('auto-close');
+                notification.style.setProperty('--duration', `${duration}ms`);
+                notification.querySelector('::after').style.transitionDuration = `${duration}ms`;
+                
+                setTimeout(() => {
+                    closeNotification(notification);
+                }, duration);
+            }
+
+            return notification;
+        }
+
+        // Crear elemento de notificación
+        function createNotificationElement(type, title, message, duration) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.setAttribute('data-id', ++notificationId);
+
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon">
+                        <i class="${icons[type] || icons.info}"></i>
+                    </div>
+                    <div class="notification-text">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                    <button class="notification-close" onclick="closeNotification(this.parentElement)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            // Auto-cerrar con progreso
+            if (duration > 0) {
+                notification.style.setProperty('--duration', `${duration}ms`);
+            }
+
+            return notification;
+        }
+
+        // Cerrar notificación
+        function closeNotification(notification) {
+            notification.classList.add('hide');
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.parentElement.removeChild(notification);
+                }
+            }, 400);
+        }
+
+        // Métodos de conveniencia
+        function showSuccess(title, message, duration = 4000) {
+            return showNotification('success', title, message, duration);
+        }
+
+        function showError(title, message, duration = 6000) {
+            return showNotification('error', title, message, duration);
+        }
+
+        function showWarning(title, message, duration = 5000) {
+            return showNotification('warning', title, message, duration);
+        }
+
+        function showInfo(title, message, duration = 4000) {
+            return showNotification('info', title, message, duration);
+        }
+
+        // Limpiar todas las notificaciones
+        function clearAllNotifications() {
+            const container = document.getElementById('notificationContainer');
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700&display=swap');
@@ -1339,6 +1441,240 @@
             color: var(--muted);
         }
 
+        /* 🎨 MEJORAS: Estilos para dropdowns/selects - MEJORADO */
+        .form-group select,
+        .input-group select,
+        select {
+            background: #1a1f2e !important;
+            border: 2px solid rgba(255,255,255,0.14) !important;
+            color: #e9eef5 !important;
+            backdrop-filter: blur(10px);
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+        }
+
+        /* Estilos FORZADOS para las opciones del select */
+        .form-group select option,
+        .input-group select option,
+        select option {
+            background-color: #0b0f14 !important;
+            background: #0b0f14 !important;
+            color: #e9eef5 !important;
+            padding: 8px 12px !important;
+            border: none !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+        }
+
+        /* Estados de las opciones */
+        .form-group select option:checked,
+        .input-group select option:checked,
+        select option:checked {
+            background-color: #ff9b40 !important;
+            background: #ff9b40 !important;
+            color: #000000 !important;
+        }
+
+        .form-group select option:hover,
+        .input-group select option:hover,
+        select option:hover {
+            background-color: #333333 !important;
+            background: #333333 !important;
+            color: #ffffff !important;
+        }
+
+        /* Select específicos para productos - FORZADO */
+        #priceProductSelect,
+        #stockProductSelect,
+        #manageProductSelect,
+        .chart-select {
+            background: #000000 !important;
+            border: 2px solid rgba(255,155,64,0.3) !important;
+            color: #ffffff !important;
+            backdrop-filter: blur(10px);
+        }
+
+        #priceProductSelect option,
+        #stockProductSelect option,
+        #manageProductSelect option,
+        .chart-select option {
+            background-color: #000000 !important;
+            background: #000000 !important;
+            color: #ffffff !important;
+            padding: 10px 15px !important;
+            font-weight: 500 !important;
+        }
+
+        /* Webkit específico para dropdowns */
+        select::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        select::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        select::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 4px;
+        }
+
+        select::-webkit-scrollbar-thumb:hover {
+            background: #555555;
+        }
+
+        #priceProductSelect option,
+        #stockProductSelect option,
+        #manageProductSelect option {
+            background: #000000 !important;
+            color: #ffffff !important;
+            padding: 0.75rem 1rem !important;
+        }
+
+        /* 🔔 SISTEMA DE NOTIFICACIONES PUSH */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .notification {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: all;
+            cursor: pointer;
+            max-width: 380px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.hide {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        .notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--brand);
+        }
+
+        .notification.success::before {
+            background: var(--brand-2);
+        }
+
+        .notification.error::before {
+            background: var(--danger);
+        }
+
+        .notification.warning::before {
+            background: var(--warn);
+        }
+
+        .notification.info::before {
+            background: var(--accent);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .notification.success .notification-icon {
+            color: var(--brand-2);
+        }
+
+        .notification.error .notification-icon {
+            color: var(--danger);
+        }
+
+        .notification.warning .notification-icon {
+            color: var(--warn);
+        }
+
+        .notification.info .notification-icon {
+            color: var(--accent);
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            color: var(--txt);
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .notification-message {
+            color: var(--muted);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            margin-left: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .notification-close:hover {
+            color: var(--txt);
+        }
+
+        /* Progreso de auto-cierre */
+        .notification::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            width: 100%;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform linear;
+        }
+
+        .notification.auto-close::after {
+            transform: scaleX(1);
+        }
+
         .checkbox-group {
             display: flex;
             gap: 2rem;
@@ -1418,9 +1754,64 @@
         .mb-2 {
             margin-bottom: 1rem;
         }
+
+        /* 🔧 ESTILOS ADICIONALES PARA DROPDOWNS - ULTRA FORZADO */
+        * select {
+            background-color: #0b0f14 !important;
+            color: #e9eef5 !important;
+        }
+
+        * select option {
+            background-color: #0b0f14 !important;
+            color: #e9eef5 !important;
+            padding: 8px !important;
+        }
+
+        /* Para navegadores Webkit */
+        select option {
+            background: #0b0f14 !important;
+            color: #e9eef5 !important;
+        }
+
+        /* Para Firefox */
+        @-moz-document url-prefix() {
+            select option {
+                background-color: #0b0f14 !important;
+                color: #e9eef5 !important;
+            }
+        }
+
+        /* Para Edge/IE */
+        select option {
+            background-color: #0b0f14 !important;
+            color: #e9eef5 !important;
+        }
+
+        /* Estilos globales específicos */
+        select[id*="Select"],
+        select[id*="product"],
+        select[id*="stock"],
+        select[id*="price"],
+        select[id*="manage"] {
+            background: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        select[id*="Select"] option,
+        select[id*="product"] option,
+        select[id*="stock"] option,
+        select[id*="price"] option,
+        select[id*="manage"] option {
+            background-color: #000000 !important;
+            background: #000000 !important;
+            color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
+    <!-- 🔔 Contenedor de Notificaciones Push -->
+    <div id="notificationContainer" class="notification-container"></div>
+    
     <div class="admin-container">
         <!-- Header -->
         <div class="admin-header">
@@ -2422,27 +2813,41 @@
             const newPrice = parseFloat(document.getElementById('newPrice').value);
             const reason = document.getElementById('priceReason').value || 'Manual update';
             
-            if (!productId || !newPrice) {
-                showAlert('Por favor completa todos los campos', 'warning');
+            if (!productId || !newPrice || newPrice <= 0) {
+                showWarning('Campos incompletos', 'Por favor completa todos los campos con valores válidos');
                 return;
             }
             
             try {
                 showLoading('Actualizando precio...');
+                
+                // Obtener nombre del producto para el mensaje
+                const productSelect = document.getElementById('priceProductSelect');
+                const productName = productSelect.options[productSelect.selectedIndex].text;
+                
                 const result = await productManager.updateProductPrice(productId, newPrice, reason, 'admin');
                 
                 if (result.success) {
-                    showAlert('Precio actualizado correctamente', 'success');
+                    showSuccess(
+                        '💰 Precio actualizado',
+                        `${productName} ahora cuesta $${newPrice.toLocaleString('es-CO')}`
+                    );
                     await loadInitialData(); // Refresh data
                     
                     // Clear form
                     document.getElementById('newPrice').value = '';
                     document.getElementById('priceReason').value = '';
                 } else {
-                    showAlert('Error actualizando precio: ' + result.error, 'danger');
+                    showError(
+                        '❌ Error al cambiar precio',
+                        result.error || 'No se pudo actualizar el precio del producto'
+                    );
                 }
             } catch (error) {
-                showAlert('Error: ' + error.message, 'danger');
+                showError(
+                    '💥 Error del sistema',
+                    `Error inesperado: ${error.message}`
+                );
             } finally {
                 hideLoading();
             }
@@ -2495,26 +2900,41 @@
             const reason = document.getElementById('stockReason').value || 'Manual adjustment';
             
             if (!productId || isNaN(stockChange)) {
-                showAlert('Por favor completa todos los campos', 'warning');
+                showWarning('Campos incompletos', 'Por favor completa todos los campos requeridos');
                 return;
             }
             
             try {
                 showLoading('Actualizando inventario...');
+                
+                // Obtener nombre del producto para el mensaje
+                const productSelect = document.getElementById('stockProductSelect');
+                const productName = productSelect.options[productSelect.selectedIndex].text;
+                
                 const result = await productManager.updateStock(productId, stockChange, reason);
                 
                 if (result.success) {
-                    showAlert('Inventario actualizado correctamente', 'success');
+                    const actionText = stockChange > 0 ? 'agregado' : 'reducido';
+                    showSuccess(
+                        '✅ Inventario actualizado', 
+                        `Se ha ${actionText} ${Math.abs(stockChange)} unidades de ${productName}`
+                    );
                     await loadInitialData(); // Refresh data
                     
                     // Clear form
                     document.getElementById('stockChange').value = '';
                     document.getElementById('stockReason').value = '';
                 } else {
-                    showAlert('Error actualizando inventario: ' + result.error, 'danger');
+                    showError(
+                        '❌ Error en inventario', 
+                        result.error || 'No se pudo actualizar el inventario'
+                    );
                 }
             } catch (error) {
-                showAlert('Error: ' + error.message, 'danger');
+                showError(
+                    '💥 Error del sistema', 
+                    `Error inesperado: ${error.message}`
+                );
             } finally {
                 hideLoading();
             }
@@ -3485,11 +3905,11 @@
                     });
                     
                     if (result.success) {
-                        showAlert('Producto actualizado exitosamente', 'success');
+                        showSuccess('✏️ Producto actualizado', `${productData.name} se actualizó correctamente`);
                         closeAddProductModal();
                         await loadInitialData(); // Refresh all data
                     } else {
-                        showAlert('Error actualizando producto: ' + result.error, 'danger');
+                        showError('❌ Error al actualizar', result.error || 'No se pudo actualizar el producto');
                     }
                 } else {
                     console.log('Creating product:', productData);
@@ -3513,16 +3933,16 @@
                     });
                     
                     if (result.success) {
-                        showAlert('Producto creado exitosamente', 'success');
+                        showSuccess('🎉 Producto creado', `${productData.name} se agregó al catálogo exitosamente`);
                         closeAddProductModal();
                         await loadInitialData(); // Refresh all data
                     } else {
-                        showAlert('Error creando producto: ' + result.error, 'danger');
+                        showError('❌ Error al crear producto', result.error || 'No se pudo crear el producto');
                     }
                 }
             } catch (error) {
                 console.error('Error in handleAddProduct:', error);
-                showAlert('Error: ' + error.message, 'danger');
+                showError('💥 Error del sistema', `Error inesperado: ${error.message}`);
             } finally {
                 hideLoading();
             }
@@ -3663,7 +4083,7 @@
 
         // Delete product function (legacy - for compatibility)
         window.deleteProduct = async function(productId, productName) {
-            if (!confirm(`¿Estás seguro de que quieres eliminar "${productName}"? Esta acción no se puede deshacer.`)) {
+            if (!confirm(`🗑️ ¿Estás seguro de que quieres eliminar "${productName}"?\n\nEsta acción desactivará el producto pero mantendrá los datos históricos.`)) {
                 return;
             }
 
@@ -3684,11 +4104,11 @@
 
                 if (error) throw error;
 
-                showAlert('Producto eliminado exitosamente', 'success');
+                showSuccess('🗑️ Producto eliminado', `${productName} se desactivó correctamente`);
                 await loadInitialData(); // Refresh all data
             } catch (error) {
                 console.error('Error deleting product:', error);
-                showAlert('Error eliminando producto: ' + error.message, 'danger');
+                showError('❌ Error al eliminar', `No se pudo eliminar ${productName}: ${error.message}`);
             } finally {
                 hideLoading();
             }
@@ -3713,10 +4133,10 @@
                 link.click();
                 document.body.removeChild(link);
                 
-                showAlert('Archivo exportado exitosamente', 'success');
+                showSuccess('📊 Exportación completada', `Archivo CSV descargado con ${products.length} productos`);
             } catch (error) {
                 console.error('Error exporting products:', error);
-                showAlert('Error exportando productos: ' + error.message, 'danger');
+                showError('❌ Error en exportación', `No se pudo generar el archivo: ${error.message}`);
             } finally {
                 hideLoading();
             }
