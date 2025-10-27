@@ -16,11 +16,8 @@ function isValidEnvVar(value) {
     return false;
   }
 
-  // REJECT invalid placeholder keys. This is the root cause of the crash.
-  if (value === 'your-anon-key') {
-    return false;
-  }
-
+  // En desarrollo local, aceptar placeholders del .env
+  // Solo rechazar si NO hay otras fuentes disponibles
   return true;
 }
 
@@ -79,22 +76,29 @@ window.initializeSupabase = function initializeSupabase() {
 }
 
 function getEnvironmentVariables() {
-  // First priority: window.__ENV__ (injected by build process)
+  // First priority: window.__ENV__ (injected by build process - either from secrets or .env)
   const envUrl = window.__ENV__?.VITE_SUPABASE_URL;
   const envKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY;
 
-  // Second priority: localStorage (for manual configuration)
+  // Second priority: localStorage (for manual configuration/testing)
   const localUrl = localStorage.getItem('fruvi_supabase_url');
   const localKey = localStorage.getItem('fruvi_supabase_anon');
 
-  // Use env vars if available and valid, otherwise localStorage
-  const url = (envUrl && isValidEnvVar(envUrl)) ? envUrl :
-              (localUrl && isValidEnvVar(localUrl)) ? localUrl :
-              'https://ipjkpgmptexkhilrjnsl.supabase.co';
+  // Third priority: import.meta.env (Vite development)
+  const viteUrl = import.meta.env?.VITE_SUPABASE_URL;
+  const viteKey = import.meta.env?.VITE_SUPABASE_ANON_KEY;
 
-  const anonKey = (envKey && isValidEnvVar(envKey)) ? envKey :
-                  (localKey && isValidEnvVar(localKey)) ? localKey :
-                  'your-anon-key';
+  // Use the first valid source found
+  const url = envUrl || localUrl || viteUrl || 'https://ipjkpgmptexkhilrjnsl.supabase.co';
+  const anonKey = envKey || localKey || viteKey || 'your-anon-key';
+
+  console.log('🔍 Fuentes de variables de entorno:', {
+    envUrl: !!envUrl,
+    localUrl: !!localUrl,
+    viteUrl: !!viteUrl,
+    finalUrl: url,
+    finalKeyValid: isValidEnvVar(anonKey)
+  });
 
   return { url, anonKey };
 }

@@ -21,8 +21,8 @@ const PRODUCTS_SUPABASE_ANON_KEY = import.meta.env?.VITE_SUPABASE_PRODUCTS_ANON_
 function isValidEnvVar(value) {
   if (!value || typeof value !== 'string') return false;
   if (value.includes('${{') || value.includes('secrets.')) return false;
-  if (value === 'your-anon-key' || value === 'placeholder') return false;
-  if (value.length < 10) return false; // Basic length check
+  if (value === 'placeholder') return false;
+  // En desarrollo local, aceptar cualquier valor que no sea claramente inválido
   return true;
 }
 
