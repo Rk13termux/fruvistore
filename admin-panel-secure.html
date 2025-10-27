@@ -2900,8 +2900,14 @@
             const stockChange = parseInt(document.getElementById('stockChange').value);
             const reason = document.getElementById('stockReason').value || 'Manual adjustment';
             
-            if (!productId || isNaN(stockChange)) {
-                showWarning('Campos incompletos', 'Por favor completa todos los campos requeridos');
+            // Validaciones mejoradas
+            if (!productId || productId === '' || productId === 'undefined') {
+                showWarning('Producto no seleccionado', 'Por favor selecciona un producto válido');
+                return;
+            }
+            
+            if (isNaN(stockChange) || stockChange === 0) {
+                showWarning('Cantidad inválida', 'Por favor ingresa una cantidad válida diferente de cero');
                 return;
             }
             
@@ -2910,7 +2916,8 @@
                 
                 // Obtener nombre del producto para el mensaje
                 const productSelect = document.getElementById('stockProductSelect');
-                const productName = productSelect.options[productSelect.selectedIndex].text;
+                const selectedOption = productSelect.options[productSelect.selectedIndex];
+                const productName = selectedOption ? selectedOption.text : 'Producto desconocido';
                 
                 const result = await productManager.updateStock(productId, stockChange, reason);
                 
@@ -2938,6 +2945,34 @@
                 );
             } finally {
                 hideLoading();
+            }
+        };
+
+        // Función para abrir el modal de stock con un producto preseleccionado
+        window.openStockModal = function(productId) {
+            if (!productId) {
+                showWarning('Error', 'ID de producto no válido');
+                return;
+            }
+            
+            // Pre-seleccionar el producto en el dropdown
+            const stockSelect = document.getElementById('stockProductSelect');
+            if (stockSelect) {
+                stockSelect.value = productId;
+                
+                // Scroll a la sección de stock
+                const stockSection = document.querySelector('[id*="stock"]').closest('.admin-card');
+                if (stockSection) {
+                    stockSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                // Focus en el campo de cantidad
+                const stockChangeInput = document.getElementById('stockChange');
+                if (stockChangeInput) {
+                    setTimeout(() => {
+                        stockChangeInput.focus();
+                    }, 500);
+                }
             }
         };
 
@@ -3200,7 +3235,7 @@
                                     <button class="btn-sm btn-warning" onclick="updatePrice(${product.id})" title="Cambiar precio">
                                         <i class="fas fa-tag"></i>
                                     </button>
-                                    <button class="btn-sm btn-success" onclick="updateStock(${product.id})" title="Actualizar stock">
+                                    <button class="btn-sm btn-success" onclick="openStockModal(${product.id})" title="Actualizar stock">
                                         <i class="fas fa-boxes"></i>
                                     </button>
                                     <button class="btn-sm btn-danger" onclick="deleteProduct(${product.id}, '${product.name.replace(/'/g, "\\'")}')" title="Eliminar producto">
