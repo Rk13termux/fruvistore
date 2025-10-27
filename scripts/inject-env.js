@@ -34,6 +34,8 @@ const envLocalVars = readEnvFile('.env.local')
 const systemEnvVars = {
   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
   VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
+  VITE_SUPABASE_PRODUCTS_URL: process.env.VITE_SUPABASE_PRODUCTS_URL,
+  VITE_SUPABASE_PRODUCTS_ANON_KEY: process.env.VITE_SUPABASE_PRODUCTS_ANON_KEY,
   VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY
 }
 const allEnvVars = { ...envFileVars, ...envLocalVars, ...systemEnvVars }
@@ -78,6 +80,8 @@ console.log('📋 Variables inyectadas:', Object.keys(envVars))
 console.log('🔍 Fuentes utilizadas:', {
   VITE_SUPABASE_URL: systemEnvVars.VITE_SUPABASE_URL ? 'process.env' : 'default',
   VITE_SUPABASE_ANON_KEY: systemEnvVars.VITE_SUPABASE_ANON_KEY ? 'process.env' : 'default',
+  VITE_SUPABASE_PRODUCTS_URL: systemEnvVars.VITE_SUPABASE_PRODUCTS_URL ? 'process.env' : 'default',
+  VITE_SUPABASE_PRODUCTS_ANON_KEY: systemEnvVars.VITE_SUPABASE_PRODUCTS_ANON_KEY ? 'process.env' : 'default',
   VITE_GROQ_API_KEY: systemEnvVars.VITE_GROQ_API_KEY ? 'process.env' : 'default'
 })
 
