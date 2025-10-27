@@ -273,11 +273,20 @@
         // Sistema de seguridad avanzado
         const MAX_ATTEMPTS = 3;
         const LOCKOUT_TIME = 300000; // 5 minutos en milisegundos
-        const SECURE_CREDENTIALS = {
-            // Usuario y contraseña seguras (cambiar en producción)
-            user: 'fruvi_admin_2024',
-            pass: 'FruviStore@Secure#2024!'
-        };
+        
+        // Función para obtener credenciales desde variables de entorno
+        function getSecureCredentials() {
+            // Prioridad: variables de entorno -> fallbacks seguros
+            const user = window.__ENV__?.VITE_ADMIN_USER || 'fruvi_admin_2024';
+            const password = window.__ENV__?.VITE_ADMIN_PASSWORD || 'FruviStore@Secure#2024!';
+            
+            return {
+                user: user,
+                pass: password
+            };
+        }
+        
+        const SECURE_CREDENTIALS = getSecureCredentials();
 
         let attempts = parseInt(localStorage.getItem('adminAttempts') || '0');
         let lastAttempt = parseInt(localStorage.getItem('lastAttemptTime') || '0');

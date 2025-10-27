@@ -34,9 +34,13 @@ const envLocalVars = readEnvFile('.env.local')
 const systemEnvVars = {
   VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
   VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY,
+  VITE_SUPABASE_SERVICE_ROLE_KEY: process.env.VITE_SUPABASE_SERVICE_ROLE_KEY,
   VITE_SUPABASE_PRODUCTS_URL: process.env.VITE_SUPABASE_PRODUCTS_URL,
   VITE_SUPABASE_PRODUCTS_ANON_KEY: process.env.VITE_SUPABASE_PRODUCTS_ANON_KEY,
-  VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY
+  VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY: process.env.VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY,
+  VITE_GROQ_API_KEY: process.env.VITE_GROQ_API_KEY,
+  VITE_ADMIN_USER: process.env.VITE_ADMIN_USER,
+  VITE_ADMIN_PASSWORD: process.env.VITE_ADMIN_PASSWORD
 }
 const allEnvVars = { ...envFileVars, ...envLocalVars, ...systemEnvVars }
 
@@ -47,10 +51,14 @@ console.log('🖥️ Variables de sistema:', Object.values(systemEnvVars).some(v
 
 const envVars = {
   VITE_SUPABASE_URL: systemEnvVars.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co',
-  VITE_SUPABASE_ANON_KEY: systemEnvVars.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
-  VITE_GROQ_API_KEY: systemEnvVars.VITE_GROQ_API_KEY || 'placeholder-key-for-github-pages',
+  VITE_SUPABASE_ANON_KEY: systemEnvVars.VITE_SUPABASE_ANON_KEY || 'your-supabase-anon-key',
+  VITE_SUPABASE_SERVICE_ROLE_KEY: systemEnvVars.VITE_SUPABASE_SERVICE_ROLE_KEY || 'your-service-role-key',
   VITE_SUPABASE_PRODUCTS_URL: systemEnvVars.VITE_SUPABASE_PRODUCTS_URL || 'https://xujenwuefrgxfsiqjqhl.supabase.co',
-  VITE_SUPABASE_PRODUCTS_ANON_KEY: systemEnvVars.VITE_SUPABASE_PRODUCTS_ANON_KEY || 'your-anon-key'
+  VITE_SUPABASE_PRODUCTS_ANON_KEY: systemEnvVars.VITE_SUPABASE_PRODUCTS_ANON_KEY || 'your-products-anon-key',
+  VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY: systemEnvVars.VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY || 'your-products-service-key',
+  VITE_GROQ_API_KEY: systemEnvVars.VITE_GROQ_API_KEY || 'placeholder-groq-api-key',
+  VITE_ADMIN_USER: systemEnvVars.VITE_ADMIN_USER || 'admin_user',
+  VITE_ADMIN_PASSWORD: systemEnvVars.VITE_ADMIN_PASSWORD || 'admin_password'
 }
 
 console.log('📋 Variables finales a inyectar:')
