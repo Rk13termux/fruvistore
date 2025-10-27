@@ -2394,7 +2394,13 @@
                 const productsKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5OTExNTYsImV4cCI6MjA3NjU2NzE1Nn0.89UAEW8CVBkz8lEAdnJzt0XJNo0C4lCrZMBBcRYKmMs';
                 
                 // Create products client manually
-                window.productsClient = window.supabase.createClient(productsUrl, productsKey);
+                window.productsClient = window.supabase.createClient(productsUrl, productsKey, {
+                    auth: {
+                        storageKey: 'fruvi-admin-products-auth',
+                        autoRefreshToken: false,
+                        persistSession: false
+                    }
+                });
                 window.supabaseClient = window.productsClient; // For backward compatibility
                 
                 console.log('✅ Cliente de productos creado manualmente');

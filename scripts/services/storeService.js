@@ -41,7 +41,13 @@ function initializeProductsClient() {
     });
 
     if (isValidEnvVar(PRODUCTS_SUPABASE_URL) && isValidEnvVar(PRODUCTS_SUPABASE_ANON_KEY)) {
-      productsClient = supabase.createClient(PRODUCTS_SUPABASE_URL, PRODUCTS_SUPABASE_ANON_KEY);
+      productsClient = supabase.createClient(PRODUCTS_SUPABASE_URL, PRODUCTS_SUPABASE_ANON_KEY, {
+        auth: {
+          storageKey: 'fruvi-products-auth',
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      });
       console.log('✅ Cliente de productos inicializado:', PRODUCTS_SUPABASE_URL);
       return true;
     } else {

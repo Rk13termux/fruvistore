@@ -50,7 +50,13 @@ window.initializeSupabase = function initializeSupabase() {
     if (url && anonKey && isValidEnvVar(url) && isValidEnvVar(anonKey)) {
       try {
         console.log('🚀 Creando cliente Supabase con URL:', url);
-        supabaseClient = supabase.createClient(url, anonKey);
+        supabaseClient = supabase.createClient(url, anonKey, {
+          auth: {
+            storageKey: 'fruvi-users-auth',
+            autoRefreshToken: true,
+            persistSession: true
+          }
+        });
         console.log('✅ Cliente Supabase creado exitosamente');
         return true;
       } catch (createError) {
@@ -224,7 +230,13 @@ return false;
 }
 
 // Crear cliente temporal para probar
-const testClient = supabase.createClient(url, anonKey);
+const testClient = supabase.createClient(url, anonKey, {
+  auth: {
+    storageKey: `fruvi-test-${Date.now()}`,
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
 
 console.log('📋 Probando consulta simple...');
 
@@ -280,7 +292,13 @@ const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Solo proceder si tenemos variables reales
 if (url.includes('ipjkpgmptexkhilrjnsl.supabase.co') && anonKey !== 'your-anon-key') {
-supabaseClient = supabase.createClient(url, anonKey);
+supabaseClient = supabase.createClient(url, anonKey, {
+  auth: {
+    storageKey: 'fruvi-users-auth-fallback',
+    autoRefreshToken: true,
+    persistSession: true
+  }
+});
 console.log('✅ Cliente inicializado exitosamente');
 
 // Probar conexión inmediatamente

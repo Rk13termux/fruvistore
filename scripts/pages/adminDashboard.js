@@ -162,7 +162,13 @@ class AdminDashboard {
 
     if (!window.productsClient && window.supabase) {
       console.warn('Cliente de productos no disponible. Creando cliente manualmente con valores predeterminados.');
-      window.productsClient = window.supabase.createClient(PRODUCTS_FALLBACK.url, PRODUCTS_FALLBACK.anonKey);
+      window.productsClient = window.supabase.createClient(PRODUCTS_FALLBACK.url, PRODUCTS_FALLBACK.anonKey, {
+        auth: {
+          storageKey: 'fruvi-admin-fallback-auth',
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      });
       window.supabaseClient = window.productsClient;
     }
 
