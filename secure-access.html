@@ -359,6 +359,7 @@
                 localStorage.removeItem('lastAttemptTime');
                 localStorage.setItem('adminAuthenticated', 'true');
                 localStorage.setItem('adminAuthTime', Date.now().toString());
+                localStorage.setItem('adminLoginTime', Date.now().toString());
                 localStorage.setItem('adminUser', user);
                 
                 // Redirigir al admin real

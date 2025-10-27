@@ -48,8 +48,19 @@
         function updateHeaderUserInfo(username) {
             const userInfoElement = document.getElementById('userInfo');
             if (userInfoElement) {
-                const loginTime = new Date(parseInt(localStorage.getItem('adminLoginTime')));
-                const timeString = loginTime.toLocaleTimeString();
+                const loginTimeStamp = localStorage.getItem('adminLoginTime');
+                let timeString = 'Ahora';
+                
+                if (loginTimeStamp) {
+                    const loginTime = new Date(parseInt(loginTimeStamp));
+                    timeString = loginTime.toLocaleTimeString();
+                } else {
+                    // Si no hay timestamp guardado, usar el actual
+                    const now = Date.now();
+                    localStorage.setItem('adminLoginTime', now.toString());
+                    timeString = new Date(now).toLocaleTimeString();
+                }
+                
                 userInfoElement.innerHTML = `
                     <span class="user-welcome">
                         <i class="fas fa-user-shield"></i>

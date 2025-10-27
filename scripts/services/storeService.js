@@ -417,6 +417,17 @@ window.updateStock = async function updateStock(productId, quantityChange, reaso
     return { success: false, error: 'Cliente de productos no inicializado' };
   }
 
+  // Validar parámetros de entrada
+  if (!productId || productId === '' || productId === 'undefined') {
+    console.error('❌ ID de producto inválido:', productId);
+    return { success: false, error: 'Debe seleccionar un producto válido' };
+  }
+
+  if (typeof quantityChange !== 'number' || isNaN(quantityChange)) {
+    console.error('❌ Cantidad inválida:', quantityChange);
+    return { success: false, error: 'La cantidad debe ser un número válido' };
+  }
+
   try {
     console.log('🔄 Actualizando stock del producto:', { productId, quantityChange, reason });
     

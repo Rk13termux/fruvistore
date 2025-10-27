@@ -1013,8 +1013,14 @@ class AdminDashboard {
     const changeValue = Number(changeInput.value);
     const reason = reasonInput?.value?.trim() || 'Ajuste manual';
 
-    if (!productId || Number.isNaN(changeValue) || changeValue === 0) {
-      this.showAlert('Selecciona un producto y una cantidad válida para ajustar el stock.', 'warning');
+    // Validaciones mejoradas
+    if (!productId || productId === '' || productId === 'undefined') {
+      this.showAlert('Por favor, selecciona un producto válido.', 'warning');
+      return;
+    }
+
+    if (!changeInput.value || Number.isNaN(changeValue) || changeValue === 0) {
+      this.showAlert('Ingresa una cantidad válida diferente de cero.', 'warning');
       return;
     }
 
