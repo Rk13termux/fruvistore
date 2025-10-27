@@ -35,31 +35,33 @@ jobs:
 
       - name: Create environment file with all secrets
         run: |
-          echo "# Fruvi Store - Production Environment Variables" > .env.local
-          echo "# Generated automatically by GitHub Actions with secrets" >> .env.local
-          echo "" >> .env.local
-          echo "# Supabase Users Database (Original)" >> .env.local
-          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL || 'https://your-users-project.supabase.co' }}" >> .env.local
-          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY || 'your-users-anon-key' }}" >> .env.local
-          echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.VITE_SUPABASE_SERVICE_ROLE_KEY || 'your-users-service-key' }}" >> .env.local
-          echo "" >> .env.local
-          echo "# Supabase Products Database (New)" >> .env.local
-          echo "VITE_SUPABASE_PRODUCTS_URL=${{ secrets.VITE_SUPABASE_PRODUCTS_URL || 'https://your-products-project.supabase.co' }}" >> .env.local
-          echo "VITE_SUPABASE_PRODUCTS_ANON_KEY=${{ secrets.VITE_SUPABASE_PRODUCTS_ANON_KEY || 'your-products-anon-key' }}" >> .env.local
-          echo "VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY=${{ secrets.VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY || 'your-products-service-key' }}" >> .env.local
-          echo "" >> .env.local
-          echo "# AI Services Configuration" >> .env.local
-          echo "VITE_GROQ_API_KEY=${{ secrets.VITE_GROQ_API_KEY || 'placeholder-groq-key' }}" >> .env.local
-          echo "VITE_GROQ_MODEL=${{ secrets.VITE_GROQ_MODEL || 'llama3-8b-8192' }}" >> .env.local
-          echo "" >> .env.local
-          echo "# Telegram Integration" >> .env.local
-          echo "VITE_TELEGRAM_BOT_TOKEN=${{ secrets.VITE_TELEGRAM_BOT_TOKEN || 'placeholder-telegram-bot-token' }}" >> .env.local
-          echo "VITE_TELEGRAM_CHAT_ID=${{ secrets.VITE_TELEGRAM_CHAT_ID || 'placeholder-telegram-chat-id' }}" >> .env.local
-          echo "" >> .env.local
-          echo "# Admin Panel Security" >> .env.local
-          echo "VITE_ADMIN_API_KEY=${{ secrets.VITE_ADMIN_API_KEY || 'placeholder-admin-key' }}" >> .env.local
-          echo "VITE_ADMIN_PASSWORD_HASH=${{ secrets.VITE_ADMIN_PASSWORD_HASH || 'placeholder-hash' }}" >> .env.local
-          echo "VITE_ENABLE_ADMIN_PANEL=${{ secrets.VITE_ENABLE_ADMIN_PANEL || 'true' }}" >> .env.local
+          echo "# Fruvi Store - Production Environment Variables" > .env
+          echo "# Generated automatically by GitHub Actions with secrets" >> .env
+          echo "" >> .env
+          echo "# Supabase Users Database (Original)" >> .env
+          echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL || 'https://your-users-project.supabase.co' }}" >> .env
+          echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY || 'your-users-anon-key' }}" >> .env
+          echo "VITE_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.VITE_SUPABASE_SERVICE_ROLE_KEY || 'your-users-service-key' }}" >> .env
+          echo "" >> .env
+          echo "# Supabase Products Database (New)" >> .env
+          echo "VITE_SUPABASE_PRODUCTS_URL=${{ secrets.VITE_SUPABASE_PRODUCTS_URL || 'https://your-products-project.supabase.co' }}" >> .env
+          echo "VITE_SUPABASE_PRODUCTS_ANON_KEY=${{ secrets.VITE_SUPABASE_PRODUCTS_ANON_KEY || 'your-products-anon-key' }}" >> .env
+          echo "VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY=${{ secrets.VITE_SUPABASE_PRODUCTS_SERVICE_ROLE_KEY || 'your-products-service-key' }}" >> .env
+          echo "" >> .env
+          echo "# AI Services Configuration" >> .env
+          echo "VITE_GROQ_API_KEY=${{ secrets.VITE_GROQ_API_KEY || 'placeholder-groq-key' }}" >> .env
+          echo "VITE_GROQ_MODEL=${{ secrets.VITE_GROQ_MODEL || 'llama3-8b-8192' }}" >> .env
+          echo "" >> .env
+          echo "# Telegram Integration" >> .env
+          echo "VITE_TELEGRAM_BOT_TOKEN=${{ secrets.VITE_TELEGRAM_BOT_TOKEN || 'placeholder-telegram-bot-token' }}" >> .env
+          echo "VITE_TELEGRAM_CHAT_ID=${{ secrets.VITE_TELEGRAM_CHAT_ID || 'placeholder-telegram-chat-id' }}" >> .env
+          echo "" >> .env
+          echo "# Admin Panel Security" >> .env
+          echo "VITE_ADMIN_USER=${{ secrets.VITE_ADMIN_USER || 'admin' }}" >> .env
+          echo "VITE_ADMIN_PASSWORD=${{ secrets.VITE_ADMIN_PASSWORD || 'password' }}" >> .env
+          echo "VITE_ADMIN_API_KEY=${{ secrets.VITE_ADMIN_API_KEY || 'placeholder-admin-key' }}" >> .env
+          echo "VITE_ADMIN_PASSWORD_HASH=${{ secrets.VITE_ADMIN_PASSWORD_HASH || 'placeholder-hash' }}" >> .env
+          echo "VITE_ENABLE_ADMIN_PANEL=${{ secrets.VITE_ENABLE_ADMIN_PANEL || 'true' }}" >> .env
 
       - name: Build
         run: npm run build
