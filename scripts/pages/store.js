@@ -1,5 +1,10 @@
 // Store Page - Professional Fruit Store
 
+// Initialize cart store at the top to avoid initialization issues
+let cartStore = JSON.parse(localStorage.getItem('fruvi_cart_store') || '[]');
+// Make cartStore globally available
+window.cartStore = cartStore;
+
 export async function renderStorePage(root) {
 
   // Detectar si estamos en GitHub Pages o en local
@@ -450,12 +455,6 @@ function setupProductInteractions(products) {
   });
 }
 
-// Cart functionality
-let cartStore = JSON.parse(localStorage.getItem('fruvi_cart_store') || '[]');
-
-// Make cartStore globally available
-window.cartStore = cartStore;
-
 function setupCart() {
   updateCartDisplay();
 
@@ -490,6 +489,12 @@ function addToCart(item) {
 function updateCartDisplay() {
   const countEl = document.getElementById('cartCount');
   const totalEl = document.getElementById('cartTotal');
+
+  // Safety check for DOM elements
+  if (!countEl || !totalEl) {
+    console.warn('Cart display elements not found in DOM');
+    return;
+  }
 
   const totalItems = cartStore.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cartStore.reduce((sum, item) => sum + (item.price * item.quantity), 0);
