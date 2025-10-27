@@ -110,7 +110,6 @@
             if (duration > 0) {
                 notification.classList.add('auto-close');
                 notification.style.setProperty('--duration', `${duration}ms`);
-                notification.querySelector('::after').style.transitionDuration = `${duration}ms`;
                 
                 setTimeout(() => {
                     closeNotification(notification);
