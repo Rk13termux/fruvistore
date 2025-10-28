@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite'
+import { copyFileSync } from 'fs'
+import { resolve } from 'path'
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -31,6 +33,22 @@ export default defineConfig({
     },
     copyPublicDir: true
   },
+  // Plugin to copy admin files after build
+  plugins: [
+    {
+      name: 'copy-admin-files',
+      writeBundle() {
+        // Copy admin files to dist after build
+        try {
+          copyFileSync('admin-panel-secure.html', 'dist/admin-panel-secure.html')
+          copyFileSync('secure-access.html', 'dist/secure-access.html')
+          console.log('✅ Admin files copied to dist/')
+        } catch (error) {
+          console.error('❌ Error copying admin files:', error)
+        }
+      }
+    }
+  ],
   // Configure static file serving
   publicDir: 'public',
   // Ensure proper MIME types and environment variables
