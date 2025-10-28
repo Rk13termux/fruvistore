@@ -22,7 +22,14 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: false,
     // Ensure CSS is extracted properly
-    cssCodeSplit: true
+    cssCodeSplit: true,
+    // Copy additional files to dist
+    rollupOptions: {
+      input: {
+        main: 'index.html'
+      }
+    },
+    copyPublicDir: true
   },
   // Configure static file serving
   publicDir: 'public',
