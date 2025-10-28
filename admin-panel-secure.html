@@ -6,6 +6,8 @@
     <title>Admin Panel - Fruvi Store</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+    <!-- Production Configuration -->
+    <script src="config.js"></script>
     <script>
         // Verificar autenticación de admin (SISTEMA SEGURO)
         function checkAdminAuth() {
@@ -2390,9 +2392,15 @@
                     throw new Error('Biblioteca Supabase no está cargada');
                 }
                 
-                // Hardcoded values from .env file
-                const productsUrl = 'https://xujenwuefrgxfsiqjqhl.supabase.co';
-                const productsKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5OTExNTYsImV4cCI6MjA3NjU2NzE1Nn0.89UAEW8CVBkz8lEAdnJzt0XJNo0C4lCrZMBBcRYKmMs';
+                // Get credentials from config.js (production configuration)
+                const productsUrl = window.FRUVI_CONFIG?.PRODUCTS?.URL || 'https://xujenwuefrgxfsiqjqhl.supabase.co';
+                const productsKey = window.FRUVI_CONFIG?.PRODUCTS?.ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5OTExNTYsImV4cCI6MjA3NjU2NzE1Nn0.89UAEW8CVBkz8lEAdnJzt0XJNo0C4lCrZMBBcRYKmMs';
+                
+                console.log('🔑 Using config credentials:', { 
+                    url: productsUrl, 
+                    hasKey: !!productsKey,
+                    fromConfig: !!window.FRUVI_CONFIG 
+                });
                 
                 // Create products client manually
                 window.productsClient = window.supabase.createClient(productsUrl, productsKey, {
