@@ -194,32 +194,53 @@ CREATE POLICY "Public products are viewable" ON management_products
 CREATE POLICY "Public current prices are viewable" ON management_product_prices
     FOR SELECT USING (is_current = true);
 
--- Políticas para permitir operaciones de admin (INSERT, UPDATE, DELETE)
--- Permitir acceso anónimo para operaciones de administración (protegido por otros medios)
+-- Políticas para operaciones de administración (requieren autenticación)
+CREATE POLICY "Admin can insert products" ON management_products
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can update products" ON management_products
+    FOR UPDATE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can delete products" ON management_products
+    FOR DELETE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can insert prices" ON management_product_prices
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can update prices" ON management_product_prices
+    FOR UPDATE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can delete prices" ON management_product_prices
+    FOR DELETE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can insert suppliers" ON suppliers
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can update suppliers" ON suppliers
+    FOR UPDATE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can delete suppliers" ON suppliers
+    FOR DELETE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can insert price logs" ON price_updates_log
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Admin can view price logs" ON price_updates_log
+    FOR SELECT USING (auth.role() = 'authenticated');
+
+-- Políticas para operaciones de administrador (INSERT, UPDATE, DELETE)
+-- Permitir acceso completo para usuarios autenticados (admin panel)
 CREATE POLICY "Admin can manage products" ON management_products
-    FOR ALL USING (true);
+    FOR ALL USING (auth.uid() IS NOT NULL);
 
 CREATE POLICY "Admin can manage product prices" ON management_product_prices
-    FOR ALL USING (true);
+    FOR ALL USING (auth.uid() IS NOT NULL);
 
 CREATE POLICY "Admin can manage suppliers" ON suppliers
-    FOR ALL USING (true);
+    FOR ALL USING (auth.uid() IS NOT NULL);
 
 CREATE POLICY "Admin can manage price logs" ON price_updates_log
-    FOR ALL USING (true);
-
--- Políticas adicionales para INSERT explícito (por si las anteriores no cubren todos los casos)
-CREATE POLICY "Allow authenticated users to insert products" ON management_products
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Allow authenticated users to insert product prices" ON management_product_prices
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Allow authenticated users to insert suppliers" ON suppliers
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Allow authenticated users to insert price logs" ON price_updates_log
-    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+    FOR ALL USING (auth.uid() IS NOT NULL);
 
 -- Política para admin (requiere autenticación)
 -- CREATE POLICY "Admin full access" ON management_products
