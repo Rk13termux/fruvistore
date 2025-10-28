@@ -5,430 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Fruvi Store</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <!-- Production Configuration -->
-    <script src="config.js"></script>
-    <script>
-        // Verificar autenticación de admin (SISTEMA SEGURO)
-        function checkAdminAuth() {
-            const isAuthenticated = localStorage.getItem('adminAuthenticated');
-            const authTime = localStorage.getItem('adminAuthTime');
-            const adminUser = localStorage.getItem('adminUser') || 'Admin';
-            const now = Date.now();
-            const sessionDuration = 30 * 60 * 1000; // 30 minutos de sesión
-            
-            // Verificación múltiple de seguridad
-            if (!isAuthenticated || 
-                isAuthenticated !== 'true' ||
-                !authTime || 
-                (now - parseInt(authTime)) > sessionDuration) {
-                
-                // Limpiar cualquier dato de sesión
-                localStorage.removeItem('adminAuthenticated');
-                localStorage.removeItem('adminAuthTime');
-                localStorage.removeItem('adminUser');
-                
-                // Redirigir al acceso seguro
-                window.location.href = './secure-access.html';
-                return false;
-            }
-            
-            // Renovar sesión si queda menos de 5 minutos
-            if ((now - parseInt(authTime)) > (25 * 60 * 1000)) {
-                localStorage.setItem('adminAuthTime', now.toString());
-            }
-            
-            // Mostrar información del usuario en el header
-            setTimeout(() => {
-                updateHeaderUserInfo(adminUser);
-            }, 100);
-            
-            return true;
-        }
-        
-        // Actualizar información del usuario en el header
-        function updateHeaderUserInfo(username) {
-            const userInfoElement = document.getElementById('userInfo');
-            if (userInfoElement) {
-                const loginTimeStamp = localStorage.getItem('adminLoginTime');
-                let timeString = 'Ahora';
-                
-                if (loginTimeStamp) {
-                    const loginTime = new Date(parseInt(loginTimeStamp));
-                    timeString = loginTime.toLocaleTimeString();
-                } else {
-                    // Si no hay timestamp guardado, usar el actual
-                    const now = Date.now();
-                    localStorage.setItem('adminLoginTime', now.toString());
-                    timeString = new Date(now).toLocaleTimeString();
-                }
-                
-                // Generar un ID único para el admin
-                const adminId = btoa(username).substring(0, 8);
-                
-                userInfoElement.innerHTML = `
-                    <span class="user-welcome">
-                        <i class="fas fa-user-shield"></i>
-                        👋 Bienvenido, <strong>${username}</strong>
-                    </span>
-                    <span class="login-time">
-                        🆔 ID: ${adminId} | ⏰ Sesión: ${timeString}
-                    </span>
-                `;
-            }
-        }
-        
-        // Verificar auth al cargar la página
-        if (!checkAdminAuth()) {
-            // Si no está autenticado, detener la carga
-            document.body.style.display = 'none';
-        }
-        
-        // Función para cerrar sesión (SISTEMA SEGURO)
-        function logout() {
-            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                // Limpiar TODA la información de sesión
-                localStorage.removeItem('adminAuthenticated');
-                localStorage.removeItem('adminAuthTime');
-                localStorage.removeItem('adminUser');
-                localStorage.removeItem('adminLoggedIn');
-                localStorage.removeItem('adminLoginTime');
-                
-                // Limpiar también sessionStorage por seguridad
-                sessionStorage.clear();
-                
-                // Animación de salida
-                document.body.style.opacity = '0';
-                document.body.style.transform = 'scale(0.95)';
-                
-                setTimeout(() => {
-                    window.location.href = './secure-access.html';
-                }, 300);
-            }
-        }
-
-        // 🔔 SISTEMA DE NOTIFICACIONES PUSH
-        let notificationQueue = [];
-        let notificationId = 0;
-
-        // Función principal para mostrar notificaciones
-        function showNotification(type, title, message, duration = 5000) {
-            const container = document.getElementById('notificationContainer');
-            if (!container) return;
-
-            const notification = createNotificationElement(type, title, message, duration);
-            container.appendChild(notification);
-
-            // Mostrar con animación
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 100);
-
-            // Auto-cerrar
-            if (duration > 0) {
-                notification.classList.add('auto-close');
-                notification.style.setProperty('--duration', `${duration}ms`);
-                
-                setTimeout(() => {
-                    closeNotification(notification);
-                }, duration);
-            }
-
-            return notification;
-        }
-
-        // Crear elemento de notificación
-        function createNotificationElement(type, title, message, duration) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.setAttribute('data-id', ++notificationId);
-
-            const icons = {
-                success: 'fas fa-check-circle',
-                error: 'fas fa-exclamation-circle',
-                warning: 'fas fa-exclamation-triangle',
-                info: 'fas fa-info-circle'
-            };
-
-            notification.innerHTML = `
-                <div class="notification-content">
-                    <div class="notification-icon">
-                        <i class="${icons[type] || icons.info}"></i>
-                    </div>
-                    <div class="notification-text">
-                        <div class="notification-title">${title}</div>
-                        <div class="notification-message">${message}</div>
-                    </div>
-                    <button class="notification-close" onclick="closeNotification(this.parentElement)">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-            // Auto-cerrar con progreso
-            if (duration > 0) {
-                notification.style.setProperty('--duration', `${duration}ms`);
-            }
-
-            return notification;
-        }
-
-        // Cerrar notificación
-        function closeNotification(notification) {
-            notification.classList.add('hide');
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.parentElement.removeChild(notification);
-                }
-            }, 400);
-        }
-
-        // Métodos de conveniencia
-        function showSuccess(title, message, duration = 4000) {
-            return showNotification('success', title, message, duration);
-        }
-
-        function showError(title, message, duration = 6000) {
-            return showNotification('error', title, message, duration);
-        }
-
-        function showWarning(title, message, duration = 5000) {
-            return showNotification('warning', title, message, duration);
-        }
-
-        function showInfo(title, message, duration = 4000) {
-            return showNotification('info', title, message, duration);
-        }
-
-        // Limpiar todas las notificaciones
-        function clearAllNotifications() {
-            const container = document.getElementById('notificationContainer');
-            if (container) {
-                container.innerHTML = '';
-            }
-        }
-    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700&display=swap');
-
-        :root {
-            --bg: #0b0f14;
-            --surface: rgba(255,255,255,0.06);
-            --surface-strong: rgba(255,255,255,0.12);
-            --border: rgba(255,255,255,0.14);
-            --txt: #e9eef5;
-            --muted: #9aa6b2;
-            --brand: #ff9b40; /* vibrant orange */
-            --brand-2: #8bda01; /* vibrant green */
-            --accent: #ff8bd3; /* pink */
-            --warn: #f39c12;
-            --glass-bg: rgba(255,255,255,0.04);
-            --glass-border: rgba(255,255,255,0.08);
-            --font-body: 'Inter', 'Segoe UI', sans-serif;
-            --font-heading: 'Inter', 'Segoe UI', sans-serif;
-            --font-menu: 'Montserrat', 'Inter', 'Segoe UI', sans-serif;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-body);
-            background: #000000 !important;
-            min-height: 100vh;
-            color: var(--txt);
-        }
-
-        .admin-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .admin-header {
-            background: var(--glass-bg);
-            backdrop-filter: saturate(140%) blur(20px);
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .admin-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--brand), transparent);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .header-left h1 {
-            color: var(--txt);
-            font-family: var(--font-heading);
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 0 0.5rem 0;
-            background: linear-gradient(135deg, var(--brand), var(--brand-2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header-left h1 i {
-            margin-right: 0.75rem;
-            color: var(--brand);
-        }
-
-        .header-left p {
-            color: var(--muted);
-            margin: 0;
-            font-size: 1rem;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-direction: column;
-            text-align: right;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            margin-bottom: 0.5rem;
-        }
-
-        .user-welcome {
-            color: var(--txt);
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-welcome i {
-            color: var(--brand);
-            margin-right: 0.5rem;
-        }
-
-        .login-time {
-            color: var(--muted);
-            font-size: 0.8rem;
-        }
-
-        .logout-btn {
-            background: rgba(255, 59, 48, 0.1);
-            border: 1px solid rgba(255, 59, 48, 0.3);
-            color: #ff6b6b;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 59, 48, 0.2);
-            border-color: rgba(255, 59, 48, 0.5);
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .header-right {
-                flex-direction: row;
-                justify-content: center;
-                text-align: center;
-            }
-            
-            .user-info {
-                align-items: center;
-                margin-bottom: 0;
-                margin-right: 1rem;
-            }
-        }
-
-        .admin-header h1 i {
-            color: var(--brand);
-        }
-
-        .admin-header p {
-            color: var(--muted);
-            font-size: 1.1rem;
-        }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .admin-card {
-            background: var(--glass-bg);
-            backdrop-filter: saturate(140%) blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .admin-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
-            border-color: var(--brand);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .card-header i {
-            font-size: 1.5rem;
-            color: var(--brand);
-        }
-
-        .card-header h3 {
-            color: var(--txt);
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
         .btn {
-            background: linear-gradient(135deg, var(--brand), var(--brand-2));
-            color: #ffffff;
-            border: none;
-            padding: 0.875rem 1.75rem;
-            border-radius: 12px;
-            cursor: pointer;
             font-weight: 600;
             font-family: var(--font-menu);
             letter-spacing: 0.04em;
@@ -512,277 +93,133 @@
             margin-bottom: 2rem;
         }
 
-        .stat-card {
-            background: var(--glass-bg);
-            backdrop-filter: saturate(140%) blur(20px);
-            border: 1px solid var(--glass-border);
+        /* Make the subtitle span the full width of the stats grid so it doesn't create an empty grid cell */
+        .stat-subtitle {
+            grid-column: 1 / -1;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-section {
+            margin-top: 2.5rem;
+        }
+
+        .admin-section:first-of-type {
+            margin-top: 0;
+        }
+
+        .admin-section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
             color: var(--txt);
-            padding: 2rem;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 1.5rem;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--brand), var(--brand-2));
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-card i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+        .admin-section-title i {
             color: var(--brand);
         }
 
-        .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--brand), var(--brand-2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .admin-section-title span {
+            flex: 1;
         }
 
-        .stat-card .label {
-            font-size: 0.95rem;
-            color: var(--muted);
-            font-weight: 500;
-        }
-
-        /* Elegant Product Tables - Similar to Registration Style */
-        .table-container {
-            max-height: 500px;
-            overflow-y: auto;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            margin: 1rem 0;
-        }
-
-        .table-container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: transparent;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        thead {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-        }
-
-        thead th {
-            padding: 1.25rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            border: none;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        thead th:first-child {
-            border-top-left-radius: 15px;
-        }
-
-        thead th:last-child {
-            border-top-right-radius: 15px;
-        }
-
-        tbody tr {
-            background: white;
-            transition: all 0.3s ease;
-        }
-
-        tbody tr:nth-child(even) {
-            background: rgba(248, 249, 250, 0.5);
-        }
-
-        tbody tr:hover {
-            background: linear-gradient(135deg, rgba(139, 218, 1, 0.1) 0%, rgba(255, 155, 64, 0.1) 100%);
-            transform: translateX(5px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        tbody td {
-            padding: 1rem;
-            text-align: left;
-            border: none;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 0.9rem;
-            color: #333;
-        }
-
-        tbody td:first-child {
-            font-weight: 600;
-            color: #1e3c72;
-        }
-
-        /* Product Table Specific Styles */
-        .product-name {
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            color: #1e3c72;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 3000;
         }
 
-        .product-category {
-            background: linear-gradient(45deg, #8bda01, #7bc200);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: inline-block;
+        .admin-toast {
+            min-width: 280px;
+            max-width: 360px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            color: var(--txt);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            grid-template-rows: auto auto;
+            column-gap: 0.75rem;
+            row-gap: 0.35rem;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
-        .stock-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .admin-toast.is-visible {
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        .stock-low {
-            color: #dc3545;
-            font-weight: bold;
-            background: rgba(220, 53, 69, 0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
+        .admin-toast i {
+            grid-row: 1 / span 2;
+            font-size: 1.4rem;
+            align-self: center;
         }
 
-        .stock-good {
-            color: #28a745;
-            font-weight: bold;
-            background: rgba(40, 167, 69, 0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-        }
-
-        .price-display {
-            font-weight: 600;
-            color: #2a5298;
-            font-size: 1rem;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .btn-sm:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-sm.btn-success {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-        }
-
-        .btn-sm.btn-warning {
-            background: linear-gradient(45deg, #ffc107, #ff9b40);
-            color: white;
-        }
-
-        .btn-sm.btn-danger {
-            background: linear-gradient(45deg, #dc3545, #c82333);
-            color: white;
-        }
-
-        .btn-sm.btn-info {
-            background: linear-gradient(45deg, #17a2b8, #138496);
-            color: white;
-        }
-
-        /* Supabase Configuration Elegant Styles - Similar to Registration */
-        .supabase-config-container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .supabase-config-shell {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .supabase-config-shell:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
-        }
-
-        .supabase-config-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .config-eyebrow {
-            color: #8bda01;
-            font-size: 0.875rem;
-            font-weight: 600;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .supabase-config-header h3 {
-            color: #1e3c72;
-            font-size: 1.75rem;
+        .admin-toast .toast-title {
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.01em;
         }
 
-        .supabase-config-header p {
-            color: #666;
+        .admin-toast .toast-message {
+            font-size: 0.9rem;
+            color: var(--muted);
+            grid-column: 1 / -1;
+        }
+
+        .admin-toast button.toast-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
             font-size: 1rem;
-            margin-bottom: 1rem;
+            align-self: start;
+            transition: opacity 0.2s ease;
+        }
+
+        .admin-toast button.toast-close:hover {
+            opacity: 0.7;
+        }
+
+        .admin-toast-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .admin-toast-error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .admin-toast-warning {
+            border-left: 4px solid #ffc107;
+        }
+
+        .admin-toast-info {
+            border-left: 4px solid #17a2b8;
+        }
+
+        @media (max-width: 600px) {
+            .toast-container {
+                left: 0.75rem;
+                right: 0.75rem;
+                align-items: stretch;
+            }
+
+            .admin-toast {
+                max-width: none;
+                width: 100%;
+            }
         }
 
         .config-status-badge {
@@ -1933,270 +1370,401 @@
                             <canvas id="revenueChart"></canvas>
                         </div>
                     </div>
+
+                    <!-- Box Categories Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-box-open"></i> Distribución de Cajas</h3>
+                            <div class="chart-controls">
+                                <button class="btn-chart" onclick="refreshBoxCategoryChart()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="boxCategoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Box Status Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-toggle-on"></i> Estado de las Cajas</h3>
+                            <div class="chart-controls">
+                                <button class="btn-chart" onclick="refreshBoxStatusChart()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="boxStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Box Value Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-cubes"></i> Top Cajas por Valor</h3>
+                            <div class="chart-controls">
+                                <button class="btn-chart" onclick="refreshBoxValueChart()">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="boxValueChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Product Management Section -->
-        <div class="product-management">
-            <div class="management-header">
-                <h2><i class="fas fa-cogs"></i> Gestión de Productos</h2>
-                <div class="management-actions">
-                    <button class="btn btn-success" onclick="showAddProductModal()">
-                        <i class="fas fa-plus"></i> Nuevo Producto
+        <!-- Herramientas de la Tienda -->
+        <section class="admin-section">
+            <div class="admin-section-title">
+                <i class="fas fa-store"></i>
+                <span>Gestión de Tienda</span>
+            </div>
+            <div class="admin-grid">
+                <!-- Product Price Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-dollar-sign"></i>
+                        <h3>Gestión de Precios</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="priceProductSelect">Producto:</label>
+                        <select id="priceProductSelect">
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="newPrice">Nuevo Precio (COP):</label>
+                        <input type="number" id="newPrice" step="100" min="0" placeholder="5000">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="priceReason">Razón del cambio:</label>
+                        <input type="text" id="priceReason" placeholder="Actualización de mercado">
+                    </div>
+                    
+                    <div class="flex flex-wrap">
+                        <button class="btn" onclick="updateSinglePrice()">
+                            <i class="fas fa-edit"></i> Actualizar Precio
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewPriceHistory()">
+                            <i class="fas fa-history"></i> Ver Historial
+                        </button>
+                    </div>
+
+                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
+                    
+                    <div class="input-group">
+                        <label for="categorySelect">Categoría para aumento masivo:</label>
+                        <select id="categorySelect">
+                            <option value="">Todas las categorías</option>
+                            <option value="Bayas">Bayas</option>
+                            <option value="Bananos">Bananos</option>
+                            <option value="Cítricas">Cítricas</option>
+                            <option value="Exóticas">Exóticas</option>
+                            <option value="Frutas Dulces">Frutas Dulces</option>
+                            <option value="Tropicales">Tropicales</option>
+                            <option value="Uvas">Uvas</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="increasePercent">Porcentaje de aumento:</label>
+                        <input type="number" id="increasePercent" step="0.1" min="0" max="50" placeholder="5.0">
+                    </div>
+                    
+                    <button class="btn btn-danger" onclick="applyBulkIncrease()">
+                        <i class="fas fa-percentage"></i> Aplicar Aumento
                     </button>
-                    <button class="btn" onclick="showAllProducts()">
-                        <i class="fas fa-list"></i> Ver Todos
+                </div>
+
+                <!-- Product Inventory Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-boxes"></i>
+                        <h3>Gestión de Inventario</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="stockProductSelect">Producto:</label>
+                        <select id="stockProductSelect">
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="stockChange">Cambio en stock (kg):</label>
+                        <input type="number" id="stockChange" step="1" placeholder="+50 o -25">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="stockReason">Razón del cambio:</label>
+                        <input type="text" id="stockReason" placeholder="Reposición de inventario">
+                    </div>
+                    
+                    <div class="flex flex-wrap">
+                        <button class="btn btn-success" onclick="updateStock()">
+                            <i class="fas fa-plus"></i> Actualizar Stock
+                        </button>
+                        <button class="btn btn-secondary" onclick="showLowStock()">
+                            <i class="fas fa-exclamation-triangle"></i> Stock Bajo
+                        </button>
+                        <button class="btn" onclick="showAllProducts()">
+                            <i class="fas fa-list"></i> Ver Todos los Productos
+                        </button>
+                    </div>
+
+                    <div id="currentStock" class="mt-2">
+                        <!-- Current stock info will appear here -->
+                    </div>
+                </div>
+
+                <!-- Product Catalog Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-cogs"></i>
+                        <h3>Gestión de Productos</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manageProductSelect">Producto:</label>
+                        <select id="manageProductSelect">
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex flex-wrap">
+                        <button class="btn btn-success" onclick="showAddProductModal()">
+                            <i class="fas fa-plus"></i> Agregar Producto
+                        </button>
+                        <button class="btn" onclick="editSelectedProduct()">
+                            <i class="fas fa-edit"></i> Editar Producto
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelectedProduct()">
+                            <i class="fas fa-trash"></i> Eliminar Producto
+                        </button>
+                    </div>
+
+                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
+                    
+                    <div class="input-group">
+                        <label for="productStatus">Cambiar estado:</label>
+                        <select id="productStatus">
+                            <option value="">Seleccionar estado...</option>
+                            <option value="active">Activar Producto</option>
+                            <option value="inactive">Desactivar Producto</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="updateProductStatus()">
+                        <i class="fas fa-toggle-on"></i> Cambiar Estado
                     </button>
-                    <button class="btn btn-secondary" onclick="exportProducts()">
-                        <i class="fas fa-download"></i> Exportar
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-lightning-bolt"></i>
+                        <h3>Acciones Rápidas</h3>
+                    </div>
+                    
+                    <div class="flex flex-wrap">
+                        <button class="btn" onclick="loadInventoryReport()">
+                            <i class="fas fa-chart-bar"></i> Reporte Inventario
+                        </button>
+                        <button class="btn btn-secondary" onclick="loadDailyReport()">
+                            <i class="fas fa-calendar-day"></i> Reporte Diario
+                        </button>
+                        <button class="btn btn-success" onclick="exportData()">
+                            <i class="fas fa-download"></i> Exportar Datos
+                        </button>
+                    </div>
+
+                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
+
+                    <div class="input-group">
+                        <label for="csvFile">Importar precios desde CSV:</label>
+                        <input type="file" id="csvFile" accept=".csv">
+                        <small style="color: #666; font-size: 0.85rem;">
+                            Formato: product_id, new_price, reason
+                        </small>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="importPricesFromCSV()">
+                        <i class="fas fa-upload"></i> Importar CSV
+                    </button>
+                </div>
+
+                <!-- Reports and Analytics -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Reportes y Análisis</h3>
+                    </div>
+                    
+                    <div id="reportContainer">
+                        <p style="color: #666; text-align: center; padding: 2rem;">
+                            <i class="fas fa-info-circle"></i>
+                            Selecciona una acción para ver reportes
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Herramientas para Cajas -->
+        <section class="admin-section">
+            <div class="admin-section-title">
+                <i class="fas fa-boxes-stacked"></i>
+                <span>Gestión de Cajas</span>
+            </div>
+            <div class="admin-grid">
+                <!-- Box Price Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-boxes-stacked"></i>
+                        <h3>Gestión de Precios de Cajas</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="boxPriceSelect">Caja:</label>
+                        <select id="boxPriceSelect">
+                            <option value="">Seleccionar caja...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="boxNewPrice">Nuevo Precio (COP):</label>
+                        <input type="number" id="boxNewPrice" step="1000" min="0" placeholder="75000">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="boxNewPriceUSD">Nuevo Precio (USD) (opcional):</label>
+                        <input type="number" id="boxNewPriceUSD" step="0.01" min="0" placeholder="18.50">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="boxPriceReason">Razón del cambio:</label>
+                        <input type="text" id="boxPriceReason" placeholder="Ajuste de temporada">
+                    </div>
+                    
+                    <div class="flex flex-wrap">
+                        <button class="btn" onclick="updateBoxPriceSingle()">
+                            <i class="fas fa-edit"></i> Actualizar Precio
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewBoxPriceHistory()">
+                            <i class="fas fa-history"></i> Ver Historial
+                        </button>
+                    </div>
+
+                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
+
+                    <div class="input-group">
+                        <label for="boxCategorySelect">Categoría para aumento masivo:</label>
+                        <select id="boxCategorySelect">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="boxIncreasePercent">Porcentaje de aumento:</label>
+                        <input type="number" id="boxIncreasePercent" step="0.1" placeholder="5.0">
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="applyBoxPriceIncrease()">
+                        <i class="fas fa-percentage"></i> Aplicar Aumento
+                    </button>
+                </div>
+
+                <!-- Box Inventory Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-warehouse"></i>
+                        <h3>Gestión de Inventario de Cajas</h3>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="boxStockSelect">Caja:</label>
+                        <select id="boxStockSelect">
+                            <option value="">Seleccionar caja...</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="boxStockChange">Cambio en stock (unidades):</label>
+                        <input type="number" id="boxStockChange" placeholder="+20 o -5">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="boxStockReason">Razón del cambio:</label>
+                        <input type="text" id="boxStockReason" placeholder="Reposición de inventario">
+                    </div>
+
+                    <div class="flex flex-wrap">
+                        <button class="btn" onclick="updateBoxStock()">
+                            <i class="fas fa-box-open"></i> Actualizar Stock
+                        </button>
+                        <button class="btn btn-secondary" onclick="showAllBoxes()">
+                            <i class="fas fa-layer-group"></i> Ver Todas las Cajas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Box Catalog Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-box"></i>
+                        <h3>Gestión de Cajas</h3>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="manageBoxSelect">Caja:</label>
+                        <select id="manageBoxSelect">
+                            <option value="">Seleccionar caja...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex flex-wrap">
+                        <button class="btn btn-success" onclick="showAddBoxModal()">
+                            <i class="fas fa-plus"></i> Agregar Caja
+                        </button>
+                        <button class="btn" onclick="editSelectedBox()">
+                            <i class="fas fa-edit"></i> Editar Caja
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteSelectedBox()">
+                            <i class="fas fa-trash"></i> Eliminar Caja
+                        </button>
+                        <button class="btn btn-info" onclick="showAllBoxes()">
+                            <i class="fas fa-list"></i> Ver Todas las Cajas
+                        </button>
+                    </div>
+
+                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
+
+                    <div class="input-group">
+                        <label for="boxStatus">Cambiar estado:</label>
+                        <select id="boxStatus">
+                            <option value="">Seleccionar estado...</option>
+                            <option value="active">Activar Caja</option>
+                            <option value="inactive">Desactivar Caja</option>
+                            <option value="featured">Marcar como Destacada</option>
+                            <option value="unfeatured">Quitar Destacada</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="updateBoxStatus()">
+                        <i class="fas fa-toggle-on"></i> Cambiar Estado
                     </button>
                 </div>
             </div>
-        </div>
-
-        <!-- Main Grid -->
-        <div class="admin-grid">
-            <!-- Price Management -->
-            <div class="admin-card">
-                <div class="card-header">
-                    <i class="fas fa-dollar-sign"></i>
-                    <h3>Gestión de Precios</h3>
-                </div>
-                
-                <div class="input-group">
-                    <label for="priceProductSelect">Producto:</label>
-                    <select id="priceProductSelect">
-                        <option value="">Seleccionar producto...</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label for="newPrice">Nuevo Precio (COP):</label>
-                    <input type="number" id="newPrice" step="100" min="0" placeholder="5000">
-                </div>
-                
-                <div class="input-group">
-                    <label for="priceReason">Razón del cambio:</label>
-                    <input type="text" id="priceReason" placeholder="Actualización de mercado">
-                </div>
-                
-                <div class="flex flex-wrap">
-                    <button class="btn" onclick="updateSinglePrice()">
-                        <i class="fas fa-edit"></i> Actualizar Precio
-                    </button>
-                    <button class="btn btn-secondary" onclick="viewPriceHistory()">
-                        <i class="fas fa-history"></i> Ver Historial
-                    </button>
-                </div>
-
-                <!-- Bulk Price Updates -->
-                <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-                
-                <div class="input-group">
-                    <label for="categorySelect">Categoría para aumento masivo:</label>
-                    <select id="categorySelect">
-                        <option value="">Todas las categorías</option>
-                        <option value="Bayas">Bayas</option>
-                        <option value="Bananos">Bananos</option>
-                        <option value="Cítricas">Cítricas</option>
-                        <option value="Exóticas">Exóticas</option>
-                        <option value="Frutas Dulces">Frutas Dulces</option>
-                        <option value="Tropicales">Tropicales</option>
-                        <option value="Uvas">Uvas</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label for="increasePercent">Porcentaje de aumento:</label>
-                    <input type="number" id="increasePercent" step="0.1" min="0" max="50" placeholder="5.0">
-                </div>
-                
-                <button class="btn btn-danger" onclick="applyBulkIncrease()">
-                    <i class="fas fa-percentage"></i> Aplicar Aumento
-                </button>
-            </div>
-
-            <!-- Inventory Management -->
-            <div class="admin-card">
-                <div class="card-header">
-                    <i class="fas fa-boxes"></i>
-                    <h3>Gestión de Inventario</h3>
-                </div>
-                
-                <div class="input-group">
-                    <label for="stockProductSelect">Producto:</label>
-                    <select id="stockProductSelect">
-                        <option value="">Seleccionar producto...</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label for="stockChange">Cambio en stock (kg):</label>
-                    <input type="number" id="stockChange" step="1" placeholder="+50 o -25">
-                </div>
-                
-                <div class="input-group">
-                    <label for="stockReason">Razón del cambio:</label>
-                    <input type="text" id="stockReason" placeholder="Reposición de inventario">
-                </div>
-                
-                <div class="flex flex-wrap">
-                    <button class="btn btn-success" onclick="updateStock()">
-                        <i class="fas fa-plus"></i> Actualizar Stock
-                    </button>
-                    <button class="btn btn-secondary" onclick="showLowStock()">
-                        <i class="fas fa-exclamation-triangle"></i> Stock Bajo
-                    </button>
-                    <button class="btn" onclick="showAllProducts()">
-                        <i class="fas fa-list"></i> Ver Todos los Productos
-                    </button>
-                </div>
-
-                <div id="currentStock" class="mt-2">
-                    <!-- Current stock info will appear here -->
-                </div>
-            </div>
-
-            <!-- Product Management -->
-            <div class="admin-card">
-                <div class="card-header">
-                    <i class="fas fa-cogs"></i>
-                    <h3>Gestión de Productos</h3>
-                </div>
-                
-                <div class="input-group">
-                    <label for="manageProductSelect">Producto:</label>
-                    <select id="manageProductSelect">
-                        <option value="">Seleccionar producto...</option>
-                    </select>
-                </div>
-                
-                <div class="flex flex-wrap">
-                    <button class="btn btn-success" onclick="showAddProductModal()">
-                        <i class="fas fa-plus"></i> Agregar Producto
-                    </button>
-                    <button class="btn" onclick="editSelectedProduct()">
-                        <i class="fas fa-edit"></i> Editar Producto
-                    </button>
-                    <button class="btn btn-danger" onclick="deleteSelectedProduct()">
-                        <i class="fas fa-trash"></i> Eliminar Producto
-                    </button>
-                </div>
-
-                <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-
-                <div class="input-group">
-                    <label for="productStatus">Cambiar estado:</label>
-                    <select id="productStatus">
-                        <option value="">Seleccionar estado...</option>
-                        <option value="active">Activar Producto</option>
-                        <option value="inactive">Desactivar Producto</option>
-                    </select>
-                </div>
-                
-                <button class="btn btn-secondary" onclick="updateProductStatus()">
-                    <i class="fas fa-toggle-on"></i> Cambiar Estado
-                </button>
-            </div>
-
-            <!-- Box Management -->
-            <div class="admin-card">
-                <div class="card-header">
-                    <i class="fas fa-box"></i>
-                    <h3>Gestión de Cajas</h3>
-                </div>
-                
-                <div class="input-group">
-                    <label for="manageBoxSelect">Caja:</label>
-                    <select id="manageBoxSelect">
-                        <option value="">Seleccionar caja...</option>
-                    </select>
-                </div>
-                
-                <div class="flex flex-wrap">
-                    <button class="btn btn-success" onclick="showAddBoxModal()">
-                        <i class="fas fa-plus"></i> Agregar Caja
-                    </button>
-                    <button class="btn" onclick="editSelectedBox()">
-                        <i class="fas fa-edit"></i> Editar Caja
-                    </button>
-                    <button class="btn btn-danger" onclick="deleteSelectedBox()">
-                        <i class="fas fa-trash"></i> Eliminar Caja
-                    </button>
-                    <button class="btn btn-info" onclick="showAllBoxes()">
-                        <i class="fas fa-list"></i> Ver Todas las Cajas
-                    </button>
-                </div>
-
-                <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-
-                <div class="input-group">
-                    <label for="boxStatus">Cambiar estado:</label>
-                    <select id="boxStatus">
-                        <option value="">Seleccionar estado...</option>
-                        <option value="active">Activar Caja</option>
-                        <option value="inactive">Desactivar Caja</option>
-                        <option value="featured">Marcar como Destacada</option>
-                        <option value="unfeatured">Quitar Destacada</option>
-                    </select>
-                </div>
-                
-                <button class="btn btn-secondary" onclick="updateBoxStatus()">
-                    <i class="fas fa-toggle-on"></i> Cambiar Estado
-                </button>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="admin-card">
-                <div class="card-header">
-                    <i class="fas fa-lightning-bolt"></i>
-                    <h3>Acciones Rápidas</h3>
-                </div>
-                
-                <div class="flex flex-wrap">
-                    <button class="btn" onclick="loadInventoryReport()">
-                        <i class="fas fa-chart-bar"></i> Reporte Inventario
-                    </button>
-                    <button class="btn btn-secondary" onclick="loadDailyReport()">
-                        <i class="fas fa-calendar-day"></i> Reporte Diario
-                    </button>
-                    <button class="btn btn-success" onclick="exportData()">
-                        <i class="fas fa-download"></i> Exportar Datos
-                    </button>
-                </div>
-
-                <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-
-                <!-- CSV Import -->
-                <div class="input-group">
-                    <label for="csvFile">Importar precios desde CSV:</label>
-                    <input type="file" id="csvFile" accept=".csv">
-                    <small style="color: #666; font-size: 0.85rem;">
-                        Formato: product_id, new_price, reason
-                    </small>
-                </div>
-                
-                <button class="btn btn-secondary" onclick="importPricesFromCSV()">
-                    <i class="fas fa-upload"></i> Importar CSV
-                </button>
-            </div>
-
-            <!-- Reports and Analytics -->
-            <div class="admin-card">
-                <div class="card-header">
-                    <i class="fas fa-chart-line"></i>
-                    <h3>Reportes y Análisis</h3>
-                </div>
-                
-                <div id="reportContainer">
-                    <p style="color: #666; text-align: center; padding: 2rem;">
-                        <i class="fas fa-info-circle"></i>
-                        Selecciona una acción para ver reportes
-                    </p>
-                </div>
-            </div>
-        </div>
+        </section>
 
         <!-- Modal for detailed views -->
         <div id="modal" style="
@@ -2365,6 +1933,64 @@
         let productManager;
         let boxManager;
         let allProducts = [];
+    let cachedBoxes = [];
+    let allBoxes = [];
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function slugify(value = '') {
+            return value
+                .toString()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)+/g, '')
+                .substring(0, 100);
+        }
+
+        async function refreshBoxesSelector(selectedId = null, presetBoxes = null) {
+            if (!boxManager) {
+                return;
+            }
+
+            try {
+                const boxes = presetBoxes || await boxManager.getAllBoxes();
+                cachedBoxes = Array.isArray(boxes) ? boxes : [];
+                allBoxes = cachedBoxes.slice();
+
+                const manageBoxSelect = document.getElementById('manageBoxSelect');
+                if (manageBoxSelect) {
+                    manageBoxSelect.innerHTML = '<option value="">Seleccionar caja...</option>';
+                    cachedBoxes.forEach(box => {
+                        manageBoxSelect.innerHTML += `<option value="${box.id}">${escapeHtml(box.name)} (${escapeHtml(box.category || 'Caja')})</option>`;
+                    });
+
+                    if (selectedId !== null) {
+                        manageBoxSelect.value = String(selectedId);
+                    }
+                }
+
+                populateBoxSelects();
+            } catch (error) {
+                console.error('Error actualizando selector de cajas:', error);
+            }
+        }
+
+        function getCachedBox(boxId) {
+            return cachedBoxes.find(box => String(box.id) === String(boxId)) || null;
+        }
 
         // Auto-initialize using store service
         async function initializeFromEnv() {
@@ -2798,6 +2424,80 @@
                     }
                 },
 
+                getBoxPriceHistory: async (boxId = null, limit = 25) => {
+                    try {
+                        let query = window.productsClient
+                            .from('box_price_history')
+                            .select(`
+                                *,
+                                current_boxes(name, category)
+                            `)
+                            .order('created_at', { ascending: false });
+
+                        if (boxId) {
+                            query = query.eq('box_id', boxId);
+                        }
+
+                        if (Number.isFinite(limit) && limit > 0) {
+                            query = query.limit(limit);
+                        }
+
+                        const { data, error } = await query;
+
+                        if (error) throw error;
+
+                        return data || [];
+                    } catch (error) {
+                        console.error('❌ Error obteniendo historial de precios de cajas:', error);
+                        throw error;
+                    }
+                },
+
+                adjustBoxStock: async (boxId, change) => {
+                    try {
+                        const { data: current, error: fetchError } = await window.productsClient
+                            .from('current_boxes')
+                            .select('stock_quantity, available')
+                            .eq('id', boxId)
+                            .single();
+
+                        if (fetchError) throw fetchError;
+
+                        const delta = Number(change || 0);
+                        const previousStock = Number(current?.stock_quantity || 0);
+                        const newStock = Math.max(0, previousStock + delta);
+
+                        const updates = {
+                            stock_quantity: newStock,
+                            in_stock: newStock > 0,
+                            updated_at: new Date().toISOString()
+                        };
+
+                        if (newStock <= 0) {
+                            updates.available = false;
+                        }
+
+                        const { data, error } = await window.productsClient
+                            .from('current_boxes')
+                            .update(updates)
+                            .eq('id', boxId)
+                            .select('id, name, category, stock_quantity, available')
+                            .single();
+
+                        if (error) throw error;
+
+                        return {
+                            box: data,
+                            previousStock,
+                            newStock,
+                            change: delta
+                        };
+                    } catch (error) {
+                        console.error('❌ Error ajustando stock de caja:', error);
+                        throw error;
+                    }
+                },
+
                 updateBoxStatus: async (boxId, status) => {
                     try {
                         let updates = {};
@@ -2830,6 +2530,50 @@
                         return data;
                     } catch (error) {
                         console.error('❌ Error actualizando estado de caja:', error);
+                        throw error;
+                    }
+                },
+
+                updateBoxContents: async (boxId, items) => {
+                    try {
+                        const entries = Array.isArray(items) ? items : [];
+                        const sanitized = entries
+                            .map((item, index) => {
+                                const name = typeof item === 'string'
+                                    ? item.trim()
+                                    : (item && item.product_name ? String(item.product_name).trim() : '');
+                                if (!name) {
+                                    return null;
+                                }
+                                return {
+                                    box_id: boxId,
+                                    product_name: name,
+                                    display_order: index + 1
+                                };
+                            })
+                            .filter(Boolean);
+
+                        await window.productsClient
+                            .from('box_contents')
+                            .delete()
+                            .eq('box_id', boxId);
+
+                        if (!sanitized.length) {
+                            return [];
+                        }
+
+                        const { data, error } = await window.productsClient
+                            .from('box_contents')
+                            .insert(sanitized)
+                            .select();
+
+                        if (error) {
+                            throw error;
+                        }
+
+                        return data || [];
+                    } catch (error) {
+                        console.error('❌ Error actualizando contenido de la caja:', error);
                         throw error;
                     }
                 },
@@ -2964,15 +2708,7 @@
                 try {
                     const boxes = await boxManager.getAllBoxes();
                     console.log(`📦 Loaded ${boxes.length} boxes`);
-                    
-                    // Populate box selectors
-                    const manageBoxSelect = document.getElementById('manageBoxSelect');
-                    if (manageBoxSelect) {
-                        manageBoxSelect.innerHTML = '<option value="">Seleccionar caja...</option>';
-                        boxes.forEach(box => {
-                            manageBoxSelect.innerHTML += `<option value="${box.id}">${box.name} (${box.category})</option>`;
-                        });
-                    }
+                    await refreshBoxesSelector(null, boxes);
                 } catch (error) {
                     console.warn('⚠️ Error loading boxes:', error);
                 }
@@ -3008,109 +2744,314 @@
             });
         }
 
-        async function loadStats() {
-            try {
-                // Use storeService directly instead of productManager
-                let report, products;
-                
-                if (typeof window.getInventoryReport === 'function') {
-                    const result = await window.getInventoryReport();
-                    report = result.report || result;
-                    products = result.products || allProducts;
-                } else {
-                    // Fallback: calculate stats from allProducts
-                    products = allProducts;
-                    const lowStockProducts = products.filter(p => (p.stock || 0) <= (p.min_stock || 0));
-                    const categories = {};
-                    products.forEach(p => {
-                        if (p.category) {
-                            categories[p.category] = (categories[p.category] || 0) + 1;
-                        }
-                    });
-                    
-                    report = {
-                        totalProducts: products.length,
-                        totalStock: products.reduce((sum, p) => sum + (p.stock || 0), 0),
-                        lowStockProducts: lowStockProducts,
-                        lowStockCount: lowStockProducts.length,
-                        outOfStockProducts: products.filter(p => (p.stock || 0) === 0),
-                        totalValue: products.reduce((sum, p) => sum + ((p.stock || 0) * (p.priceKg || p.price_per_kg || 0)), 0),
-                        categories: categories
+        function populateBoxSelects() {
+            const priceSelect = document.getElementById('boxPriceSelect');
+            const stockSelect = document.getElementById('boxStockSelect');
+            const categorySelect = document.getElementById('boxCategorySelect');
+
+            if (priceSelect) {
+                priceSelect.innerHTML = '<option value="">Seleccionar caja...</option>';
+                allBoxes.forEach(box => {
+                    priceSelect.innerHTML += `<option value="${box.id}">${escapeHtml(box.name)} (${formatPrice(box.price_cop || 0)})</option>`;
+                });
+            }
+
+            if (stockSelect) {
+                stockSelect.innerHTML = '<option value="">Seleccionar caja...</option>';
+                allBoxes.forEach(box => {
+                    const stockLabel = typeof box.stock_quantity === 'number' ? `${formatNumber(box.stock_quantity)} uds` : 'Sin stock';
+                    stockSelect.innerHTML += `<option value="${box.id}">${escapeHtml(box.name)} (${stockLabel})</option>`;
+                });
+            }
+
+            if (categorySelect) {
+                const categories = new Set();
+                allBoxes.forEach(box => {
+                    if (box?.category) {
+                        categories.add(box.category);
+                    }
+                });
+
+                const currentValue = categorySelect.value;
+                categorySelect.innerHTML = '<option value="">Todas las categorías</option>';
+                Array.from(categories).sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' })).forEach(category => {
+                    categorySelect.innerHTML += `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`;
+                });
+
+                if (currentValue) {
+                    categorySelect.value = currentValue;
+                }
+            }
+        }
+
+        function buildBoxReport(boxes) {
+            const list = Array.isArray(boxes) ? boxes : [];
+
+            if (!list.length) {
+                return {
+                    totalBoxes: 0,
+                    activeBoxes: 0,
+                    inactiveBoxes: 0,
+                    featuredBoxes: 0,
+                    featuredActive: 0,
+                    totalStock: 0,
+                    totalValue: 0,
+                    avgPrice: 0,
+                    categories: {},
+                    hasData: false
+                };
+            }
+
+            let totalStock = 0;
+            let totalValue = 0;
+            let totalPrice = 0;
+            const categories = {};
+
+            const totalBoxes = list.length;
+            const activeBoxes = list.filter(box => box?.available !== false).length;
+            const featuredBoxes = list.filter(box => box?.featured).length;
+            const featuredActive = list.filter(box => box?.featured && box?.available !== false).length;
+
+            list.forEach(box => {
+                const stock = parseInt(box.stock_quantity ?? box.stock ?? 0, 10) || 0;
+                const price = parseFloat(box.price_cop ?? 0) || 0;
+                const category = box.category || 'Sin categoría';
+
+                totalStock += stock;
+                totalValue += stock * price;
+                totalPrice += price;
+
+                if (!categories[category]) {
+                    categories[category] = {
+                        count: 0,
+                        active: 0,
+                        featured: 0,
+                        totalValue: 0,
+                        totalStock: 0
                     };
                 }
-                
-                if (report) {
-                    const statsContainer = document.getElementById('statsContainer');
-                    if (!statsContainer) {
-                        console.warn('Stats container not found');
-                        return;
-                    }
-                    
-                    const activeProducts = products.filter(p => p.available);
-                    const avgPrice = products.length > 0 ? products.reduce((sum, p) => sum + p.price_per_kg, 0) / products.length : 0;
-                    
-                    statsContainer.innerHTML = `
-                        <div class="stat-card">
-                            <i class="fas fa-boxes"></i>
-                            <div class="value">${report.totalProducts}</div>
-                            <div class="label">Total Productos</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-check-circle"></i>
-                            <div class="value">${activeProducts.length}</div>
-                            <div class="label">Productos Activos</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <div class="value">${report.lowStockCount || 0}</div>
-                            <div class="label">Stock Bajo</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-dollar-sign"></i>
-                            <div class="value">${formatPrice(report.totalValue || 0)}</div>
-                            <div class="label">Valor Total</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-tag"></i>
-                            <div class="value">${formatPrice(avgPrice)}</div>
-                            <div class="label">Precio Promedio</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-layer-group"></i>
-                            <div class="value">${report.categories ? Object.keys(report.categories).length : 0}</div>
-                            <div class="label">Categorías</div>
-                        </div>
-                    `;
-                    statsContainer.classList.remove('hidden');
-                    
-                    // Load charts after stats
-                    await loadCharts(report, products);
+
+                categories[category].count += 1;
+                categories[category].totalStock += stock;
+                categories[category].totalValue += stock * price;
+
+                if (box?.available !== false) {
+                    categories[category].active += 1;
                 }
+
+                if (box?.featured) {
+                    categories[category].featured += 1;
+                }
+            });
+
+            const inactiveBoxes = totalBoxes - activeBoxes;
+            const avgPrice = totalBoxes > 0 ? totalPrice / totalBoxes : 0;
+
+            return {
+                totalBoxes,
+                activeBoxes,
+                inactiveBoxes,
+                featuredBoxes,
+                featuredActive,
+                totalStock,
+                totalValue,
+                avgPrice,
+                categories,
+                hasData: true
+            };
+        }
+
+        async function loadStats() {
+            try {
+                let report = null;
+                let products = Array.isArray(allProducts) ? allProducts : [];
+
+                if (typeof window.getInventoryReport === 'function') {
+                    try {
+                        const result = await window.getInventoryReport();
+                        report = result?.report || result || null;
+                        if (Array.isArray(result?.products)) {
+                            products = result.products;
+                        }
+                    } catch (inventoryError) {
+                        console.warn('⚠️ Error obteniendo inventario, usando datos en memoria:', inventoryError);
+                    }
+                }
+
+                if (!report) {
+                    const lowStockProducts = products.filter(product => {
+                        const stock = parseFloat(product.stock ?? product.stock_kg ?? 0);
+                        const minStock = parseFloat(product.min_stock ?? product.min_stock_kg ?? 0);
+                        return stock <= minStock;
+                    });
+
+                    const categories = {};
+                    products.forEach(product => {
+                        const category = product.category || 'Sin categoría';
+                        if (!categories[category]) {
+                            categories[category] = {
+                                count: 0,
+                                totalValue: 0,
+                                totalStock: 0,
+                                lowStock: 0
+                            };
+                        }
+
+                        const stock = parseFloat(product.stock ?? product.stock_kg ?? 0) || 0;
+                        const price = parseFloat(product.price_per_kg ?? product.priceKg ?? 0) || 0;
+                        const minStock = parseFloat(product.min_stock ?? product.min_stock_kg ?? 0) || 0;
+                        categories[category].count += 1;
+                        categories[category].totalValue += stock * price;
+                        categories[category].totalStock += stock;
+                        if (stock <= minStock) {
+                            categories[category].lowStock += 1;
+                        }
+                    });
+
+                    report = {
+                        totalProducts: products.length,
+                        totalStock: products.reduce((sum, product) => {
+                            const stock = parseFloat(product.stock ?? product.stock_kg ?? 0) || 0;
+                            return sum + stock;
+                        }, 0),
+                        lowStockProducts,
+                        lowStockCount: lowStockProducts.length,
+                        outOfStockProducts: products.filter(product => {
+                            const stock = parseFloat(product.stock ?? product.stock_kg ?? 0) || 0;
+                            return stock === 0;
+                        }),
+                        totalValue: products.reduce((sum, product) => {
+                            const stock = parseFloat(product.stock ?? product.stock_kg ?? 0) || 0;
+                            const price = parseFloat(product.price_per_kg ?? product.priceKg ?? 0) || 0;
+                            return sum + stock * price;
+                        }, 0),
+                        categories
+                    };
+                }
+
+                const statsContainer = document.getElementById('statsContainer');
+                if (!statsContainer) {
+                    console.warn('Stats container not found');
+                    return;
+                }
+
+                const boxes = Array.isArray(allBoxes) ? allBoxes : [];
+                const boxReport = buildBoxReport(boxes);
+
+                const activeProducts = products.filter(product => product?.available !== false);
+                const avgPrice = products.length > 0
+                    ? products.reduce((sum, product) => {
+                        const price = parseFloat(product.price_per_kg ?? product.priceKg ?? 0) || 0;
+                        return sum + price;
+                    }, 0) / products.length
+                    : 0;
+
+                const productCards = `
+                    <div class="stat-subtitle">Productos</div>
+                    <div class="stat-card">
+                        <i class="fas fa-boxes"></i>
+                        <div class="value">${formatNumber(report?.totalProducts ?? products.length ?? 0)}</div>
+                        <div class="label">Total Productos</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="value">${formatNumber(activeProducts.length)}</div>
+                        <div class="label">Productos Activos</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="value">${formatNumber(report?.lowStockCount || 0)}</div>
+                        <div class="label">Stock Bajo</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div class="value">${formatPrice(report?.totalValue || 0)}</div>
+                        <div class="label">Valor Total</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-tag"></i>
+                        <div class="value">${formatPrice(avgPrice)}</div>
+                        <div class="label">Precio Promedio</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-layer-group"></i>
+                        <div class="value">${formatNumber(report?.categories ? Object.keys(report.categories).length : 0)}</div>
+                        <div class="label">Categorías</div>
+                    </div>
+                `;
+
+                const boxCategoryCount = boxReport?.categories ? Object.keys(boxReport.categories).length : 0;
+                const boxCards = `
+                    <div class="stat-subtitle">Cajas</div>
+                    <div class="stat-card">
+                        <i class="fas fa-box-open"></i>
+                        <div class="value">${formatNumber(boxReport.totalBoxes)}</div>
+                        <div class="label">Total Cajas</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check"></i>
+                        <div class="value">${formatNumber(boxReport.activeBoxes)}</div>
+                        <div class="label">Cajas Activas</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <div class="value">${formatNumber(boxReport.featuredBoxes)}</div>
+                        <div class="label">Cajas Destacadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-dollar-sign"></i>
+                        <div class="value">${formatPrice(boxReport.totalValue)}</div>
+                        <div class="label">Valor Inventario Cajas</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-balance-scale"></i>
+                        <div class="value">${formatPrice(boxReport.avgPrice)}</div>
+                        <div class="label">Precio Promedio Caja</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-th-large"></i>
+                        <div class="value">${formatNumber(boxCategoryCount)}</div>
+                        <div class="label">Categorías de Cajas</div>
+                    </div>
+                `;
+
+                statsContainer.innerHTML = productCards + boxCards;
+                statsContainer.classList.remove('hidden');
+
+                await loadCharts(report, products, boxReport);
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
         }
 
         // Load all charts
-        async function loadCharts(report, products) {
+        async function loadCharts(report, products, boxReport) {
             try {
                 // Check if Chart.js is loaded
                 if (typeof Chart === 'undefined') {
                     console.warn('Chart.js not loaded yet, retrying in 1 second...');
-                    setTimeout(() => loadCharts(report, products), 1000);
+                    setTimeout(() => loadCharts(report, products, boxReport), 1000);
                     return;
                 }
                 
-                loadCategoriesChart(report.categories);
-                loadPricesChart(products);
-                loadStockChart(products);
-                loadRevenueChart(report.categories);
+                loadCategoriesChart(report?.categories || {});
+                loadPricesChart(Array.isArray(products) ? products : []);
+                loadStockChart(Array.isArray(products) ? products : []);
+                loadRevenueChart(report?.categories || {});
+
+                if (boxReport) {
+                    loadBoxCategoryChart(boxReport.categories || {});
+                    loadBoxStatusChart(boxReport);
+                    loadBoxValueChart(Array.isArray(allBoxes) ? allBoxes : []);
+                }
             } catch (error) {
                 console.error('Error loading charts:', error);
             }
         }
 
-        // Global functions for buttons
+    // ===== FUNCIONES DE GESTIÓN DE LA TIENDA =====
+
+    // --- Precios de productos ---
         window.updateSinglePrice = async function() {
             const productId = document.getElementById('priceProductSelect').value;
             const newPrice = parseFloat(document.getElementById('newPrice').value);
@@ -3197,7 +3138,8 @@
             }
         };
 
-        window.updateStock = async function() {
+    // --- Inventario de productos ---
+    window.updateStock = async function() {
             const productId = document.getElementById('stockProductSelect').value;
             const stockChange = parseInt(document.getElementById('stockChange').value);
             const reason = document.getElementById('stockReason').value || 'Manual adjustment';
@@ -3278,7 +3220,8 @@
             }
         };
 
-        window.showLowStock = async function() {
+    // --- Reportes e inventario general ---
+    window.showLowStock = async function() {
             try {
                 showLoading('Cargando productos con stock bajo...');
                 const lowStockProducts = await productManager.getLowStockProducts();
@@ -3439,7 +3382,8 @@
         };
 
         // Show All Products in Elegant Table
-        window.showAllProducts = async function() {
+    // --- Catálogo de productos ---
+    window.showAllProducts = async function() {
             try {
                 showLoading('Cargando todos los productos...');
                 const products = await productManager.getAllProducts();
@@ -3589,9 +3533,301 @@
             }
         };
 
-        // ===== FUNCIONES DE GESTIÓN DE CAJAS =====
-        
-        window.showAllBoxes = async function() {
+    // ===== FUNCIONES DE GESTIÓN DE CAJAS =====
+
+    // --- Precios de cajas ---
+        window.updateBoxPriceSingle = async function() {
+            const select = document.getElementById('boxPriceSelect');
+            const priceInput = document.getElementById('boxNewPrice');
+            const usdInput = document.getElementById('boxNewPriceUSD');
+            const reasonInput = document.getElementById('boxPriceReason');
+
+            if (!select || !select.value) {
+                showWarning('Caja no seleccionada', 'Elige una caja para actualizar su precio');
+                return;
+            }
+
+            const boxId = Number(select.value);
+            const box = getCachedBox(boxId);
+            if (!box) {
+                showAlert('No se encontró la caja seleccionada. Refresca la lista e inténtalo nuevamente.', 'danger');
+                return;
+            }
+
+            const rawPrice = parseFloat(priceInput?.value);
+            if (!Number.isFinite(rawPrice) || rawPrice <= 0) {
+                showWarning('Precio inválido', 'Ingresa un precio COP mayor a 0');
+                return;
+            }
+
+            const normalizedPrice = Math.round(rawPrice * 100) / 100;
+            const rawUsd = parseFloat(usdInput?.value);
+            const normalizedUsd = Number.isFinite(rawUsd) && rawUsd > 0
+                ? Math.round(rawUsd * 100) / 100
+                : Math.round(Number(box.price_usd || 0) * 100) / 100;
+            const reason = reasonInput?.value?.trim() || 'Actualización manual de precio';
+
+            const previousPrice = Number(box.price_cop || 0);
+            const percentChange = previousPrice > 0
+                ? ((normalizedPrice - previousPrice) / previousPrice) * 100
+                : 0;
+
+            let confirmMessage = `¿Actualizar el precio de "${box.name}" a ${formatPrice(normalizedPrice)}?`;
+            if (previousPrice > 0 && Math.abs(percentChange) >= 15) {
+                confirmMessage += `\n\nEl cambio equivale a ${percentChange.toFixed(1)}% respecto al precio actual (${formatPrice(previousPrice)}).`;
+            }
+
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            try {
+                showLoading('Actualizando precio de la caja...');
+                await boxManager.updateBoxPrice(boxId, normalizedPrice, normalizedUsd, reason);
+                showSuccess('Precio actualizado', `${escapeHtml(box.name)} ahora cuesta ${formatPrice(normalizedPrice)}`);
+
+                if (priceInput) priceInput.value = '';
+                if (usdInput) usdInput.value = '';
+                if (reasonInput) reasonInput.value = '';
+
+                await refreshBoxesSelector(boxId);
+                await loadStats();
+            } catch (error) {
+                console.error('Error actualizando precio de caja:', error);
+                showError('No se pudo actualizar el precio', error.message || String(error));
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.applyBoxPriceIncrease = async function() {
+            const percentInput = document.getElementById('boxIncreasePercent');
+            const categorySelect = document.getElementById('boxCategorySelect');
+
+            const percent = parseFloat(percentInput?.value);
+            if (!Number.isFinite(percent) || percent === 0) {
+                showWarning('Porcentaje inválido', 'Ingresa un porcentaje mayor a 0');
+                return;
+            }
+
+            if (percent > 50 || percent < -50) {
+                showWarning('Porcentaje fuera de rango', 'Limita los ajustes masivos a ±50%');
+                return;
+            }
+
+            const category = categorySelect?.value || '';
+            const confirmLabel = category
+                ? `las cajas de la categoría "${category}"`
+                : 'todas las cajas';
+
+            if (!confirm(`¿Aplicar un ajuste del ${percent}% a ${confirmLabel}?`)) {
+                return;
+            }
+
+            try {
+                showLoading('Aplicando aumento de precios en cajas...');
+
+                const allAvailableBoxes = await boxManager.getAllBoxes();
+                const normalizedCategory = category.trim().toLowerCase();
+                const targetBoxes = normalizedCategory
+                    ? allAvailableBoxes.filter(box => (box.category || '').toLowerCase() === normalizedCategory)
+                    : allAvailableBoxes;
+
+                if (!targetBoxes.length) {
+                    showWarning('Sin cajas objetivo', 'No se encontraron cajas para actualizar con ese criterio');
+                    return;
+                }
+
+                let updatedCount = 0;
+                const errors = [];
+
+                for (const box of targetBoxes) {
+                    const basePrice = Number(box.price_cop || 0);
+                    const baseUsd = Number(box.price_usd || 0);
+                    const multiplier = 1 + percent / 100;
+                    const newPrice = Math.round(basePrice * multiplier * 100) / 100;
+                    const newUsd = baseUsd > 0 ? Math.round(baseUsd * multiplier * 100) / 100 : baseUsd;
+
+                    try {
+                        await boxManager.updateBoxPrice(
+                            box.id,
+                            newPrice,
+                            newUsd,
+                            `Ajuste masivo ${percent}%${category ? ` (${category})` : ''}`.trim()
+                        );
+                        updatedCount++;
+                    } catch (error) {
+                        console.error(`Error actualizando ${box.name}:`, error);
+                        errors.push(`${box.name}: ${error.message || String(error)}`);
+                    }
+                }
+
+                if (updatedCount === 0 && errors.length) {
+                    const list = `<ul>${errors.map(msg => `<li>${escapeHtml(msg)}</li>`).join('')}</ul>`;
+                    showError('No se aplicaron cambios', list);
+                } else {
+                    const detail = `${updatedCount} de ${targetBoxes.length} cajas actualizadas${errors.length ? ` (errores: ${errors.length})` : ''}.`;
+                    if (errors.length) {
+                        showWarning('Ajuste parcial aplicado', detail);
+                    } else {
+                        showSuccess('Ajuste aplicado', detail);
+                    }
+                }
+
+                await refreshBoxesSelector();
+                await loadStats();
+
+                if (percentInput) percentInput.value = '';
+            } catch (error) {
+                console.error('Error aplicando aumento de cajas:', error);
+                showAlert('Error aplicando aumento: ' + (error.message || String(error)), 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.viewBoxPriceHistory = async function() {
+            const select = document.getElementById('boxPriceSelect');
+            const boxId = select && select.value ? Number(select.value) : null;
+            const selectedBox = boxId ? getCachedBox(boxId) : null;
+
+            try {
+                showLoading('Cargando historial de precios de cajas...');
+                const history = await boxManager.getBoxPriceHistory(boxId || undefined, boxId ? 40 : 60);
+
+                if (!history.length) {
+                    showAlert('No hay historial de precios registrado para esta selección.', 'info');
+                    return;
+                }
+
+                let html = `
+                    <h3>${selectedBox ? `Historial de precio - ${escapeHtml(selectedBox.name)}` : 'Historial reciente de precios de cajas'}</h3>
+                    <div class="table-container">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    ${selectedBox ? '' : '<th>Caja</th>'}
+                                    <th>Precio anterior</th>
+                                    <th>Precio nuevo</th>
+                                    <th>Variación</th>
+                                    <th>Motivo</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                history.forEach(entry => {
+                    const boxInfo = entry.current_boxes || {};
+                    const name = selectedBox?.name || boxInfo.name || `Caja #${entry.box_id}`;
+                    const oldPrice = Number(entry.old_price_cop || 0);
+                    const newPrice = Number(entry.new_price_cop || 0);
+                    const diff = newPrice - oldPrice;
+                    const percent = oldPrice > 0 ? (diff / oldPrice) * 100 : 0;
+                    const sign = diff > 0 ? '+' : diff < 0 ? '-' : '';
+                    const changeColor = diff > 0 ? '#28a745' : diff < 0 ? '#dc3545' : '#6c757d';
+                    const changeText = diff === 0
+                        ? 'Sin cambios'
+                        : `${sign}${formatPrice(Math.abs(diff))} (${sign}${Math.abs(percent).toFixed(1)}%)`;
+                    const reason = entry.change_reason ? escapeHtml(entry.change_reason) : 'Sin motivo';
+                    const timestamp = entry.created_at
+                        ? new Date(entry.created_at).toLocaleString('es-CO')
+                        : 'Sin fecha';
+
+                    html += `
+                        <tr>
+                            ${selectedBox ? '' : `<td>${escapeHtml(name)}</td>`}
+                            <td>${formatPrice(oldPrice)}</td>
+                            <td>${formatPrice(newPrice)}</td>
+                            <td><span style="color:${changeColor}; font-weight:600;">${changeText}</span></td>
+                            <td>${reason}</td>
+                            <td>${escapeHtml(timestamp)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                showModal(html);
+            } catch (error) {
+                console.error('Error obteniendo historial de precios de cajas:', error);
+                showAlert('Error cargando historial: ' + (error.message || String(error)), 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+    // --- Inventario de cajas ---
+    window.updateBoxStock = async function() {
+            const select = document.getElementById('boxStockSelect');
+            const changeInput = document.getElementById('boxStockChange');
+            const reasonInput = document.getElementById('boxStockReason');
+
+            if (!select || !select.value) {
+                showWarning('Caja no seleccionada', 'Elige una caja para ajustar su inventario');
+                return;
+            }
+
+            const boxId = Number(select.value);
+            const box = getCachedBox(boxId);
+            if (!box) {
+                showAlert('No se encontró la caja seleccionada. Refresca la lista e inténtalo nuevamente.', 'danger');
+                return;
+            }
+
+            const delta = parseInt(changeInput?.value, 10);
+            if (!Number.isFinite(delta) || delta === 0) {
+                showWarning('Cantidad inválida', 'Ingresa un valor diferente de cero para ajustar el stock');
+                return;
+            }
+
+            const currentStock = Number(box.stock_quantity || 0);
+            const projectedStock = currentStock + delta;
+            if (projectedStock < 0) {
+                if (!confirm('El ajuste dejará el stock en 0. ¿Deseas continuar?')) {
+                    return;
+                }
+            }
+
+            const targetStock = Math.max(0, projectedStock);
+            const summary = `Stock actual: ${currentStock} → Stock resultante: ${targetStock}`;
+            const confirmText = `¿Aplicar un cambio de ${delta > 0 ? '+' : ''}${delta} unidades a "${box.name}"?\n${summary}`;
+
+            if (!confirm(confirmText)) {
+                return;
+            }
+
+            const reason = reasonInput?.value?.trim() || 'Ajuste manual de inventario';
+
+            try {
+                showLoading('Actualizando inventario de la caja...');
+                const result = await boxManager.adjustBoxStock(boxId, delta);
+                const newStock = Number(result?.newStock ?? targetStock);
+
+                const reasonSuffix = reason
+                    ? `<br><small style="color:#9aa6b2;">Motivo: ${escapeHtml(reason)}</small>`
+                    : '';
+                showSuccess('Inventario actualizado', `${escapeHtml(box.name)} ahora tiene ${newStock} unidades disponibles${reasonSuffix}`);
+
+                if (changeInput) changeInput.value = '';
+                if (reasonInput) reasonInput.value = '';
+
+                await refreshBoxesSelector(boxId);
+                await loadStats();
+            } catch (error) {
+                console.error('Error ajustando stock de caja:', error);
+                showError('No se pudo actualizar el inventario', error.message || String(error));
+            } finally {
+                hideLoading();
+            }
+        };
+
+    // --- Catálogo de cajas ---
+    window.showAllBoxes = async function() {
             showLoading('Cargando todas las cajas...');
             try {
                 const boxes = await boxManager.getAllBoxes();
@@ -3621,19 +3857,20 @@
                 
                 boxes.forEach(box => {
                     const isFeatured = box.featured ? '<i class="fas fa-star" style="color: #ffc107; margin-left: 0.5rem;" title="Destacada"></i>' : '';
+                    const itemsLabel = Number.isFinite(box.total_items) ? `${box.total_items} items` : `${(box.contents?.length || 0)} items`;
                     
                     html += `
                         <tr>
                             <td>
                                 <div class="product-name">
                                     <i class="fas fa-box" style="color: #8bda01;"></i>
-                                    ${box.name}${isFeatured}
+                                    ${escapeHtml(box.name)}${isFeatured}
                                 </div>
                             </td>
-                            <td><span class="category-badge">${box.category}</span></td>
+                            <td><span class="category-badge">${escapeHtml(box.category || 'Caja')}</span></td>
                             <td class="price">${formatPrice(box.price_cop)}</td>
-                            <td class="price">$${box.price_usd}</td>
-                            <td>${box.total_items} items</td>
+                            <td class="price">$${Number(box.price_usd || 0).toFixed(2)}</td>
+                            <td>${itemsLabel}</td>
                             <td>
                                 <span class="status-badge status-${box.available ? 'active' : 'inactive'}">
                                     ${box.available ? 'Activa' : 'Inactiva'}
@@ -3646,6 +3883,15 @@
                                     </button>
                                     <button class="btn-sm btn-warning" onclick="editBox(${box.id})" title="Editar caja">
                                         <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-sm btn-success" onclick="toggleBoxAvailability(${box.id}, ${box.available ? 'true' : 'false'})" title="${box.available ? 'Desactivar caja' : 'Activar caja'}">
+                                        <i class="fas fa-toggle-on"></i>
+                                    </button>
+                                    <button class="btn-sm btn-secondary" onclick="toggleBoxFeatured(${box.id}, ${box.featured ? 'true' : 'false'})" title="${box.featured ? 'Quitar destacada' : 'Marcar como destacada'}">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button class="btn-sm btn-danger" onclick="deleteBoxById(${box.id}, ${JSON.stringify(box.name || '')})" title="Eliminar caja">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             </td>
@@ -3663,10 +3909,11 @@
             }
         };
 
-        window.showAddBoxModal = function() {
+    // --- Formularios y acciones avanzadas de cajas ---
+    window.showAddBoxModal = function() {
             const html = `
                 <h3>Agregar Nueva Caja</h3>
-                <form id="addBoxForm">
+                <form id="addBoxForm" class="box-form">
                     <div class="form-grid">
                         <div class="input-group">
                             <label for="boxName">Nombre:</label>
@@ -3678,24 +3925,501 @@
                                 <option value="Caja Premium">Caja Premium</option>
                                 <option value="Caja Familiar">Caja Familiar</option>
                                 <option value="Caja Exótica">Caja Exótica</option>
+                                <option value="Caja Empresarial">Caja Empresarial</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label for="boxPriceCOP">Precio COP:</label>
-                            <input type="number" id="boxPriceCOP" required>
+                            <input type="number" id="boxPriceCOP" min="0" step="0.01" required>
                         </div>
                         <div class="input-group">
                             <label for="boxPriceUSD">Precio USD:</label>
-                            <input type="number" id="boxPriceUSD" step="0.25" required>
+                            <input type="number" id="boxPriceUSD" min="0" step="0.01" placeholder="Opcional">
                         </div>
+                        <div class="input-group">
+                            <label for="boxWeight">Peso estimado (kg):</label>
+                            <input type="number" id="boxWeight" min="0" step="0.1" value="2.5">
+                        </div>
+                        <div class="input-group">
+                            <label for="boxItems">Total de items:</label>
+                            <input type="number" id="boxItems" min="1" value="5">
+                        </div>
+                        <div class="input-group">
+                            <label for="boxStock">Stock disponible:</label>
+                            <input type="number" id="boxStock" min="0" value="10">
+                        </div>
+                        <div class="input-group">
+                            <label for="boxImage">Imagen (URL):</label>
+                            <input type="url" id="boxImage" placeholder="https://ejemplo.com/imagen.jpg">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="boxDescription">Descripción:</label>
+                        <textarea id="boxDescription" rows="3" placeholder="Descripción breve de la caja"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="boxTags">Tags (separados por coma):</label>
+                        <input type="text" id="boxTags" placeholder="orgánica, familiar, temporada">
+                    </div>
+                    <div class="form-group">
+                        <label for="boxContents">Contenido (una fruta por línea):</label>
+                        <textarea id="boxContents" rows="4" placeholder="Mango\nBanano\nPiña"></textarea>
+                    </div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="boxAvailable" checked>
+                            <span class="checkmark"></span>
+                            Disponible
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="boxFeatured">
+                            <span class="checkmark"></span>
+                            Destacada
+                        </label>
                     </div>
                     <div class="form-actions">
                         <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Agregar</button>
+                        <button type="submit" class="btn btn-success">Guardar Caja</button>
                     </div>
                 </form>
             `;
             showModal(html);
+
+            const form = document.getElementById('addBoxForm');
+            if (!form) {
+                return;
+            }
+
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+
+                const name = document.getElementById('boxName').value.trim();
+                if (!name) {
+                    showAlert('Ingresa un nombre válido para la caja.', 'warning');
+                    return;
+                }
+
+                const priceCOP = parseFloat(document.getElementById('boxPriceCOP').value);
+                if (!Number.isFinite(priceCOP) || priceCOP <= 0) {
+                    showAlert('El precio en COP debe ser mayor que cero.', 'warning');
+                    return;
+                }
+
+                const priceUSDInput = document.getElementById('boxPriceUSD').value;
+                const priceUSD = priceUSDInput ? parseFloat(priceUSDInput) : 0;
+                const weight = parseFloat(document.getElementById('boxWeight').value) || 0;
+                const items = parseInt(document.getElementById('boxItems').value, 10) || 0;
+                const stock = parseInt(document.getElementById('boxStock').value, 10) || 0;
+                const tags = document.getElementById('boxTags').value
+                    .split(',')
+                    .map(tag => tag.trim())
+                    .filter(Boolean);
+                const contentsRaw = document.getElementById('boxContents').value
+                    .split('\n')
+                    .map(item => item.trim())
+                    .filter(Boolean);
+
+                const available = document.getElementById('boxAvailable').checked;
+                const featured = document.getElementById('boxFeatured').checked;
+                const createdBy = typeof window.getAdminUser === 'function' ? window.getAdminUser() : 'admin';
+
+                const payload = {
+                    name,
+                    category: document.getElementById('boxCategory').value || 'Caja Premium',
+                    description: document.getElementById('boxDescription').value.trim() || null,
+                    image_url: document.getElementById('boxImage').value.trim() || null,
+                    price_cop: Number.isFinite(priceCOP) ? priceCOP : 0,
+                    price_usd: Number.isFinite(priceUSD) && priceUSD > 0 ? priceUSD : 0,
+                    estimated_weight_kg: Number.isFinite(weight) ? weight : 0,
+                    total_items: items > 0 ? items : contentsRaw.length,
+                    stock_quantity: stock,
+                    available,
+                    in_stock: available && stock > 0,
+                    featured,
+                    tags,
+                    slug: slugify(name),
+                    created_by: createdBy
+                };
+
+                try {
+                    showLoading('Guardando nueva caja...');
+                    const created = await boxManager.addBox(payload);
+                    if (created?.id && contentsRaw.length) {
+                        await boxManager.updateBoxContents(created.id, contentsRaw);
+                    }
+                    showAlert('Caja creada correctamente.', 'success');
+                    closeModal();
+                    if (created?.id) {
+                        await refreshBoxesSelector(created.id);
+                    } else {
+                        await refreshBoxesSelector();
+                    }
+                    await loadStats();
+                } catch (error) {
+                    console.error('Error creando caja:', error);
+                    showAlert('Error creando la caja: ' + (error.message || error), 'danger');
+                } finally {
+                    hideLoading();
+                }
+            }, { once: true });
+        };
+
+        window.editSelectedBox = function() {
+            const select = document.getElementById('manageBoxSelect');
+            if (!select || !select.value) {
+                showAlert('Selecciona una caja para editar.', 'warning');
+                return;
+            }
+            window.editBox(Number(select.value));
+        };
+
+        window.deleteSelectedBox = async function() {
+            const select = document.getElementById('manageBoxSelect');
+            if (!select || !select.value) {
+                showAlert('Selecciona una caja para eliminar.', 'warning');
+                return;
+            }
+            const cached = getCachedBox(select.value);
+            await window.deleteBoxById(Number(select.value), cached?.name || 'esta caja');
+        };
+
+        window.updateBoxStatus = async function() {
+            const select = document.getElementById('manageBoxSelect');
+            const statusSelect = document.getElementById('boxStatus');
+
+            if (!select || !select.value) {
+                showAlert('Selecciona una caja para actualizar.', 'warning');
+                return;
+            }
+
+            if (!statusSelect || !statusSelect.value) {
+                showAlert('Selecciona un estado para aplicar.', 'warning');
+                return;
+            }
+
+            try {
+                showLoading('Actualizando estado de la caja...');
+                await boxManager.updateBoxStatus(Number(select.value), statusSelect.value);
+                showAlert('Estado de la caja actualizado correctamente.', 'success');
+                statusSelect.value = '';
+                await refreshBoxesSelector(select.value);
+                await loadStats();
+            } catch (error) {
+                console.error('Error actualizando estado de la caja:', error);
+                showAlert('Error actualizando el estado: ' + (error.message || error), 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.deleteBoxById = async function(boxId, boxName = '') {
+            const numericId = Number(boxId);
+            if (!numericId) {
+                showAlert('Identificador de caja inválido.', 'danger');
+                return;
+            }
+
+            const label = boxName || getCachedBox(numericId)?.name || 'esta caja';
+            if (!confirm(`¿Eliminar "${label}" de forma permanente?`)) {
+                return;
+            }
+
+            try {
+                showLoading('Eliminando caja...');
+                await boxManager.deleteBox(numericId);
+                showAlert('Caja eliminada correctamente.', 'success');
+                closeModal();
+                await refreshBoxesSelector();
+                await loadStats();
+            } catch (error) {
+                console.error('Error eliminando la caja:', error);
+                showAlert('Error eliminando la caja: ' + (error.message || error), 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.toggleBoxAvailability = async function(boxId, isActive) {
+            const numericId = Number(boxId);
+            if (!numericId) {
+                return;
+            }
+
+            const targetStatus = isActive ? 'inactive' : 'active';
+            try {
+                showLoading('Actualizando disponibilidad...');
+                await boxManager.updateBoxStatus(numericId, targetStatus);
+                showAlert(`Caja ${isActive ? 'desactivada' : 'activada'} correctamente.`, 'success');
+                await refreshBoxesSelector(numericId);
+                await loadStats();
+                if (document.getElementById('modal')?.style.display === 'flex') {
+                    await window.showAllBoxes();
+                }
+            } catch (error) {
+                console.error('Error actualizando disponibilidad:', error);
+                showAlert('Error actualizando disponibilidad: ' + (error.message || error), 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.toggleBoxFeatured = async function(boxId, isFeatured) {
+            const numericId = Number(boxId);
+            if (!numericId) {
+                return;
+            }
+
+            const targetStatus = isFeatured ? 'unfeatured' : 'featured';
+            try {
+                showLoading('Actualizando destacado...');
+                await boxManager.updateBoxStatus(numericId, targetStatus);
+                showAlert(`Caja ${isFeatured ? 'sin destaque' : 'marcada como destacada'}.`, 'success');
+                await refreshBoxesSelector(numericId);
+                await loadStats();
+                if (document.getElementById('modal')?.style.display === 'flex') {
+                    await window.showAllBoxes();
+                }
+            } catch (error) {
+                console.error('Error actualizando destacado:', error);
+                showAlert('Error actualizando destacado: ' + (error.message || error), 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.viewBoxDetails = async function(boxId) {
+            const numericId = Number(boxId);
+            if (!numericId) {
+                showAlert('Identificador de caja inválido.', 'danger');
+                return;
+            }
+
+            try {
+                const box = await boxManager.getBoxWithContents(numericId);
+                if (!box) {
+                    showAlert('No se pudo cargar la caja seleccionada.', 'danger');
+                    return;
+                }
+
+                const tags = Array.isArray(box.tags) && box.tags.length
+                    ? box.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')
+                    : '<span class="tag muted">Sin tags</span>';
+
+                const contents = Array.isArray(box.contents) && box.contents.length
+                    ? `<ul class="box-contents-list">${box.contents.map(item => `<li>${escapeHtml(item.product_name || item)}</li>`).join('')}</ul>`
+                    : '<p style="color: #666;">Sin contenido registrado.</p>';
+
+                const html = `
+                    <div class="box-details">
+                        <h3>${escapeHtml(box.name)}</h3>
+                        <p style="color: #666;">${escapeHtml(box.description || 'Sin descripción')}</p>
+                        <div class="box-info-grid">
+                            <div><strong>Categoría:</strong> ${escapeHtml(box.category || 'Caja')}</div>
+                            <div><strong>Precio COP:</strong> ${formatPrice(box.price_cop)}</div>
+                            <div><strong>Precio USD:</strong> $${Number(box.price_usd || 0).toFixed(2)}</div>
+                            <div><strong>Peso:</strong> ${Number(box.estimated_weight_kg || 0).toFixed(1)} kg</div>
+                            <div><strong>Items:</strong> ${box.total_items || (box.contents?.length || 0)}</div>
+                            <div><strong>Stock:</strong> ${box.stock_quantity || 0}</div>
+                            <div><strong>Estado:</strong> ${box.available ? 'Activa' : 'Inactiva'}</div>
+                            <div><strong>Destacada:</strong> ${box.featured ? 'Sí' : 'No'}</div>
+                        </div>
+                        <h4>Contenido</h4>
+                        ${contents}
+                        <h4>Tags</h4>
+                        <div class="box-tags">${tags}</div>
+                        <div class="form-actions" style="margin-top: 1.5rem; gap: 0.75rem;">
+                            <button class="btn btn-warning" onclick="editBox(${box.id})">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-success" onclick="toggleBoxAvailability(${box.id}, ${box.available ? 'true' : 'false'})">
+                                <i class="fas fa-toggle-on"></i> ${box.available ? 'Desactivar' : 'Activar'}
+                            </button>
+                            <button class="btn btn-secondary" onclick="toggleBoxFeatured(${box.id}, ${box.featured ? 'true' : 'false'})">
+                                <i class="fas fa-star"></i> ${box.featured ? 'Quitar destacada' : 'Destacar'}
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteBoxById(${box.id}, ${JSON.stringify(box.name || '')})">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                showModal(html);
+            } catch (error) {
+                console.error('Error cargando detalles de la caja:', error);
+                showAlert('Error cargando detalles de la caja: ' + (error.message || error), 'danger');
+            }
+        };
+
+        window.editBox = async function(boxId) {
+            const numericId = Number(boxId);
+            if (!numericId) {
+                showAlert('Identificador de caja inválido.', 'danger');
+                return;
+            }
+
+            try {
+                showLoading('Cargando datos de la caja...');
+                const box = await boxManager.getBoxWithContents(numericId);
+                hideLoading();
+
+                if (!box) {
+                    showAlert('No se encontró la caja seleccionada.', 'danger');
+                    return;
+                }
+
+                const tagsValue = Array.isArray(box.tags) ? box.tags.join(', ') : '';
+                const contentsValue = Array.isArray(box.contents)
+                    ? box.contents.map(item => item.product_name || '').join('\n')
+                    : '';
+                const html = `
+                    <h3>Editar Caja</h3>
+                    <form id="editBoxForm" class="box-form">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="editBoxName">Nombre:</label>
+                                <input type="text" id="editBoxName" value="${escapeHtml(box.name || '')}" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxCategory">Categoría:</label>
+                                <select id="editBoxCategory" required>
+                                    <option value="Caja Premium"${box.category === 'Caja Premium' ? ' selected' : ''}>Caja Premium</option>
+                                    <option value="Caja Familiar"${box.category === 'Caja Familiar' ? ' selected' : ''}>Caja Familiar</option>
+                                    <option value="Caja Exótica"${box.category === 'Caja Exótica' ? ' selected' : ''}>Caja Exótica</option>
+                                    <option value="Caja Empresarial"${box.category === 'Caja Empresarial' ? ' selected' : ''}>Caja Empresarial</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxPriceCOP">Precio COP:</label>
+                                <input type="number" id="editBoxPriceCOP" min="0" step="0.01" value="${Number(box.price_cop || 0).toFixed(2)}" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxPriceUSD">Precio USD:</label>
+                                <input type="number" id="editBoxPriceUSD" min="0" step="0.01" value="${Number(box.price_usd || 0).toFixed(2)}">
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxWeight">Peso estimado (kg):</label>
+                                <input type="number" id="editBoxWeight" min="0" step="0.1" value="${Number(box.estimated_weight_kg || 0).toFixed(1)}">
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxItems">Total de items:</label>
+                                <input type="number" id="editBoxItems" min="1" value="${box.total_items || (box.contents?.length || 0)}">
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxStock">Stock disponible:</label>
+                                <input type="number" id="editBoxStock" min="0" value="${box.stock_quantity || 0}">
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxImage">Imagen (URL):</label>
+                                <input type="url" id="editBoxImage" value="${escapeHtml(box.image_url || '')}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editBoxDescription">Descripción:</label>
+                            <textarea id="editBoxDescription" rows="3">${escapeHtml(box.description || '')}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="editBoxTags">Tags (separados por coma):</label>
+                            <input type="text" id="editBoxTags" value="${escapeHtml(tagsValue)}">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBoxContents">Contenido (una fruta por línea):</label>
+                            <textarea id="editBoxContents" rows="4">${escapeHtml(contentsValue)}</textarea>
+                        </div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="editBoxAvailable" ${box.available ? 'checked' : ''}>
+                                <span class="checkmark"></span>
+                                Disponible
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="editBoxFeatured" ${box.featured ? 'checked' : ''}>
+                                <span class="checkmark"></span>
+                                Destacada
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                        </div>
+                    </form>
+                `;
+
+                showModal(html);
+
+                const form = document.getElementById('editBoxForm');
+                if (!form) {
+                    return;
+                }
+
+                form.addEventListener('submit', async event => {
+                    event.preventDefault();
+
+                    const name = document.getElementById('editBoxName').value.trim();
+                    if (!name) {
+                        showAlert('Ingresa un nombre válido para la caja.', 'warning');
+                        return;
+                    }
+
+                    const priceCOP = parseFloat(document.getElementById('editBoxPriceCOP').value);
+                    if (!Number.isFinite(priceCOP) || priceCOP <= 0) {
+                        showAlert('El precio en COP debe ser mayor que cero.', 'warning');
+                        return;
+                    }
+
+                    const priceUSDInput = document.getElementById('editBoxPriceUSD').value;
+                    const priceUSD = priceUSDInput ? parseFloat(priceUSDInput) : 0;
+                    const weight = parseFloat(document.getElementById('editBoxWeight').value) || 0;
+                    const items = parseInt(document.getElementById('editBoxItems').value, 10) || 0;
+                    const stock = parseInt(document.getElementById('editBoxStock').value, 10) || 0;
+                    const tags = document.getElementById('editBoxTags').value
+                        .split(',')
+                        .map(tag => tag.trim())
+                        .filter(Boolean);
+                    const contentsRaw = document.getElementById('editBoxContents').value
+                        .split('\n')
+                        .map(item => item.trim())
+                        .filter(Boolean);
+                    const available = document.getElementById('editBoxAvailable').checked;
+                    const featured = document.getElementById('editBoxFeatured').checked;
+
+                    const payload = {
+                        name,
+                        category: document.getElementById('editBoxCategory').value || 'Caja Premium',
+                        description: document.getElementById('editBoxDescription').value.trim() || null,
+                        image_url: document.getElementById('editBoxImage').value.trim() || null,
+                        price_cop: Number.isFinite(priceCOP) ? priceCOP : 0,
+                        price_usd: Number.isFinite(priceUSD) && priceUSD > 0 ? priceUSD : 0,
+                        estimated_weight_kg: Number.isFinite(weight) ? weight : 0,
+                        total_items: items > 0 ? items : contentsRaw.length,
+                        stock_quantity: stock,
+                        available,
+                        in_stock: available && stock > 0,
+                        featured,
+                        tags,
+                        slug: box.slug || slugify(name)
+                    };
+
+                    try {
+                        showLoading('Actualizando caja...');
+                        await boxManager.updateBox(numericId, payload);
+                        await boxManager.updateBoxContents(numericId, contentsRaw);
+                        showAlert('Caja actualizada correctamente.', 'success');
+                        closeModal();
+                        await refreshBoxesSelector(numericId);
+                        await loadStats();
+                    } catch (error) {
+                        console.error('Error actualizando la caja:', error);
+                        showAlert('Error actualizando la caja: ' + (error.message || error), 'danger');
+                    } finally {
+                        hideLoading();
+                    }
+                }, { once: true });
+            } catch (error) {
+                hideLoading();
+                console.error('Error cargando la caja:', error);
+                showAlert('Error cargando la caja: ' + (error.message || error), 'danger');
+            }
         };
 
         // Utility functions
@@ -3737,6 +4461,103 @@
                     </p>
                 `;
             }
+        }
+
+        const TOAST_ICONS = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-times-circle',
+            warning: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info-circle'
+        };
+
+        function getToastContainer() {
+            let container = document.getElementById('adminToastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'adminToastContainer';
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            return container;
+        }
+
+        // Render dismissible toast notifications for admin actions.
+        function createToast(type, title, message) {
+            const container = getToastContainer();
+            const toast = document.createElement('div');
+            toast.className = `admin-toast admin-toast-${type}`;
+
+            const icon = document.createElement('i');
+            icon.className = TOAST_ICONS[type] || TOAST_ICONS.info;
+            toast.appendChild(icon);
+
+            const titleEl = document.createElement('div');
+            titleEl.className = 'toast-title';
+            titleEl.textContent = title || '';
+            toast.appendChild(titleEl);
+
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button';
+            closeBtn.className = 'toast-close';
+            closeBtn.setAttribute('aria-label', 'Cerrar notificación');
+            closeBtn.textContent = 'x';
+            toast.appendChild(closeBtn);
+
+            if (message) {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'toast-message';
+                messageEl.textContent = message;
+                toast.appendChild(messageEl);
+            }
+
+            const dismiss = () => {
+                toast.classList.remove('is-visible');
+            };
+
+            let hideTimer = setTimeout(dismiss, 5000);
+
+            closeBtn.addEventListener('click', () => {
+                clearTimeout(hideTimer);
+                dismiss();
+            });
+
+            toast.addEventListener('mouseenter', () => {
+                clearTimeout(hideTimer);
+            });
+
+            toast.addEventListener('mouseleave', () => {
+                hideTimer = setTimeout(dismiss, 2000);
+            });
+
+            toast.addEventListener('transitionend', event => {
+                if (event.propertyName === 'opacity' && !toast.classList.contains('is-visible')) {
+                    toast.remove();
+                }
+            });
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.add('is-visible');
+            });
+
+            return toast;
+        }
+
+        function showSuccess(title, message = '') {
+            createToast('success', title, message);
+        }
+
+        function showError(title, message = '') {
+            createToast('error', title, message);
+        }
+
+        function showWarning(title, message = '') {
+            createToast('warning', title, message);
+        }
+
+        function showInfo(title, message = '') {
+            createToast('info', title, message);
         }
 
         function showModal(content) {
@@ -3866,8 +4687,15 @@
             }).format(price);
         }
 
+        function formatNumber(value) {
+            const numeric = Number.isFinite(value) ? value : Number(value) || 0;
+            return new Intl.NumberFormat('es-CO', {
+                maximumFractionDigits: 0
+            }).format(numeric);
+        }
+
         // Chart instances
-        let categoriesChart, pricesChart, stockChart, revenueChart;
+        let categoriesChart, pricesChart, stockChart, revenueChart, boxCategoryChart, boxStatusChart, boxValueChart;
 
         // Categories Distribution Chart
         function loadCategoriesChart(categories) {
@@ -4155,7 +4983,7 @@
             }
 
             const labels = Object.keys(categories);
-            const values = Object.values(categories).map(cat => cat.totalValue);
+            const values = Object.values(categories).map(cat => cat?.totalValue || 0);
 
             revenueChart = new Chart(ctx, {
                 type: 'bar',
@@ -4228,6 +5056,234 @@
             });
         }
 
+        // Box Category Distribution
+        function loadBoxCategoryChart(categories) {
+            const ctx = document.getElementById('boxCategoryChart');
+            if (!ctx) {
+                console.warn('Box categories chart canvas not found');
+                return;
+            }
+
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded');
+                return;
+            }
+
+            if (boxCategoryChart) {
+                boxCategoryChart.destroy();
+            }
+
+            const labels = Object.keys(categories);
+            const data = labels.map(label => categories[label]?.count || 0);
+            const palette = [
+                'rgba(139, 218, 1, 0.8)',
+                'rgba(255, 155, 64, 0.8)',
+                'rgba(255, 139, 211, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(64, 196, 255, 0.8)',
+                'rgba(255, 99, 132, 0.8)'
+            ];
+            const backgroundColors = labels.map((_, index) => palette[index % palette.length]);
+
+            boxCategoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#0b0f14',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e9eef5'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#e9eef5',
+                            bodyColor: '#e9eef5'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Box Availability / Status Chart
+        function loadBoxStatusChart(boxReport) {
+            const ctx = document.getElementById('boxStatusChart');
+            if (!ctx) {
+                console.warn('Box status chart canvas not found');
+                return;
+            }
+
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded');
+                return;
+            }
+
+            if (boxStatusChart) {
+                boxStatusChart.destroy();
+            }
+
+            const activeNonFeatured = Math.max(0, (boxReport.activeBoxes || 0) - (boxReport.featuredActive || 0));
+            const featured = boxReport.featuredActive || 0;
+            const inactive = boxReport.inactiveBoxes || 0;
+
+            boxStatusChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Activas', 'Destacadas', 'Inactivas'],
+                    datasets: [{
+                        label: 'Cantidad de cajas',
+                        data: [activeNonFeatured, featured, inactive],
+                        backgroundColor: [
+                            'rgba(139, 218, 1, 0.8)',
+                            'rgba(255, 215, 0, 0.8)',
+                            'rgba(255, 99, 132, 0.8)'
+                        ],
+                        borderColor: [
+                            '#8bda01',
+                            '#ffd700',
+                            '#ff4757'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#e9eef5',
+                            bodyColor: '#e9eef5'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9aa6b2',
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9aa6b2'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Box Value Chart (Top boxes by inventory value)
+        function loadBoxValueChart(boxes) {
+            const ctx = document.getElementById('boxValueChart');
+            if (!ctx) {
+                console.warn('Box value chart canvas not found');
+                return;
+            }
+
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js not loaded');
+                return;
+            }
+
+            if (boxValueChart) {
+                boxValueChart.destroy();
+            }
+
+            const dataSource = (Array.isArray(boxes) ? boxes : []).map(box => {
+                const stock = parseInt(box.stock_quantity ?? box.stock ?? 0, 10) || 0;
+                const price = parseFloat(box.price_cop ?? 0) || 0;
+                return {
+                    name: box.name || 'Caja',
+                    value: stock * price
+                };
+            }).filter(item => item.value > 0)
+              .sort((a, b) => b.value - a.value)
+              .slice(0, 8);
+
+            const labels = dataSource.map(item => item.name);
+            const values = dataSource.map(item => item.value);
+
+            boxValueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Valor inventario (COP)',
+                        data: values,
+                        backgroundColor: 'rgba(255, 155, 64, 0.8)',
+                        borderColor: '#ff9b40',
+                        borderWidth: 2,
+                        borderRadius: 10,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#e9eef5',
+                            bodyColor: '#e9eef5',
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${formatPrice(context.parsed.x)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9aa6b2',
+                                callback: value => formatPrice(value)
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#9aa6b2'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         // Chart refresh functions
         window.refreshCategoriesChart = async function() {
             try {
@@ -4270,6 +5326,48 @@
                 }
             } catch (error) {
                 console.error('Error refreshing revenue chart:', error);
+            }
+        };
+
+        window.refreshBoxCategoryChart = async function() {
+            try {
+                if (!boxManager) {
+                    throw new Error('Box manager no inicializado');
+                }
+                const boxes = await boxManager.getAllBoxes();
+                allBoxes = Array.isArray(boxes) ? boxes.slice() : [];
+                await loadStats();
+            } catch (error) {
+                console.error('Error refreshing box categories chart:', error);
+                showAlert('No se pudieron actualizar los gráficos de cajas.', 'danger');
+            }
+        };
+
+        window.refreshBoxStatusChart = async function() {
+            try {
+                if (!boxManager) {
+                    throw new Error('Box manager no inicializado');
+                }
+                const boxes = await boxManager.getAllBoxes();
+                allBoxes = Array.isArray(boxes) ? boxes.slice() : [];
+                await loadStats();
+            } catch (error) {
+                console.error('Error refreshing box status chart:', error);
+                showAlert('No se pudo actualizar el estado de las cajas.', 'danger');
+            }
+        };
+
+        window.refreshBoxValueChart = async function() {
+            try {
+                if (!boxManager) {
+                    throw new Error('Box manager no inicializado');
+                }
+                const boxes = await boxManager.getAllBoxes();
+                allBoxes = Array.isArray(boxes) ? boxes.slice() : [];
+                await loadStats();
+            } catch (error) {
+                console.error('Error refreshing box value chart:', error);
+                showAlert('No se pudo actualizar el valor de las cajas.', 'danger');
             }
         };
 
