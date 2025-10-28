@@ -249,7 +249,7 @@ async function handleRegistrationSubmit(e) {
                 throw error;
             }
             
-            showNotification('¡Registro exitoso! Bienvenido a FreshFruits', 'success');
+            showNotification('✅ ¡Registro exitoso! Bienvenido a Fruvi Store', 'success');
             e.target.reset();
             currentStep = 1;
             document.getElementById('step3').classList.remove('active');
@@ -261,7 +261,7 @@ async function handleRegistrationSubmit(e) {
             customers.push(userData);
             localStorage.setItem('freshfruits_customers', JSON.stringify(customers));
             
-            showNotification('¡Registro exitoso! (Datos guardados localmente)', 'success');
+            showNotification('✅ ¡Registro exitoso! (Datos guardados localmente)', 'success');
             e.target.reset();
             currentStep = 1;
             document.getElementById('step3').classList.remove('active');

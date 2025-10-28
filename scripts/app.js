@@ -10,6 +10,10 @@ let renderDashboardPage, initChatWidget, CheckoutModalStore, CheckoutModalBoxes;
 
 async function loadModules() {
   try {
+    console.log('📦 Loading user utilities...');
+    await import('./utils/userUtils.js');
+    console.log('✅ User utilities loaded');
+
     console.log('📦 Loading router module...');
     const routerModule = await import('./router.js');
     ({ startRouter, registerRoute, getCurrentPath } = routerModule);
@@ -470,15 +474,18 @@ async function renderAuthNav() {
       el.style.display = ''; 
     });
 
-    // Agregar menú de cuenta (con ARIA)
-    const display = user.user_metadata?.full_name || user.email || 'Mi Cuenta';
+    // Agregar menú de cuenta (con ARIA) - usando utilidades de formato
+    const userInfo = window.formatUserInfo ? window.formatUserInfo(user) : null;
+    const display = userInfo ? userInfo.fullName : (user.user_metadata?.full_name || user.email || 'Mi Cuenta');
+    const displayWithEmoji = userInfo ? `👤 ${userInfo.fullName}` : display;
+    
     const li = document.createElement('li');
     li.dataset.authItem = 'account';
     const btnId = 'accbtn-' + Math.random().toString(36).slice(2, 8);
     li.innerHTML = `
       <div class="account-dropdown">
         <button class="account-btn" aria-haspopup="true" aria-expanded="false" id="${btnId}">
-          ${escapeHtml(display)} <i class="fas fa-chevron-down" aria-hidden="true"></i>
+          ${escapeHtml(displayWithEmoji)} <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </button>
         <div class="account-menu glass" role="menu" aria-labelledby="${btnId}">
           <a href="#/perfil" class="account-link" role="menuitem">Mi Perfil</a>

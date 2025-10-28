@@ -460,7 +460,7 @@ function setupCart() {
 
   document.getElementById('cartCheckout')?.addEventListener('click', () => {
     if (cartStore.length === 0) {
-      showNotification('Tu carrito está vacío', false);
+      showNotification('🛒 Tu carrito está vacío', false);
       return;
     }
 
@@ -468,7 +468,7 @@ function setupCart() {
     if (window.checkoutModalStore) {
       window.checkoutModalStore.show({ items: cartStore });
     } else {
-      showNotification('Error: Modal de checkout no disponible', false);
+      showNotification('❌ Error: Modal de checkout no disponible', false);
     }
   });
 }
@@ -483,7 +483,13 @@ function addToCart(item) {
 
   localStorage.setItem('fruvi_cart_store', JSON.stringify(cartStore));
   updateCartDisplay();
-  showNotification(`${item.name} añadido al carrito`, true);
+  
+  // Usar MessageTemplates si está disponible
+  if (window.MessageTemplates) {
+    showNotification(window.MessageTemplates.addToCart(item.name), true);
+  } else {
+    showNotification(`🛒 ${item.name} añadido al carrito`, true);
+  }
 }
 
 function updateCartDisplay() {
@@ -508,10 +514,10 @@ function updateCartItemQuantity(productId, newQuantity) {
   if (itemIndex !== -1) {
     if (newQuantity <= 0) {
       cartStore.splice(itemIndex, 1);
-      showNotification('Producto eliminado del carrito', true);
+      showNotification('🗑️ Producto eliminado del carrito', true);
     } else {
       cartStore[itemIndex].quantity = newQuantity;
-      showNotification('Cantidad actualizada', true);
+      showNotification('✅ Cantidad actualizada', true);
     }
     localStorage.setItem('fruvi_cart_store', JSON.stringify(cartStore));
     updateCartDisplay();

@@ -61,12 +61,17 @@
                     timeString = new Date(now).toLocaleTimeString();
                 }
                 
+                // Generar un ID único para el admin
+                const adminId = btoa(username).substring(0, 8);
+                
                 userInfoElement.innerHTML = `
                     <span class="user-welcome">
                         <i class="fas fa-user-shield"></i>
-                        Bienvenido, <strong>${username}</strong>
+                        👋 Bienvenido, <strong>${username}</strong>
                     </span>
-                    <span class="login-time">Sesión iniciada: ${timeString}</span>
+                    <span class="login-time">
+                        🆔 ID: ${adminId} | ⏰ Sesión: ${timeString}
+                    </span>
                 `;
             }
         }
