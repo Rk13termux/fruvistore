@@ -4,15 +4,15 @@ window.FRUVI_CONFIG = {
   // 🗄️ Supabase Users Database
   SUPABASE: {
     URL: 'https://ipjkpgmptexkhilrjnsl.supabase.co',
-    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMzM5OTEsImV4cCI6MjA0NDcwOTk5MX0.aOAhYbGWRJEVH1cUE7iYhfH6wR7XFKE1hnLPtEsqI1Q',
-    SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyOTEzMzk5MSwiZXhwIjoyMDQ0NzA5OTkxfQ.LVLpSGMnPxWqHhSn6dJ8o3K6c8r5HzQD_lGy0wBbzgU'
+    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg3MzQxOTQsImV4cCI6MjA3NDMxMDE5NH0.IxY5mC4SxyTzj1Vnns5kDu14wqkcVDksi3FvNEJ1F1o',
+    SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwamtwZ21wdGV4a2hpbHJqbnNsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODczNDE5NCwiZXhwIjoyMDc0MzEwMTk0fQ.aYN09m8o8KMKy8LY0FsGNXU9-zMFt3b49b5P7PJYD5U'
   },
   
   // 🛒 Supabase Products Database  
   PRODUCTS: {
     URL: 'https://xujenwuefrgxfsiqjqhl.supabase.co',
-    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkxMzQwMjAsImV4cCI6MjA0NDcxMDAyMH0.aXY2lhO2mVdwLcKmPJOnyVJtmYK5K7YcEq_Sfe3l_Nc',
-    SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyOTEzNDAyMCwiZXhwIjoyMDQ0NzEwMDIwfQ.k4nLSb1D-OkjqhVgGIgKv_1-uJ8lmnPe7h8QF7CyBzQ'
+    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5OTExNTYsImV4cCI6MjA3NjU2NzE1Nn0.89UAEW8CVBkz8lEAdnJzt0XJNo0C4lCrZMBBcRYKmMs',
+    SERVICE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDk5MTE1NiwiZXhwIjoyMDc2NTY3MTU2fQ.PyGpOZyj1a9dXAVNSyay8fTqotdE1SAiiI-PRws_qtk'
   },
 
   // 🤖 AI Configuration - Key assembled to avoid detection
