@@ -70,28 +70,15 @@ console.log('GROQ presente:', !!envVars.VITE_GROQ_API_KEY)
 const indexPath = path.join(rootDir, 'index.html')
 let htmlContent = fs.readFileSync(indexPath, 'utf8')
 
-// Check if __ENV__ script already exists
+// Check if __ENV__ script already exists and remove it (clean architecture)
 if (htmlContent.includes('window.__ENV__')) {
-  // Always replace all existing __ENV__ blocks to avoid duplicates
-  console.log('🔄 Reemplazando todos los bloques __ENV__ existentes...');
-  // Remove all existing __ENV__ script blocks first
+  console.log('🧹 Limpiando variables hardcodeadas del HTML...');
+  // Remove all existing __ENV__ script blocks to maintain clean architecture
   htmlContent = htmlContent.replace(/<script>[\s\S]*?window\.__ENV__\s*=[\s\S]*?<\/script>/g, '');
-  // Then add the new one
-  const envScript = `<script>
-  window.__ENV__ = ${JSON.stringify(envVars, null, 2)};
-</script>`;
-  // Insert before closing </head> tag
-  htmlContent = htmlContent.replace('</head>', `${envScript}\n  </head>`);
+  console.log('✅ HTML cleaned - variables will be loaded from config.js and .env only')
+} else {
+  console.log('✅ HTML already clean - no hardcoded variables found')
 }
-console.log('✅ Environment variables injected into HTML')
-console.log('📋 Variables inyectadas:', Object.keys(envVars))
-console.log('🔍 Fuentes utilizadas:', {
-  VITE_SUPABASE_URL: systemEnvVars.VITE_SUPABASE_URL ? 'process.env' : envFileVars.VITE_SUPABASE_URL ? '.env' : 'default',
-  VITE_SUPABASE_ANON_KEY: systemEnvVars.VITE_SUPABASE_ANON_KEY ? 'process.env' : envFileVars.VITE_SUPABASE_ANON_KEY ? '.env' : 'default',
-  VITE_SUPABASE_PRODUCTS_URL: systemEnvVars.VITE_SUPABASE_PRODUCTS_URL ? 'process.env' : envFileVars.VITE_SUPABASE_PRODUCTS_URL ? '.env' : 'default',
-  VITE_SUPABASE_PRODUCTS_ANON_KEY: systemEnvVars.VITE_SUPABASE_PRODUCTS_ANON_KEY ? 'process.env' : envFileVars.VITE_SUPABASE_PRODUCTS_ANON_KEY ? '.env' : 'default',
-  VITE_GROQ_API_KEY: systemEnvVars.VITE_GROQ_API_KEY ? 'process.env' : envFileVars.VITE_GROQ_API_KEY ? '.env' : 'default'
-})
 
 // Write back to index.html
 fs.writeFileSync(indexPath, htmlContent)
