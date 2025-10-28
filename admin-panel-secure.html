@@ -2504,10 +2504,23 @@
         function createStoreProductManager() {
             return {
                 getAllProducts: async () => {
-                    if (typeof window.getAllProducts === 'function') {
-                        return await window.getAllProducts();
-                    } else {
-                        throw new Error('Función getAllProducts no disponible en storeService');
+                    try {
+                        console.log('📦 Consultando productos desde current_products...');
+                        const { data: products, error } = await window.productsClient
+                            .from('current_products')
+                            .select('*')
+                            .order('name');
+                        
+                        if (error) {
+                            console.error('❌ Error consultando productos:', error);
+                            throw error;
+                        }
+                        
+                        console.log('✅ Productos obtenidos:', products?.length || 0);
+                        return products || [];
+                    } catch (error) {
+                        console.error('❌ Error en getAllProducts:', error);
+                        throw new Error('Error cargando productos: ' + error.message);
                     }
                 },
                 
@@ -4106,7 +4119,7 @@
                 }
 
                 const { error } = await window.productsClient
-                    .from('products')
+                    .from('current_products')
                     .update({ 
                         available: isActive,
                         updated_at: new Date().toISOString()
@@ -4144,7 +4157,7 @@
                 }
 
                 const { error } = await window.productsClient
-                    .from('products')
+                    .from('current_products')
                     .update({ 
                         available: false,
                         updated_at: new Date().toISOString()
