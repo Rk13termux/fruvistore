@@ -1895,10 +1895,18 @@
                         <textarea id="productDescription" name="description" rows="3" 
                                   placeholder="Descripción del producto..."></textarea>
                     </div>
-                    <div class="form-group full-width">
-                        <label for="productImage">URL de la Imagen</label>
-                        <input type="url" id="productImage" name="image" 
-                               placeholder="https://ejemplo.com/imagen.jpg">
+                    <div class="form-group">
+                        <label for="productImageName">Nombre de la Imagen</label>
+                        <input type="text" id="productImageName" name="imageName"
+                               placeholder="arandanos-azules">
+                    </div>
+                    <div class="form-group">
+                        <label for="productImageFormat">Formato de la Imagen</label>
+                        <select id="productImageFormat" name="imageFormat">
+                            <option value="jpg">jpg</option>
+                            <option value="png">png</option>
+                            <option value="jpeg">jpeg</option>
+                        </select>
                     </div>
                     <div class="checkbox-group">
                         <label class="checkbox-label">
@@ -3918,8 +3926,16 @@
                             <input type="number" id="boxStock" min="0" value="10">
                         </div>
                         <div class="input-group">
-                            <label for="boxImage">Imagen (URL):</label>
-                            <input type="url" id="boxImage" placeholder="https://ejemplo.com/imagen.jpg">
+                            <label for="boxImageName">Nombre de la Imagen:</label>
+                            <input type="text" id="boxImageName" placeholder="caja-premium">
+                        </div>
+                        <div class="input-group">
+                            <label for="boxImageFormat">Formato de la Imagen:</label>
+                            <select id="boxImageFormat">
+                                <option value="jpg">jpg</option>
+                                <option value="png">png</option>
+                                <option value="jpeg">jpeg</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -3992,11 +4008,15 @@
                 const featured = document.getElementById('boxFeatured').checked;
                 const createdBy = typeof window.getAdminUser === 'function' ? window.getAdminUser() : 'admin';
 
+                const boxImageName = document.getElementById('boxImageName').value.trim() || '';
+                const boxImageFormat = document.getElementById('boxImageFormat').value || 'jpg';
+                const boxImageUrl = boxImageName ? `public/images/caja/${boxImageName}.${boxImageFormat}` : null;
+
                 const payload = {
                     name,
                     category: document.getElementById('boxCategory').value || 'Caja Premium',
                     description: document.getElementById('boxDescription').value.trim() || null,
-                    image_url: document.getElementById('boxImage').value.trim() || null,
+                    image_url: boxImageUrl,
                     price_cop: Number.isFinite(priceCOP) ? priceCOP : 0,
                     price_usd: Number.isFinite(priceUSD) && priceUSD > 0 ? priceUSD : 0,
                     estimated_weight_kg: Number.isFinite(weight) ? weight : 0,
@@ -4279,8 +4299,16 @@
                                 <input type="number" id="editBoxStock" min="0" value="${box.stock_quantity || 0}">
                             </div>
                             <div class="input-group">
-                                <label for="editBoxImage">Imagen (URL):</label>
-                                <input type="url" id="editBoxImage" value="${escapeHtml(box.image_url || '')}">
+                                <label for="editBoxImageName">Nombre de la Imagen:</label>
+                                <input type="text" id="editBoxImageName" value="${box.image_url ? escapeHtml(box.image_url.split('/').pop().split('.')[0]) : ''}">
+                            </div>
+                            <div class="input-group">
+                                <label for="editBoxImageFormat">Formato de la Imagen:</label>
+                                <select id="editBoxImageFormat">
+                                    <option value="jpg"${box.image_url && box.image_url.endsWith('.jpg') ? ' selected' : ''}>jpg</option>
+                                    <option value="png"${box.image_url && box.image_url.endsWith('.png') ? ' selected' : ''}>png</option>
+                                    <option value="jpeg"${box.image_url && box.image_url.endsWith('.jpeg') ? ' selected' : ''}>jpeg</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -4352,11 +4380,15 @@
                     const available = document.getElementById('editBoxAvailable').checked;
                     const featured = document.getElementById('editBoxFeatured').checked;
 
+                    const editBoxImageName = document.getElementById('editBoxImageName').value.trim() || '';
+                    const editBoxImageFormat = document.getElementById('editBoxImageFormat').value || 'jpg';
+                    const editBoxImageUrl = editBoxImageName ? `public/images/caja/${editBoxImageName}.${editBoxImageFormat}` : null;
+
                     const payload = {
                         name,
                         category: document.getElementById('editBoxCategory').value || 'Caja Premium',
                         description: document.getElementById('editBoxDescription').value.trim() || null,
-                        image_url: document.getElementById('editBoxImage').value.trim() || null,
+                        image_url: editBoxImageUrl,
                         price_cop: Number.isFinite(priceCOP) ? priceCOP : 0,
                         price_usd: Number.isFinite(priceUSD) && priceUSD > 0 ? priceUSD : 0,
                         estimated_weight_kg: Number.isFinite(weight) ? weight : 0,
@@ -5378,11 +5410,15 @@
                 const formData = new FormData(form);
                 const isEditing = form.dataset.editingId;
                 
+                const imageName = formData.get('imageName') || '';
+                const imageFormat = formData.get('imageFormat') || 'jpg';
+                const imageUrl = imageName ? `public/images/products/${imageName}.${imageFormat}` : '/images/products/placeholder.jpg';
+
                 const productData = {
                     name: formData.get('name'),
                     category: formData.get('category'),
                     description: formData.get('description') || '',
-                    image_url: formData.get('image') || '/images/products/placeholder.jpg',
+                    image_url: imageUrl,
                     price: parseFloat(formData.get('price')),
                     price_per_kg: parseFloat(formData.get('price')),
                     cost_per_kg: parseFloat(formData.get('cost')) || 0,
@@ -5490,7 +5526,8 @@
             document.getElementById('productSupplier').value = product.supplier || '';
             document.getElementById('productRating').value = product.rating || '4';
             document.getElementById('productDescription').value = product.description || '';
-            document.getElementById('productImage').value = product.image_url || '';
+            document.getElementById('productImageName').value = product.image_url ? product.image_url.split('/').pop().split('.')[0] : '';
+            document.getElementById('productImageFormat').value = product.image_url ? product.image_url.split('.').pop() : 'jpg';
             document.getElementById('productOrganic').checked = product.organic || false;
             document.getElementById('productActive').checked = product.available;
             
