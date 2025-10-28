@@ -3041,17 +3041,17 @@
                 
                 if (result.success) {
                     showSuccess(
-                        '💰 Precio actualizado',
-                        `${productName} ahora cuesta $${newPrice.toLocaleString('es-CO')}`
+                        '💰 Precio de producto actualizado',
+                        `El precio de "${productName}" se cambió exitosamente a $${newPrice.toLocaleString('es-CO')} por kg`
                     );
                     await loadInitialData(); // Refresh data
-                    
+
                     // Clear form
                     document.getElementById('newPrice').value = '';
                     document.getElementById('priceReason').value = '';
                 } else {
                     showError(
-                        '❌ Error al cambiar precio',
+                        '❌ Error al actualizar precio del producto',
                         result.error || 'No se pudo actualizar el precio del producto'
                     );
                 }
@@ -3134,20 +3134,21 @@
                 const result = await productManager.updateStock(productId, stockChange, reason);
                 
                 if (result.success) {
-                    const actionText = stockChange > 0 ? 'agregado' : 'reducido';
+                    const actionText = stockChange > 0 ? 'incrementado' : 'reducido';
+                    const unitText = Math.abs(stockChange) === 1 ? 'kg' : 'kg';
                     showSuccess(
-                        '✅ Inventario actualizado', 
-                        `Se ha ${actionText} ${Math.abs(stockChange)} unidades de ${productName}`
+                        '📦 Inventario de producto actualizado',
+                        `El stock de "${productName}" fue ${actionText} en ${Math.abs(stockChange)} ${unitText}`
                     );
                     await loadInitialData(); // Refresh data
-                    
+
                     // Clear form
                     document.getElementById('stockChange').value = '';
                     document.getElementById('stockReason').value = '';
                 } else {
                     showError(
-                        '❌ Error en inventario', 
-                        result.error || 'No se pudo actualizar el inventario'
+                        '❌ Error al actualizar inventario del producto',
+                        result.error || 'No se pudo actualizar el inventario del producto'
                     );
                 }
             } catch (error) {
@@ -3163,7 +3164,7 @@
         // Función para abrir el modal de stock con un producto preseleccionado
         window.openStockModal = function(productId) {
             if (!productId) {
-                showWarning('Error', 'ID de producto no válido');
+                showWarning('Producto no seleccionado', 'Por favor selecciona un producto para cambiar su estado');
                 return;
             }
             
@@ -3552,7 +3553,7 @@
             try {
                 showLoading('Actualizando precio de la caja...');
                 await boxManager.updateBoxPrice(boxId, normalizedPrice, normalizedUsd, reason);
-                showSuccess('Precio actualizado', `${escapeHtml(box.name)} ahora cuesta ${formatPrice(normalizedPrice)}`);
+                showSuccess('💰 Precio de caja actualizado', `La caja "${escapeHtml(box.name)}" ahora tiene precio de ${formatPrice(normalizedPrice)}`);
 
                 if (priceInput) priceInput.value = '';
                 if (usdInput) usdInput.value = '';
@@ -3638,7 +3639,7 @@
                     if (errors.length) {
                         showWarning('Ajuste parcial aplicado', detail);
                     } else {
-                        showSuccess('Ajuste aplicado', detail);
+                        showSuccess('📈 Ajuste masivo de precios aplicado', `Se actualizaron ${updatedBoxes.length} cajas con ajuste del ${percent}%`);
                     }
                 }
 
@@ -3779,7 +3780,7 @@
                 const reasonSuffix = reason
                     ? `<br><small style="color:#9aa6b2;">Motivo: ${escapeHtml(reason)}</small>`
                     : '';
-                showSuccess('Inventario actualizado', `${escapeHtml(box.name)} ahora tiene ${newStock} unidades disponibles${reasonSuffix}`);
+                showSuccess('📦 Inventario de caja actualizado', `La caja "${escapeHtml(box.name)}" ahora tiene ${newStock} unidades disponibles${reasonSuffix}`);
 
                 if (changeInput) changeInput.value = '';
                 if (reasonInput) reasonInput.value = '';
@@ -5418,11 +5419,11 @@
                     });
                     
                     if (result.success) {
-                        showSuccess('✏️ Producto actualizado', `${productData.name} se actualizó correctamente`);
+                        showSuccess('✏️ Producto actualizado exitosamente', `"${productData.name}" ha sido modificado en el catálogo de productos`);
                         closeAddProductModal();
                         await loadInitialData(); // Refresh all data
                     } else {
-                        showError('❌ Error al actualizar', result.error || 'No se pudo actualizar el producto');
+                        showError('❌ Error al actualizar producto', result.error || 'No se pudo actualizar el producto en la base de datos');
                     }
                 } else {
                     console.log('Creating product:', productData);
@@ -5446,11 +5447,11 @@
                     });
                     
                     if (result.success) {
-                        showSuccess('🎉 Producto creado', `${productData.name} se agregó al catálogo exitosamente`);
+                        showSuccess('🎉 Nuevo producto agregado al catálogo', `"${productData.name}" está ahora disponible en la tienda con precio de $${productData.price_per_kg?.toLocaleString('es-CO')} por kg`);
                         closeAddProductModal();
                         await loadInitialData(); // Refresh all data
                     } else {
-                        showError('❌ Error al crear producto', result.error || 'No se pudo crear el producto');
+                        showError('❌ Error al crear nuevo producto', result.error || 'No se pudo agregar el producto al catálogo');
                     }
                 }
             } catch (error) {
@@ -5579,7 +5580,7 @@
 
                 if (error) throw error;
 
-                showAlert(`Producto ${statusText === 'activar' ? 'activado' : 'desactivado'} exitosamente`, 'success');
+                showSuccess(`📊 Estado del producto actualizado`, `"${product.name}" ha sido ${statusText === 'activar' ? 'activado' : 'desactivado'} en el catálogo`);
                 
                 // Clear selections
                 document.getElementById('manageProductSelect').value = '';
@@ -5617,11 +5618,11 @@
 
                 if (error) throw error;
 
-                showSuccess('🗑️ Producto eliminado', `${productName} se desactivó correctamente`);
+                showSuccess('🗑️ Producto removido del catálogo', `"${productName}" ha sido desactivado y ya no está disponible para venta`);
                 await loadInitialData(); // Refresh all data
             } catch (error) {
                 console.error('Error deleting product:', error);
-                showError('❌ Error al eliminar', `No se pudo eliminar ${productName}: ${error.message}`);
+                showError('❌ Error al remover producto', `No se pudo eliminar "${productName}" del catálogo: ${error.message}`);
             } finally {
                 hideLoading();
             }
@@ -5646,10 +5647,10 @@
                 link.click();
                 document.body.removeChild(link);
                 
-                showSuccess('📊 Exportación completada', `Archivo CSV descargado con ${products.length} productos`);
+                showSuccess('📊 Catálogo de productos exportado', `Se descargó un archivo CSV con ${products.length} productos del catálogo para respaldo`);
             } catch (error) {
                 console.error('Error exporting products:', error);
-                showError('❌ Error en exportación', `No se pudo generar el archivo: ${error.message}`);
+                showError('❌ Error al exportar catálogo', `No se pudo generar el archivo de respaldo: ${error.message}`);
             } finally {
                 hideLoading();
             }

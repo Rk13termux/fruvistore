@@ -208,6 +208,19 @@ CREATE POLICY "Admin can manage suppliers" ON suppliers
 CREATE POLICY "Admin can manage price logs" ON price_updates_log
     FOR ALL USING (true);
 
+-- Políticas adicionales para INSERT explícito (por si las anteriores no cubren todos los casos)
+CREATE POLICY "Allow authenticated users to insert products" ON management_products
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow authenticated users to insert product prices" ON management_product_prices
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow authenticated users to insert suppliers" ON suppliers
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow authenticated users to insert price logs" ON price_updates_log
+    FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
 -- Política para admin (requiere autenticación)
 -- CREATE POLICY "Admin full access" ON management_products
 --     FOR ALL USING (auth.role() = 'admin');
