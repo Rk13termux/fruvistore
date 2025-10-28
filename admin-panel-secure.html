@@ -1995,34 +1995,28 @@
         // Auto-initialize using store service
         async function initializeFromEnv() {
             try {
-                console.log('🔧 Inicializando panel de administración con storeService...');
-                
                 // Wait a bit for services to load
                 await new Promise(resolve => setTimeout(resolve, 1000));
-                
+
                 // Check if store service is loaded and initialized
                 if (typeof window.checkProductsConfig !== 'function') {
-                    console.warn('⚠️ StoreService no está cargado, intentando modo manual...');
                     return await initializeManualMode();
                 }
-                
+
                 // Check products configuration
                 const productsConfig = window.checkProductsConfig();
-                console.log('📋 Configuración de productos:', productsConfig);
-                
+
                 if (!productsConfig.configured) {
-                    console.warn('⚠️ Configuración automática falló, intentando modo manual...');
                     return await initializeManualMode();
                 }
-                
+
                 if (!productsConfig.initialized) {
-                    console.warn('⚠️ Inicialización automática falló, intentando modo manual...');
                     return await initializeManualMode();
                 }
-                
+
                 // Test products database connection
                 const productsConnected = await window.testProductsConnection();
-                
+
                 if (productsConnected) {
                     updateConnectionStatus(true, '✅ Conectado a base de datos de productos');
                     updateElementSafely('productsDbStatus', '<i class="fas fa-check-circle"></i> Conectado', '#28a745');
@@ -2030,7 +2024,7 @@
                     updateConnectionStatus('warning', '⚠️ Cliente inicializado, verificando tablas...');
                     updateElementSafely('productsDbStatus', '<i class="fas fa-exclamation-triangle"></i> Verificando', '#ffc107');
                 }
-                
+
                 // Check users database (using original supabase service)
                 try {
                     if (window.checkSupabaseConfig && typeof window.checkSupabaseConfig === 'function') {
@@ -2046,12 +2040,11 @@
                 } catch (userDbError) {
                     updateElementSafely('usersDbStatus', '<i class="fas fa-exclamation-triangle"></i> Error', '#ffc107');
                 }
-                
+
                 return true;
-                
+
             } catch (error) {
                 console.error('❌ Error inicializando desde storeService:', error);
-                console.log('🔄 Intentando modo manual...');
                 return await initializeManualMode();
             }
         }
@@ -2059,23 +2052,15 @@
         // Manual initialization mode with hardcoded values
         async function initializeManualMode() {
             try {
-                console.log('🔧 Inicializando en modo manual...');
-                
                 // Check if Supabase library is available
                 if (typeof window.supabase === 'undefined') {
                     throw new Error('Biblioteca Supabase no está cargada');
                 }
-                
+
                 // Get credentials from config.js (production configuration)
                 const productsUrl = window.FRUVI_CONFIG?.PRODUCTS?.URL || 'https://xujenwuefrgxfsiqjqhl.supabase.co';
                 const productsKey = window.FRUVI_CONFIG?.PRODUCTS?.ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1amVud3VlZnJneGZzaXFqcWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA5OTExNTYsImV4cCI6MjA3NjU2NzE1Nn0.89UAEW8CVBkz8lEAdnJzt0XJNo0C4lCrZMBBcRYKmMs';
-                
-                console.log('🔑 Using config credentials:', { 
-                    url: productsUrl, 
-                    hasKey: !!productsKey,
-                    fromConfig: !!window.FRUVI_CONFIG 
-                });
-                
+
                 // Create products client manually
                 window.productsClient = window.supabase.createClient(productsUrl, productsKey, {
                     auth: {
@@ -2085,9 +2070,7 @@
                     }
                 });
                 window.supabaseClient = window.productsClient; // For backward compatibility
-                
-                console.log('✅ Cliente de productos creado manualmente');
-                
+
                 // Test connection
                 const { data, error } = await window.productsClient
                     .from('management_products')
@@ -2105,12 +2088,12 @@
                     updateConnectionStatus(true, '✅ Conectado a base de datos de productos (modo manual)');
                     updateElementSafely('productsDbStatus', '<i class="fas fa-check-circle"></i> Conectado', '#28a745');
                 }
-                
+
                 // Set users status as separate
                 updateElementSafely('usersDbStatus', '<i class="fas fa-info-circle"></i> Separado', '#17a2b8');
-                
+
                 return true;
-                
+
             } catch (error) {
                 console.error('❌ Error en modo manual:', error);
                 updateConnectionStatus(false, 'Error en inicialización manual: ' + error.message);
@@ -2121,19 +2104,17 @@
 
         // Initialize
         async function init() {
-            console.log('🚀 Iniciando panel de administración...');
-            
             try {
                 // Initialize from environment variables
                 const envInitialized = await initializeFromEnv();
-                
+
                 if (!envInitialized) {
                     throw new Error('No se pudo inicializar desde variables de entorno');
                 }
-                
+
                 // Wait for storeService to be ready, then initialize product manager
                 await waitForStoreService();
-                
+
                 if (window.initProductManager && typeof window.initProductManager === 'function') {
                     productManager = window.initProductManager();
                     if (!productManager) {
@@ -2142,15 +2123,12 @@
                 } else {
                     console.warn('⚠️ ProductManager not available, using store service directly');
                 }
-                
+
                 // Initialize Box Manager
                 boxManager = createBoxManager();
-                console.log('✅ Box Manager initialized');
-                
+
                 await loadInitialData();
-                
-                console.log('✅ Panel de administración inicializado correctamente');
-                
+
             } catch (error) {
                 console.error('❌ Error inicializando panel:', error);
                 updateConnectionStatus(false, error.message);
@@ -2160,22 +2138,18 @@
         // Product manager using store service functions
         // Wait for storeService to be loaded
         async function waitForStoreService() {
-            console.log('⏳ Esperando a que storeService esté listo...');
-            
             let attempts = 0;
             const maxAttempts = 50; // 5 segundos máximo
-            
+
             while (attempts < maxAttempts) {
                 if (window.productsClient && typeof window.getStoreProducts === 'function') {
-                    console.log('✅ StoreService está listo');
                     return true;
                 }
-                
+
                 await new Promise(resolve => setTimeout(resolve, 100));
                 attempts++;
             }
-            
-            console.warn('⚠️ StoreService no se cargó completamente');
+
             return false;
         }
 
@@ -2690,33 +2664,27 @@
 
         async function loadInitialData() {
             try {
-                console.log('🔄 Cargando datos iniciales del admin panel...');
-                
                 // Load products for dropdowns using storeService directly
                 if (typeof window.getAllProducts === 'function') {
                     allProducts = await window.getAllProducts();
                 } else if (typeof window.getStoreProducts === 'function') {
                     allProducts = await window.getStoreProducts();
                 } else {
-                    console.warn('⚠️ Using fallback method to get products');
                     allProducts = [];
                 }
-                
+
                 populateProductSelects();
-                
+
                 // Load boxes for selectors
                 try {
                     const boxes = await boxManager.getAllBoxes();
-                    console.log(`📦 Loaded ${boxes.length} boxes`);
                     await refreshBoxesSelector(null, boxes);
                 } catch (error) {
                     console.warn('⚠️ Error loading boxes:', error);
                 }
-                
+
                 // Load stats
                 await loadStats();
-                
-                console.log(`📊 Loaded ${allProducts.length} products`);
             } catch (error) {
                 console.error('Error loading initial data:', error);
                 showAlert('Error cargando datos iniciales: ' + error.message, 'danger');
@@ -5721,24 +5689,15 @@
                 modal.style.display = 'none';
                 modal.classList.add('hidden');
             }
-            
+
             const addModal = document.getElementById('addProductModal');
             if (addModal) {
                 addModal.style.display = 'none';
             }
-            
-            console.log('🔄 Página de administración cargada, inicializando...');
-            
-            // Check Chart.js availability
-            if (typeof Chart !== 'undefined') {
-                console.log('✅ Chart.js loaded successfully:', Chart.version || 'unknown version');
-            } else {
-                console.warn('⚠️ Chart.js not loaded');
-            }
-            
+
             // Setup form handlers
             setupFormHandlers();
-            
+
             // Check if Supabase library is loaded
             if (!window.supabase) {
                 updateConnectionStatus(false, 'Cargando biblioteca de Supabase...');

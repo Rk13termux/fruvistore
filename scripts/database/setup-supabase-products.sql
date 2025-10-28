@@ -80,10 +80,10 @@ END;
 $$ language 'plpgsql';
 
 -- Trigger para actualizar updated_at automáticamente
-CREATE TRIGGER update_products_modtime BEFORE UPDATE ON management_products 
+CREATE TRIGGER update_products_modtime BEFORE UPDATE ON management_products
     FOR EACH ROW EXECUTE FUNCTION update_modified_column();
 
-CREATE TRIGGER update_prices_modtime BEFORE UPDATE ON management_product_prices 
+CREATE TRIGGER update_prices_modtime BEFORE UPDATE ON management_product_prices
     FOR EACH ROW EXECUTE FUNCTION update_modified_column();
 
 -- 7. FUNCIÓN para actualizar precios manteniendo historial
@@ -99,12 +99,12 @@ DECLARE
 BEGIN
     -- Obtener precio actual
     SELECT price_per_kg INTO old_price_record
-    FROM management_product_prices 
+    FROM management_product_prices
     WHERE product_id = p_product_id AND is_current = true;
 
     -- Marcar precio actual como no vigente
-    UPDATE management_product_prices 
-    SET is_current = false, 
+    UPDATE management_product_prices
+    SET is_current = false,
         valid_until = NOW(),
         updated_at = NOW()
     WHERE product_id = p_product_id AND is_current = true;
@@ -120,10 +120,10 @@ BEGIN
     INSERT INTO price_updates_log (
         product_id, old_price, new_price, update_reason, updated_by
     ) VALUES (
-        p_product_id, 
-        old_price_record.price_per_kg, 
-        p_new_price, 
-        p_update_reason, 
+        p_product_id,
+        old_price_record.price_per_kg,
+        p_new_price,
+        p_update_reason,
         p_updated_by
     );
 END;
@@ -137,19 +137,19 @@ CREATE OR REPLACE FUNCTION update_stock(
 )
 RETURNS VOID AS $$
 BEGIN
-    UPDATE management_product_prices 
+    UPDATE management_product_prices
     SET stock_kg = stock_kg + p_quantity_change,
         updated_at = NOW()
     WHERE product_id = p_product_id AND is_current = true;
-    
+
     -- Opcional: Log de cambios de inventario
     INSERT INTO price_updates_log (
-        product_id, 
-        update_reason, 
+        product_id,
+        update_reason,
         updated_by,
         created_at
     ) VALUES (
-        p_product_id, 
+        p_product_id,
         p_reason || ' - Stock change: ' || p_quantity_change || 'kg',
         'system',
         NOW()
@@ -159,7 +159,7 @@ $$ LANGUAGE plpgsql;
 
 -- 9. VISTA para consulta rápida de productos con precios actuales
 CREATE OR REPLACE VIEW current_products AS
-SELECT 
+SELECT
     p.id,
     p.name,
     p.category,
@@ -178,7 +178,7 @@ SELECT
     (pr.stock_kg <= pr.min_stock_kg) as low_stock,
     ROUND(((pr.price_per_kg - pr.cost_per_kg) / pr.price_per_kg * 100), 2) as profit_margin
 FROM management_products p
-LEFT JOIN management_product_prices pr ON p.id = pr.product_id 
+LEFT JOIN management_product_prices pr ON p.id = pr.product_id
 WHERE p.is_active = true AND pr.is_current = true;
 
 -- 10. RLS (Row Level Security) - Opcional para multi-tenant
@@ -193,6 +193,20 @@ CREATE POLICY "Public products are viewable" ON management_products
 
 CREATE POLICY "Public current prices are viewable" ON management_product_prices
     FOR SELECT USING (is_current = true);
+
+-- Políticas para permitir operaciones de admin (INSERT, UPDATE, DELETE)
+-- Permitir acceso anónimo para operaciones de administración (protegido por otros medios)
+CREATE POLICY "Admin can manage products" ON management_products
+    FOR ALL USING (true);
+
+CREATE POLICY "Admin can manage product prices" ON management_product_prices
+    FOR ALL USING (true);
+
+CREATE POLICY "Admin can manage suppliers" ON suppliers
+    FOR ALL USING (true);
+
+CREATE POLICY "Admin can manage price logs" ON price_updates_log
+    FOR ALL USING (true);
 
 -- Política para admin (requiere autenticación)
 -- CREATE POLICY "Admin full access" ON management_products

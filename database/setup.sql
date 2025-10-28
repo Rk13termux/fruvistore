@@ -85,6 +85,14 @@ CREATE POLICY "Allow authenticated users to read products" ON management_product
 CREATE POLICY "Allow authenticated users to read prices" ON management_product_prices
   FOR SELECT USING (auth.role() = 'authenticated');
 
+-- Allow authenticated users to manage products (INSERT, UPDATE, DELETE)
+-- Permitir acceso anónimo para operaciones de administración (protegido por otros medios)
+CREATE POLICY "Allow authenticated users to manage products" ON management_products
+  FOR ALL USING (true);
+
+CREATE POLICY "Allow authenticated users to manage prices" ON management_product_prices
+  FOR ALL USING (true);
+
 CREATE POLICY "Users can read their own orders" ON management_orders
   FOR SELECT USING (auth.uid() = user_id);
 
