@@ -2100,6 +2100,53 @@
                 </button>
             </div>
 
+            <!-- Box Management -->
+            <div class="admin-card">
+                <div class="card-header">
+                    <i class="fas fa-box"></i>
+                    <h3>Gestión de Cajas</h3>
+                </div>
+                
+                <div class="input-group">
+                    <label for="manageBoxSelect">Caja:</label>
+                    <select id="manageBoxSelect">
+                        <option value="">Seleccionar caja...</option>
+                    </select>
+                </div>
+                
+                <div class="flex flex-wrap">
+                    <button class="btn btn-success" onclick="showAddBoxModal()">
+                        <i class="fas fa-plus"></i> Agregar Caja
+                    </button>
+                    <button class="btn" onclick="editSelectedBox()">
+                        <i class="fas fa-edit"></i> Editar Caja
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteSelectedBox()">
+                        <i class="fas fa-trash"></i> Eliminar Caja
+                    </button>
+                    <button class="btn btn-info" onclick="showAllBoxes()">
+                        <i class="fas fa-list"></i> Ver Todas las Cajas
+                    </button>
+                </div>
+
+                <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
+
+                <div class="input-group">
+                    <label for="boxStatus">Cambiar estado:</label>
+                    <select id="boxStatus">
+                        <option value="">Seleccionar estado...</option>
+                        <option value="active">Activar Caja</option>
+                        <option value="inactive">Desactivar Caja</option>
+                        <option value="featured">Marcar como Destacada</option>
+                        <option value="unfeatured">Quitar Destacada</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="updateBoxStatus()">
+                    <i class="fas fa-toggle-on"></i> Cambiar Estado
+                </button>
+            </div>
+
             <!-- Quick Actions -->
             <div class="admin-card">
                 <div class="card-header">
@@ -2316,6 +2363,7 @@
     <script src="./scripts/services/productManager.js"></script>
     <script>
         let productManager;
+        let boxManager;
         let allProducts = [];
 
         // Auto-initialize using store service
@@ -2469,6 +2517,10 @@
                     console.warn('⚠️ ProductManager not available, using store service directly');
                 }
                 
+                // Initialize Box Manager
+                boxManager = createBoxManager();
+                console.log('✅ Box Manager initialized');
+                
                 await loadInitialData();
                 
                 console.log('✅ Panel de administración inicializado correctamente');
@@ -2596,6 +2648,213 @@
             };
         }
 
+        // Box Manager - Gestión completa de cajas
+        function createBoxManager() {
+            return {
+                getAllBoxes: async () => {
+                    try {
+                        console.log('📦 Consultando cajas desde current_boxes...');
+                        const { data: boxes, error } = await window.productsClient
+                            .from('current_boxes')
+                            .select('*')
+                            .order('featured', { ascending: false })
+                            .order('name');
+                        
+                        if (error) {
+                            console.error('❌ Error consultando cajas:', error);
+                            throw error;
+                        }
+                        
+                        console.log('✅ Cajas obtenidas:', boxes?.length || 0);
+                        return boxes || [];
+                    } catch (error) {
+                        console.error('❌ Error en getAllBoxes:', error);
+                        throw new Error('Error cargando cajas: ' + error.message);
+                    }
+                },
+
+                getBoxWithContents: async (boxId) => {
+                    try {
+                        // Obtener información de la caja
+                        const { data: box, error: boxError } = await window.productsClient
+                            .from('current_boxes')
+                            .select('*')
+                            .eq('id', boxId)
+                            .single();
+
+                        if (boxError) throw boxError;
+
+                        // Obtener contenido de la caja
+                        const { data: contents, error: contentsError } = await window.productsClient
+                            .from('box_contents')
+                            .select('*')
+                            .eq('box_id', boxId)
+                            .order('display_order');
+
+                        if (contentsError) throw contentsError;
+
+                        return { ...box, contents: contents || [] };
+                    } catch (error) {
+                        console.error('❌ Error obteniendo caja con contenido:', error);
+                        throw error;
+                    }
+                },
+
+                addBox: async (boxData) => {
+                    try {
+                        const { data, error } = await window.productsClient
+                            .from('current_boxes')
+                            .insert([boxData])
+                            .select()
+                            .single();
+
+                        if (error) throw error;
+                        
+                        console.log('✅ Caja agregada exitosamente:', data);
+                        return data;
+                    } catch (error) {
+                        console.error('❌ Error agregando caja:', error);
+                        throw error;
+                    }
+                },
+
+                updateBox: async (boxId, updates) => {
+                    try {
+                        const { data, error } = await window.productsClient
+                            .from('current_boxes')
+                            .update(updates)
+                            .eq('id', boxId)
+                            .select()
+                            .single();
+
+                        if (error) throw error;
+                        
+                        console.log('✅ Caja actualizada exitosamente:', data);
+                        return data;
+                    } catch (error) {
+                        console.error('❌ Error actualizando caja:', error);
+                        throw error;
+                    }
+                },
+
+                deleteBox: async (boxId) => {
+                    try {
+                        const { error } = await window.productsClient
+                            .from('current_boxes')
+                            .delete()
+                            .eq('id', boxId);
+
+                        if (error) throw error;
+                        
+                        console.log('✅ Caja eliminada exitosamente');
+                        return true;
+                    } catch (error) {
+                        console.error('❌ Error eliminando caja:', error);
+                        throw error;
+                    }
+                },
+
+                updateBoxPrice: async (boxId, newPriceCOP, newPriceUSD, reason) => {
+                    try {
+                        // Obtener precio actual
+                        const { data: currentBox } = await window.productsClient
+                            .from('current_boxes')
+                            .select('price_cop, price_usd')
+                            .eq('id', boxId)
+                            .single();
+
+                        // Registrar en historial
+                        await window.productsClient
+                            .from('box_price_history')
+                            .insert([{
+                                box_id: boxId,
+                                old_price_cop: currentBox.price_cop,
+                                new_price_cop: newPriceCOP,
+                                old_price_usd: currentBox.price_usd,
+                                new_price_usd: newPriceUSD,
+                                change_reason: reason,
+                                updated_by: 'admin'
+                            }]);
+
+                        // Actualizar precio
+                        const { data, error } = await window.productsClient
+                            .from('current_boxes')
+                            .update({ 
+                                price_cop: newPriceCOP, 
+                                price_usd: newPriceUSD,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('id', boxId)
+                            .select()
+                            .single();
+
+                        if (error) throw error;
+                        
+                        console.log('✅ Precio de caja actualizado exitosamente');
+                        return data;
+                    } catch (error) {
+                        console.error('❌ Error actualizando precio de caja:', error);
+                        throw error;
+                    }
+                },
+
+                updateBoxStatus: async (boxId, status) => {
+                    try {
+                        let updates = {};
+                        
+                        switch(status) {
+                            case 'active':
+                                updates = { available: true, in_stock: true };
+                                break;
+                            case 'inactive':
+                                updates = { available: false };
+                                break;
+                            case 'featured':
+                                updates = { featured: true };
+                                break;
+                            case 'unfeatured':
+                                updates = { featured: false };
+                                break;
+                        }
+
+                        const { data, error } = await window.productsClient
+                            .from('current_boxes')
+                            .update(updates)
+                            .eq('id', boxId)
+                            .select()
+                            .single();
+
+                        if (error) throw error;
+                        
+                        console.log('✅ Estado de caja actualizado exitosamente');
+                        return data;
+                    } catch (error) {
+                        console.error('❌ Error actualizando estado de caja:', error);
+                        throw error;
+                    }
+                },
+
+                getBoxAnalytics: async () => {
+                    try {
+                        const { data, error } = await window.productsClient
+                            .from('box_analytics')
+                            .select(`
+                                *,
+                                current_boxes!inner(name, category)
+                            `)
+                            .order('revenue_cop', { ascending: false });
+
+                        if (error) throw error;
+                        
+                        return data || [];
+                    } catch (error) {
+                        console.error('❌ Error obteniendo analytics de cajas:', error);
+                        return [];
+                    }
+                }
+            };
+        }
+
         async function waitForSupabase() {
             return new Promise((resolve, reject) => {
                 let attempts = 0;
@@ -2700,6 +2959,23 @@
                 }
                 
                 populateProductSelects();
+                
+                // Load boxes for selectors
+                try {
+                    const boxes = await boxManager.getAllBoxes();
+                    console.log(`📦 Loaded ${boxes.length} boxes`);
+                    
+                    // Populate box selectors
+                    const manageBoxSelect = document.getElementById('manageBoxSelect');
+                    if (manageBoxSelect) {
+                        manageBoxSelect.innerHTML = '<option value="">Seleccionar caja...</option>';
+                        boxes.forEach(box => {
+                            manageBoxSelect.innerHTML += `<option value="${box.id}">${box.name} (${box.category})</option>`;
+                        });
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Error loading boxes:', error);
+                }
                 
                 // Load stats
                 await loadStats();
@@ -3311,6 +3587,115 @@
             } finally {
                 hideLoading();
             }
+        };
+
+        // ===== FUNCIONES DE GESTIÓN DE CAJAS =====
+        
+        window.showAllBoxes = async function() {
+            showLoading('Cargando todas las cajas...');
+            try {
+                const boxes = await boxManager.getAllBoxes();
+                
+                if (boxes.length === 0) {
+                    showAlert('No hay cajas registradas en el sistema', 'warning');
+                    return;
+                }
+                
+                let html = `
+                    <h3>Lista Completa de Cajas (${boxes.length})</h3>
+                    <div class="table-responsive">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Caja</th>
+                                    <th>Categoría</th>
+                                    <th>Precio COP</th>
+                                    <th>Precio USD</th>
+                                    <th>Items</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                boxes.forEach(box => {
+                    const isFeatured = box.featured ? '<i class="fas fa-star" style="color: #ffc107; margin-left: 0.5rem;" title="Destacada"></i>' : '';
+                    
+                    html += `
+                        <tr>
+                            <td>
+                                <div class="product-name">
+                                    <i class="fas fa-box" style="color: #8bda01;"></i>
+                                    ${box.name}${isFeatured}
+                                </div>
+                            </td>
+                            <td><span class="category-badge">${box.category}</span></td>
+                            <td class="price">${formatPrice(box.price_cop)}</td>
+                            <td class="price">$${box.price_usd}</td>
+                            <td>${box.total_items} items</td>
+                            <td>
+                                <span class="status-badge status-${box.available ? 'active' : 'inactive'}">
+                                    ${box.available ? 'Activa' : 'Inactiva'}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-sm btn-info" onclick="viewBoxDetails(${box.id})" title="Ver detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-sm btn-warning" onclick="editBox(${box.id})" title="Editar caja">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table></div>';
+                showModal(html);
+                
+            } catch (error) {
+                showAlert('Error cargando cajas: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        };
+
+        window.showAddBoxModal = function() {
+            const html = `
+                <h3>Agregar Nueva Caja</h3>
+                <form id="addBoxForm">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="boxName">Nombre:</label>
+                            <input type="text" id="boxName" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="boxCategory">Categoría:</label>
+                            <select id="boxCategory" required>
+                                <option value="Caja Premium">Caja Premium</option>
+                                <option value="Caja Familiar">Caja Familiar</option>
+                                <option value="Caja Exótica">Caja Exótica</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="boxPriceCOP">Precio COP:</label>
+                            <input type="number" id="boxPriceCOP" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="boxPriceUSD">Precio USD:</label>
+                            <input type="number" id="boxPriceUSD" step="0.25" required>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Agregar</button>
+                    </div>
+                </form>
+            `;
+            showModal(html);
         };
 
         // Utility functions
