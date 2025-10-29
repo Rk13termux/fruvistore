@@ -2049,6 +2049,12 @@
                     updateElementSafely('usersDbStatus', '<i class="fas fa-exclamation-triangle"></i> Error', '#ffc107');
                 }
 
+                // Initialize product manager for admin panel
+                if (typeof window.initProductManager === 'function') {
+                    window.productManager = window.initProductManager();
+                    console.log('✅ Product manager initialized');
+                }
+
                 return true;
 
             } catch (error) {
