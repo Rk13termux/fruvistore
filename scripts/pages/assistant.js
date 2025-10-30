@@ -124,12 +124,13 @@ export function renderAssistantPage(root) {
     chatSection.style.display = 'grid';
 
     // Personalized greeting based on user status
-    let greeting = '¡Hola! Soy <strong>Fruvi</strong> 🍎. Puedo ayudarte con frutas, compras, envíos, nutrición y recetas. ¿En qué te ayudo hoy?';
+    let greeting = '¡Hola! Soy <strong>Fruvi</strong> 🍎. Tu experto en frutas frescas y saludables. ¿En qué te ayudo hoy?';
 
     try {
       const user = await window.getUser();
       if (user) {
-        greeting = `¡Hola ${user.email?.split('@')[0] || 'usuario'}! Soy <strong>Fruvi</strong> 🍎, tu asistente personal. Tengo acceso a tu información y puedo ayudarte con productos, precios, stock y recomendaciones personalizadas. ¿En qué te ayudo hoy?`;
+        const firstName = user.email?.split('@')[0] || 'amigo';
+        greeting = `¡Hola ${firstName}! 🎉 Soy <strong>Fruvi</strong>, tu asistente personal para frutas frescas. Tengo acceso a nuestro catálogo completo y puedo ayudarte a elegir los mejores productos. ¿Qué frutas te interesan hoy?`;
       }
     } catch (e) {
       console.log('No se pudo obtener información del usuario para saludo personalizado');
@@ -187,8 +188,17 @@ export function renderAssistantPage(root) {
         }
       }
 
+      // Get user name for personalized responses
+      let userName = '';
+      try {
+        const user = await window.getUser();
+        if (user) {
+          userName = user.email?.split('@')[0] || '';
+        }
+      } catch (e) {}
+
       // Use database-integrated completion for better responses
-      const reply = await chatCompletionWithDatabase(text, currentUserId);
+      const reply = await chatCompletionWithDatabase(text, currentUserId, userName);
       stopTyping();
       history.push({ role: 'assistant', content: reply });
       appendMessage('assistant', reply);
@@ -320,6 +330,7 @@ export function renderAssistantPage(root) {
 
     if (existingItem) {
       existingItem.quantity += qty;
+      existingItem.total = existingItem.price * existingItem.quantity;
     } else {
       chatCart.push({
         product: productName,
@@ -330,7 +341,20 @@ export function renderAssistantPage(root) {
     }
 
     saveChatCart();
-    appendMessage('assistant', `¡Perfecto! Agregué ${qty} kg de ${productName} a tu carrito. Total: $${(price * qty).toLocaleString('es-CO')}`);
+
+    // Personalized response based on cart size
+    const totalItems = chatCart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalValue = chatCart.reduce((sum, item) => sum + item.total, 0);
+
+    let response = `¡Perfecto! 🎉 Agregué ${qty} kg de ${productName} a tu carrito. `;
+
+    if (totalItems >= 3) {
+      response += `¡Qué rico pedido llevas! Ya tienes ${totalItems} kg de frutas frescas por $${totalValue.toLocaleString('es-CO')}. ¿Estás listo para confirmar tu pedido? ¡Aprovecha y cuida tu salud con frutas frescas! 🌱💚`;
+    } else {
+      response += `Ahora llevas ${totalItems} kg en total. ¿Te gustaría agregar algo más para completar tu pedido?`;
+    }
+
+    appendMessage('assistant', response);
 
     // Show cart summary
     showCartSummary();
@@ -381,18 +405,35 @@ export function renderAssistantPage(root) {
   }
 
   // Global functions for cart actions
-  window.finalizeOrder = function() {
+  window.finalizeOrder = async function() {
     const total = chatCart.reduce((sum, item) => sum + item.total, 0);
     const orderText = chatCart.map(item =>
       `${item.quantity}kg ${item.product} - $${item.total.toLocaleString('es-CO')}`
     ).join('\n');
 
-    const whatsappMessage = `¡Hola Fruvi! Quiero hacer este pedido:\n\n${orderText}\n\nTotal: $${total.toLocaleString('es-CO')}\n\n¿Me puedes ayudar con el envío?`;
+    const whatsappMessage = `¡Hola Fruvi! 🍎 Quiero hacer este pedido:\n\n${orderText}\n\n💰 Total: $${total.toLocaleString('es-CO')}\n\n🚚 ¿Me puedes ayudar con el envío? ¿Dónde te gustaría recibirlo?\n\n¡Gracias! 😊`;
 
     const whatsappUrl = `https://wa.me/573001234567?text=${encodeURIComponent(whatsappMessage)}`;
     window.open(whatsappUrl, '_blank');
 
-    appendMessage('assistant', '¡Excelente! Te redirigí a WhatsApp para finalizar tu pedido. ¡Gracias por comprar en Fruvi! 🍎');
+    // Get user name for personalized message
+    let userName = '';
+    try {
+      const user = await window.getUser();
+      if (user) {
+        userName = user.email?.split('@')[0] || '';
+      }
+    } catch (e) {}
+
+    const farewellMessage = userName
+      ? `¡Perfecto ${userName}! 🚀 Te envié todo por WhatsApp para coordinar la entrega. ¡Gracias por elegir Fruvi para cuidar tu salud! 🌱💚`
+      : '¡Perfecto! 🚀 Te envié todo por WhatsApp para coordinar la entrega. ¡Gracias por elegir Fruvi! 🌱💚';
+
+    appendMessage('assistant', farewellMessage);
+
+    // Clear cart after successful order
+    chatCart = [];
+    saveChatCart();
   };
 
   window.clearChatCart = function() {
@@ -401,3 +442,4 @@ export function renderAssistantPage(root) {
     appendMessage('assistant', 'Carrito vaciado. ¿Qué más te gustaría comprar?');
   };
 }
+
