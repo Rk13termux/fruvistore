@@ -24,6 +24,9 @@ Reglas:
 - Si te preguntan algo fuera de ese ámbito, rehúsa amablemente y redirige el tema a frutas.
 - Sé útil y conciso, usa listas y formato Markdown cuando ayude (titulares breves, listas, negritas para puntos clave).
 - Si faltan datos, indícalo y sugiere alternativas u opciones.
+- Tienes acceso a información actualizada de productos, precios e inventario de la tienda.
+- Puedes consultar precios, disponibilidad de stock, información nutricional y detalles de productos.
+- Mantén el contexto de la tienda Fruvi y actúa como un vendedor experto.
 Marca: Fruvi.`;
 
   const body = {
@@ -135,7 +138,72 @@ Las cantidades son aproximadas y por cada 100 g. Si no hay datos, usa null. Nunc
   return parsed;
 }
 
-// General chat completion for assistant
+// Enhanced chat completion with database integration
+export async function chatCompletionWithDatabase(userMessage, userId = null) {
+  try {
+    // Get user context if available
+    let userContext = '';
+    if (userId) {
+      try {
+        const user = await window.getUser();
+        if (user) {
+          userContext = `Usuario: ${user.email || 'Usuario registrado'}. `;
+        }
+      } catch (e) {
+        console.log('No se pudo obtener contexto de usuario:', e.message);
+      }
+    }
+
+    // Get product information from database
+    let productInfo = '';
+    try {
+      const products = await window.getStoreProducts();
+      if (products && products.length > 0) {
+        productInfo = `Información de productos disponibles:\n${products.map(p =>
+          `- ${p.name}: $${p.priceKg?.toLocaleString('es-CO')} por kg, Stock: ${p.stock || 'Disponible'}, Categoría: ${p.category}`
+        ).join('\n')}`;
+      }
+    } catch (e) {
+      console.log('No se pudo obtener información de productos:', e.message);
+    }
+
+    const systemPrompt = `Eres Fruvi, asistente inteligente de una tienda de frutas premium.
+${userContext}
+INFORMACIÓN DE PRODUCTOS:
+${productInfo}
+
+REGLAS:
+- Responde SIEMPRE en español con tono cercano y profesional.
+- Tienes acceso a información actualizada de productos, precios e inventario.
+- Puedes consultar precios, disponibilidad de stock, información nutricional y detalles de productos.
+- Mantén el contexto de la tienda Fruvi y actúa como un vendedor experto.
+- Si preguntan por precios o disponibilidad, usa la información proporcionada arriba.
+- Si no tienes datos específicos, indícalo y sugiere alternativas.
+- Enfócate en temas de frutas: variedades, compras, pedidos, envíos, nutrición, recetas.
+- Sé útil y conciso, usa formato Markdown cuando ayude.`;
+
+    const body = {
+      model: getGroqModel(),
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userMessage }
+      ],
+      temperature: 0.3,
+      max_tokens: 800,
+      stream: false
+    };
+
+    const res = await callGroq(body);
+    const data = await res.json();
+    return data?.choices?.[0]?.message?.content || 'No se recibió respuesta.';
+  } catch (error) {
+    console.error('Error en chatCompletionWithDatabase:', error);
+    // Fallback to basic completion
+    return chatCompletion(userMessage);
+  }
+}
+
+// General chat completion for assistant (legacy)
 export async function chatCompletion(userMessage) {
   const systemPrompt = `Eres Fruvi, asistente de una tienda de frutas. Responde en español de forma clara, breve, útil y amigable. Puedes ayudar con precios, compras, envíos, nutrición, recetas y calidad. Si no tienes datos exactos, indícalo y ofrece una alternativa. Mantén el enfoque en frutas y temas relacionados.`;
 

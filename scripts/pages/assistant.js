@@ -1,5 +1,5 @@
-// Assistant Page (AI Chat powered by Groq) - Full-screen ChatGPT-like UI
-import { chatCompletionWithHistory } from '../services/groqService.js';
+// Assistant Page (AI Chat powered by Groq) - Full-screen ChatGPT-like UI with Database Integration
+import { chatCompletionWithHistory, chatCompletionWithDatabase } from '../services/groqService.js';
 
 export function renderAssistantPage(root) {
   // Full page chat layout with professional introduction
@@ -115,11 +115,24 @@ export function renderAssistantPage(root) {
   const backToIntroBtn = root.querySelector('#backToIntroBtn');
 
   // Handle start chat
-  startChatBtn.addEventListener('click', () => {
+  startChatBtn.addEventListener('click', async () => {
     root.querySelector('.ai-assistant-intro').style.display = 'none';
     chatSection.style.display = 'grid';
+
+    // Personalized greeting based on user status
+    let greeting = '¡Hola! Soy <strong>Fruvi</strong> 🍎. Puedo ayudarte con frutas, compras, envíos, nutrición y recetas. ¿En qué te ayudo hoy?';
+
+    try {
+      const user = await window.getUser();
+      if (user) {
+        greeting = `¡Hola ${user.email?.split('@')[0] || 'usuario'}! Soy <strong>Fruvi</strong> 🍎, tu asistente personal. Tengo acceso a tu información y puedo ayudarte con productos, precios, stock y recomendaciones personalizadas. ¿En qué te ayudo hoy?`;
+      }
+    } catch (e) {
+      console.log('No se pudo obtener información del usuario para saludo personalizado');
+    }
+
     // Initial greeting
-    setTimeout(() => appendMessage('assistant', '¡Hola! Soy <strong>Fruvi</strong> 🍎. Puedo ayudarte con frutas, compras, envíos, nutrición y recetas. ¿En qué te ayudo hoy?'), 300);
+    setTimeout(() => appendMessage('assistant', greeting), 300);
   });
 
   // Handle back to intro
@@ -143,21 +156,42 @@ export function renderAssistantPage(root) {
     e.preventDefault();
     const text = (input.value || '').trim();
     if (!text) return;
+
+    // Get current user for personalized responses
+    let currentUserId = null;
+    try {
+      const user = await window.getUser();
+      currentUserId = user?.id || null;
+    } catch (e) {
+      console.log('No se pudo obtener usuario actual:', e.message);
+    }
+
     // Push user message
     history.push({ role: 'user', content: text });
     appendMessage('user', text);
     input.value = '';
     autosize();
     const stopTyping = showTyping();
+
     try {
-      const reply = await chatCompletionWithHistory(history);
+      // Use database-integrated completion for better responses
+      const reply = await chatCompletionWithDatabase(text, currentUserId);
       stopTyping();
       history.push({ role: 'assistant', content: reply });
       appendMessage('assistant', reply);
     } catch (err) {
-      console.error(err);
-      stopTyping();
-      appendMessage('assistant', 'Lo siento, hubo un problema procesando tu mensaje. Intenta nuevamente.');
+      console.error('Error con base de datos, usando modo básico:', err);
+      try {
+        // Fallback to history-based completion
+        const reply = await chatCompletionWithHistory(history);
+        stopTyping();
+        history.push({ role: 'assistant', content: reply });
+        appendMessage('assistant', reply);
+      } catch (fallbackErr) {
+        console.error(fallbackErr);
+        stopTyping();
+        appendMessage('assistant', 'Lo siento, hubo un problema procesando tu mensaje. Intenta nuevamente.');
+      }
     }
   });
 
