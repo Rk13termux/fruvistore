@@ -159,9 +159,29 @@ export async function chatCompletionWithDatabase(userMessage, userId = null) {
     try {
       const products = await window.getStoreProducts();
       if (products && products.length > 0) {
-        productInfo = `Información de productos disponibles:\n${products.map(p =>
-          `- ${p.name}: $${p.priceKg?.toLocaleString('es-CO')} por kg, Stock: ${p.stock || 'Disponible'}, Categoría: ${p.category}`
-        ).join('\n')}`;
+        // Group products by name to show varieties
+        const productGroups = {};
+        products.forEach(p => {
+          const key = p.name.toLowerCase().replace(/\s+/g, '');
+          if (!productGroups[key]) {
+            productGroups[key] = [];
+          }
+          productGroups[key].push(p);
+        });
+
+        productInfo = `Información detallada de productos disponibles:\n`;
+        Object.values(productGroups).forEach(group => {
+          if (group.length === 1) {
+            const p = group[0];
+            productInfo += `- ${p.name}: $${p.priceKg?.toLocaleString('es-CO')} por kg, Stock: ${p.stock || 'Disponible'}, Categoría: ${p.category}, ${p.organic ? 'Orgánico' : 'Convencional'}\n`;
+          } else {
+            // Multiple varieties of same fruit
+            productInfo += `- ${group[0].name} (variedades disponibles):\n`;
+            group.forEach(p => {
+              productInfo += `  • Variedad: ${p.category}, Precio: $${p.priceKg?.toLocaleString('es-CO')} por kg, Stock: ${p.stock || 'Disponible'}, ${p.organic ? 'Orgánico' : 'Convencional'}\n`;
+            });
+          }
+        });
       }
     } catch (e) {
       console.log('No se pudo obtener información de productos:', e.message);
@@ -172,15 +192,18 @@ ${userContext}
 INFORMACIÓN DE PRODUCTOS:
 ${productInfo}
 
-REGLAS:
+REGLAS IMPORTANTES:
 - Responde SIEMPRE en español con tono cercano y profesional.
-- Tienes acceso a información actualizada de productos, precios e inventario.
-- Puedes consultar precios, disponibilidad de stock, información nutricional y detalles de productos.
+- Tienes acceso a información actualizada de productos, precios e inventario REAL de la base de datos.
+- Usa EXACTAMENTE los precios y stock que aparecen en la información proporcionada arriba.
+- Si un producto tiene variedades diferentes, menciona todas las disponibles con sus precios específicos.
+- Para preguntas sobre disponibilidad: usa "Disponible" o la cantidad exacta de stock.
+- Para preguntas sobre precios: cita el precio exacto en pesos colombianos (COP) por kilogramo.
+- Si preguntan por un producto específico, busca en la información proporcionada y da detalles precisos.
 - Mantén el contexto de la tienda Fruvi y actúa como un vendedor experto.
-- Si preguntan por precios o disponibilidad, usa la información proporcionada arriba.
-- Si no tienes datos específicos, indícalo y sugiere alternativas.
-- Enfócate en temas de frutas: variedades, compras, pedidos, envíos, nutrición, recetas.
-- Sé útil y conciso, usa formato Markdown cuando ayude.`;
+- Si no encuentras el producto en la información, di que no está disponible actualmente.
+- Sé útil y conciso, usa formato Markdown cuando ayude (listas, negritas para precios).
+- Siempre ofrece ayuda adicional como "¿Te gustaría hacer un pedido?" o "¿Necesitas información de envío?"`;
 
     const body = {
       model: getGroqModel(),
