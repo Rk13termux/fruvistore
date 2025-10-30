@@ -724,13 +724,13 @@ window.getUserStats = async function getUserStats(userId) {
     // Get orders count and total spent from Supabase
     const { data: orders, error: ordersError } = await supabaseClient
       .from('orders')
-      .select('total, status, created_at')
+      .select('total_amount, status, created_at')
       .eq('customer_id', userId);
 
     if (ordersError) throw ordersError;
 
     const totalOrders = orders?.length || 0;
-    const totalSpent = orders?.reduce((sum, order) => sum + (order.total || 0), 0) || 0;
+    const totalSpent = orders?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0;
     const pendingOrders = orders?.filter(order => order.status === 'pending').length || 0;
 
     // Mock data for charts (in a real app, this would come from analytics)
