@@ -18,7 +18,7 @@ export function initChatWidget() {
         <button id="fruvi-chat-close" class="btn-icon" aria-label="Cerrar"><i class="fas fa-xmark"></i></button>
       </div>
       <div id="fruvi-chat-messages" class="chat-panel__messages">
-        <div class="message bot-message"><i class="fas fa-brain"></i><p>¡Hola! Soy <strong>Fruvi</strong> 🍎, tu asistente personal para frutas frescas. ¿Qué frutas te interesan hoy?</p></div>
+        <div class="message bot-message"><i class="fas fa-brain"></i><p>¡Hola! Soy <strong>Fruvi</strong> 🍎, tu asistente personal para frutas frescas. ¿Qué frutas te interesan hoy? Pregúntame sobre precios y te mostraré opciones para agregar al carrito.</p></div>
       </div>
       <div class="chat-panel__input">
         <input type="text" id="fruvi-chat-input" placeholder="Escribe tu pregunta..." />
@@ -73,31 +73,49 @@ export function initChatWidget() {
     const uniqueProducts = [...new Set(productMatches.map(p => p.toLowerCase()))];
 
     const buttons = uniqueProducts.map(product => {
-      return `<button class="widget-btn widget-add-to-cart" data-product="${product}" data-price="10000">
-        <i class="fas fa-cart-plus"></i> ${product.charAt(0).toUpperCase() + product.slice(1)}
+      const capitalizedProduct = product.charAt(0).toUpperCase() + product.slice(1);
+      return `<button class="widget-btn widget-add-to-cart btn-primary" data-product="${product}" data-price="10000">
+        <i class="fas fa-cart-plus"></i> Agregar ${capitalizedProduct}
       </button>`;
     }).filter(Boolean);
 
     // Always add cart view button
-    buttons.push(`<button class="widget-btn widget-view-cart">
+    buttons.push(`<button class="widget-btn widget-view-cart btn-primary">
       <i class="fas fa-shopping-cart"></i> Ver Carrito
     </button>`);
 
     return `<div class="widget-action-buttons">${buttons.join('')}</div>`;
   }
 
-  function addMessage(text, sender) {
+  function addMessage(text, sender, showButtons = false) {
     const div = document.createElement('div');
     div.className = `message ${sender}-message`;
-    const icon = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-brain"></i>';
-    const processedText = renderWidgetMarkdown(text);
-    div.innerHTML = `${icon}<p>${processedText}`;
 
-    // Add action buttons for bot messages
-    if (sender === 'bot') {
-      const buttons = generateWidgetActionButtons(text);
-      if (buttons) {
-        div.innerHTML += buttons;
+    // Create icon element
+    const iconEl = document.createElement('i');
+    iconEl.className = sender === 'user' ? 'fas fa-user' : 'fas fa-brain';
+    div.appendChild(iconEl);
+
+    // Create message paragraph with full width
+    const p = document.createElement('p');
+    p.innerHTML = renderWidgetMarkdown(text);
+    p.style.width = '100%';
+    div.appendChild(p);
+
+    // Add action buttons for bot messages only when showButtons is true (price inquiries)
+    if (sender === 'bot' && showButtons) {
+      const buttonsHtml = generateWidgetActionButtons(text);
+      if (buttonsHtml) {
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.innerHTML = buttonsHtml;
+        buttonsContainer.style.cssText = `
+          margin-top: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          width: 100%;
+        `;
+        div.appendChild(buttonsContainer);
       }
     }
 
@@ -128,41 +146,10 @@ export function initChatWidget() {
       try {
 function escapeHtml(s) { return s.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])); }
 
-function renderWidgetMarkdown(text) {
-  // Basic markdown rendering for widget
-  const escaped = escapeHtml(text);
-  return escaped
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\n/g, '<br>');
-}
-
-function generateWidgetActionButtons(text) {
-  // Extract product names from response
-  const productMatches = text.match(/\b(aguacate|manzana|mango|pera|platano|uva|fresa|kiwi|naranja|limon|papaya|piña|sandia|melon|cereza|ciruela|durazno|nectarina|mandarina|granada|frambuesa|arandano|morá|guanabana|maracuya|lulo|feijoa|carambolo|pitahaya|lichi|longan|rambutan|jaca|nance|zapote|mamey|anona|chirimoya|guayaba|tomate de arbol|coco|datil|dátil|higo|tuna|nopal|aloe vera|acelga|espinaca|lechuga|repollo|coliflor|brocoli|zanahoria|remolacha|cebolla|ajo|papá|yuca|arracacha|ñame|malanga|plátano|guineo|banano|cambur)\b/gi) || [];
-
-  if (productMatches.length === 0) return '';
-
-  // Get unique products
-  const uniqueProducts = [...new Set(productMatches.map(p => p.toLowerCase()))];
-
-  const buttons = uniqueProducts.map(product => {
-    return `<button class="widget-btn widget-add-to-cart" data-product="${product}" data-price="10000">
-      <i class="fas fa-cart-plus"></i> ${product.charAt(0).toUpperCase() + product.slice(1)}
-    </button>`;
-  }).filter(Boolean);
-
-  // Always add cart view button
-  buttons.push(`<button class="widget-btn widget-view-cart">
-    <i class="fas fa-shopping-cart"></i> Ver Carrito
-  </button>`);
-
-  return `<div class="widget-action-buttons">${buttons.join('')}</div>`;
-}
 
 // Widget cart functions (simplified version)
 function addToWidgetCart(productName, price) {
-  const quantity = prompt(`¿Cuántos kilos de ${productName} deseas agregar?`, '1');
+  const quantity = prompt(`¿Cuántos kilos de ${productName.charAt(0).toUpperCase() + productName.slice(1)} deseas agregar?`, '1');
   if (!quantity || isNaN(quantity) || quantity <= 0) return;
 
   const qty = parseFloat(quantity);
@@ -187,12 +174,12 @@ function addToWidgetCart(productName, price) {
   const totalItems = widgetCart.reduce((sum, item) => sum + item.quantity, 0);
   const totalValue = widgetCart.reduce((sum, item) => sum + item.total, 0);
 
-  let response = `¡Perfecto! 🎉 Agregué ${qty} kg de ${productName} a tu carrito. `;
+  let response = `¡Perfecto! 🎉 Agregué ${qty} kg de ${productName.charAt(0).toUpperCase() + productName.slice(1)} a tu carrito. `;
 
   if (totalItems >= 3) {
-    response += `¡Qué rico pedido llevas! Ya tienes ${totalItems} kg de frutas frescas. ¿Estás listo para confirmar?`;
+    response += `¡Qué rico pedido llevas! Ya tienes ${totalItems} kg de frutas frescas por un total de $${totalValue.toLocaleString('es-CO')}. ¿Estás listo para confirmar tu pedido?`;
   } else {
-    response += `Ahora llevas ${totalItems} kg en total. ¿Te gustaría agregar algo más?`;
+    response += `Ahora llevas ${totalItems} kg en total por $${totalValue.toLocaleString('es-CO')}. ¿Te gustaría agregar algo más?`;
   }
 
   addMessage(response, 'bot');
@@ -202,17 +189,17 @@ function viewWidgetCart() {
   let widgetCart = JSON.parse(localStorage.getItem('fruvi_widget_cart') || '[]');
 
   if (widgetCart.length === 0) {
-    addMessage('Tu carrito está vacío. ¿Qué frutas te gustaría agregar?', 'bot');
+    addMessage('Tu carrito está vacío. ¿Qué frutas frescas te gustaría agregar hoy?', 'bot');
     return;
   }
 
   const total = widgetCart.reduce((sum, item) => sum + item.total, 0);
   const cartHtml = `
     <div class="widget-cart-summary">
-      <h4>🛒 Tu Carrito</h4>
+      <h4>🛒 Tu Carrito de Frutas Frescas</h4>
       ${widgetCart.map(item => `
         <div class="cart-item">
-          <span>${item.product}</span>
+          <span>${item.product.charAt(0).toUpperCase() + item.product.slice(1)}</span>
           <span>${item.quantity} kg x $${item.price.toLocaleString('es-CO')}</span>
           <span>$${item.total.toLocaleString('es-CO')}</span>
         </div>
@@ -222,10 +209,10 @@ function viewWidgetCart() {
       </div>
       <div class="cart-actions">
         <button class="widget-btn widget-finalize" onclick="finalizeWidgetOrder()">
-          <i class="fab fa-whatsapp"></i> Finalizar por WhatsApp
+          <i class="fab fa-whatsapp"></i> Finalizar Pedido por WhatsApp
         </button>
         <button class="widget-btn widget-clear" onclick="clearWidgetCart()">
-          <i class="fas fa-trash"></i> Vaciar
+          <i class="fas fa-trash"></i> Vaciar Carrito
         </button>
       </div>
     </div>
@@ -239,7 +226,7 @@ window.finalizeWidgetOrder = function() {
   let widgetCart = JSON.parse(localStorage.getItem('fruvi_widget_cart') || '[]');
   const total = widgetCart.reduce((sum, item) => sum + item.total, 0);
   const orderText = widgetCart.map(item =>
-    `${item.quantity}kg ${item.product} - $${item.total.toLocaleString('es-CO')}`
+    `${item.quantity}kg ${item.product.charAt(0).toUpperCase() + item.product.slice(1)} - $${item.total.toLocaleString('es-CO')}`
   ).join('\n');
 
   const whatsappMessage = `¡Hola Fruvi! 🍎 Quiero hacer este pedido:\n\n${orderText}\n\n💰 Total: $${total.toLocaleString('es-CO')}\n\n🚚 ¿Me puedes ayudar con el envío?\n\n¡Gracias! 😊`;
@@ -255,7 +242,7 @@ window.finalizeWidgetOrder = function() {
 
 window.clearWidgetCart = function() {
   localStorage.setItem('fruvi_widget_cart', JSON.stringify([]));
-  addMessage('Carrito vaciado. ¿Qué más te gustaría comprar?', 'bot');
+  addMessage('Carrito vaciado. ¿Qué frutas frescas te gustaría agregar ahora?', 'bot');
 };
         const user = await window.getUser();
         if (user) {
@@ -266,7 +253,24 @@ window.clearWidgetCart = function() {
       // Use the same enhanced database completion as the main assistant
       const res = await chatCompletionWithDatabase(text, null, userName);
       hideTyping();
-      addMessage(res, 'bot');
+
+      // Check if the user is asking about prices to show buttons
+      const isPriceInquiry = /\b(precio|cuánto|costo|vale|cuesta|precio de)\b/i.test(text);
+
+      // Personalize response with user name if available
+      let personalizedResponse = res;
+      if (userName && userName.trim()) {
+        // Add personalized greeting or reference in the response
+        if (isPriceInquiry) {
+          personalizedResponse = `${userName}, aquí tienes los precios que preguntaste:\n\n${res}`;
+        } else if (res.includes('¡Hola!') || res.includes('Hola')) {
+          personalizedResponse = res.replace(/¡Hola!|Hola/, `¡Hola ${userName}!`);
+        } else if (Math.random() < 0.3) { // 30% chance to add personalized touch
+          personalizedResponse = `${userName}, ${res.charAt(0).toLowerCase()}${res.slice(1)}`;
+        }
+      }
+
+      addMessage(personalizedResponse, 'bot', isPriceInquiry);
     } catch (e) {
       console.error(e);
       hideTyping();
