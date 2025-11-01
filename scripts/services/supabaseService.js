@@ -791,3 +791,6 @@ window.logout = async function logout() {
   }
 };
 
+// Export supabaseClient for use in other modules
+export { supabaseClient };
+

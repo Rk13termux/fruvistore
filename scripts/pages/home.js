@@ -573,7 +573,7 @@ export function renderHomePage(root) {
         <div class="cta-actions">
           <a href="#/registro" class="cta-button-premium-final">
             <i class="fas fa-rocket"></i>
-            Comenzar Mi Viaje
+            Comenzar Ahora
           </a>
           <a href="#/tienda" class="btn-link-premium-final">
             <i class="fas fa-store"></i>

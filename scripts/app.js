@@ -6,7 +6,7 @@ let startRouter, registerRoute, getCurrentPath;
 let renderHomePage, renderStorePage, renderBoxesPage;
 let renderNutritionPage, renderAssistantPage, renderRegistrationPage, renderLoginPage;
 let renderProfilePage, renderRecipesBlogPage, renderRecipeDetailPage;
-let renderDashboardPage, initChatWidget, CheckoutModalStore, CheckoutModalBoxes;
+let renderDashboardPage, renderSubscriptionPage, initChatWidget, CheckoutModalStore, CheckoutModalBoxes;
 
 async function loadModules() {
   try {
@@ -53,6 +53,65 @@ async function loadModules() {
     const dashboardModule = await import('./pages/dashboard.js');
     ({ renderDashboardPage } = dashboardModule);
 
+    console.log('📦 Loading subscription module...');
+    try {
+      const subscriptionModule = await import('./pages/subscription.js');
+      console.log('Subscription module imported:', subscriptionModule);
+      console.log('Available exports:', Object.keys(subscriptionModule));
+      console.log('renderSubscriptionPage in module:', 'renderSubscriptionPage' in subscriptionModule);
+      renderSubscriptionPage = subscriptionModule.renderSubscriptionPage;
+      console.log('✅ Subscription module loaded, renderSubscriptionPage:', typeof renderSubscriptionPage);
+
+      // Also load global credit functions
+      console.log('🔄 Loading global credit functions...');
+
+      // Force load credit functions from subscriptionService
+      const subscriptionService = await import('./services/subscriptionService.js');
+
+      // Define global credit functions
+      window.getCreditBalance = async function(userId) {
+        return await subscriptionService.getCreditBalance(userId);
+      };
+
+      window.deductCredits = async function(userId, amount, description) {
+        return await subscriptionService.deductCredits(userId, amount, description);
+      };
+
+      window.addCredits = async function(userId, amount, description, adminUserId) {
+        return await subscriptionService.addCredits(userId, amount, description, adminUserId);
+      };
+
+      window.getCreditHistory = async function(userId, limit) {
+        return await subscriptionService.getCreditHistory(userId, limit);
+      };
+
+      window.getCreditStats = async function(userId) {
+        return await subscriptionService.getCreditStats(userId);
+      };
+
+      window.getAllUsersCredits = async function() {
+        return await subscriptionService.getAllUsersCredits();
+      };
+
+      console.log('✅ All credit functions loaded globally from subscriptionService');
+      console.log('Available credit functions:', {
+        getCreditBalance: typeof window.getCreditBalance,
+        deductCredits: typeof window.deductCredits,
+        addCredits: typeof window.addCredits,
+        getCreditHistory: typeof window.getCreditHistory,
+        getCreditStats: typeof window.getCreditStats,
+        getAllUsersCredits: typeof window.getAllUsersCredits
+      });
+    } catch (error) {
+      console.error('❌ Error importing subscription module:', error);
+      console.error('Error details:', error.message, error.stack);
+      // Don't throw error, continue with app loading
+      console.warn('⚠️ Continuing without subscription module');
+    }
+
+    const webhookModule = await import('./pages/webhook.js');
+    ({ handleGumroadWebhook } = webhookModule);
+
     console.log('📦 Loading component modules...');
     const chatWidgetModule = await import('./components/chatWidget.js');
     ({ initChatWidget } = chatWidgetModule);
@@ -90,6 +149,7 @@ async function loadModules() {
   console.log('renderBoxesPage:', typeof renderBoxesPage);
   console.log('renderNutritionPage:', typeof renderNutritionPage);
   console.log('renderAssistantPage:', typeof renderAssistantPage);
+  console.log('renderSubscriptionPage:', typeof renderSubscriptionPage);
   console.log('renderRegistrationPage:', typeof renderRegistrationPage);
   console.log('renderLoginPage:', typeof renderLoginPage);
   console.log('renderProfilePage:', typeof renderProfilePage);
@@ -98,6 +158,13 @@ async function loadModules() {
   console.log('renderDashboardPage:', typeof renderDashboardPage);
   console.log('CheckoutModalStore:', typeof CheckoutModalStore);
   console.log('CheckoutModalBoxes:', typeof CheckoutModalBoxes);
+
+  // Check credit functions
+  console.log('💰 Credit functions:');
+  console.log('window.getCreditBalance:', typeof window.getCreditBalance);
+  console.log('window.deductCredits:', typeof window.deductCredits);
+  console.log('window.addCredits:', typeof window.addCredits);
+  console.log('window.getCreditHistory:', typeof window.getCreditHistory);
 
   // Add development helper for dashboard testing
   console.log('🔧 Adding development helpers...');
@@ -132,7 +199,7 @@ async function loadModules() {
   registerRoute('/', async (rootEl, params) => {
     try {
       console.log('🔍 Checking user status for root route...');
-      
+
       // Check if getUserStatus is available
       if (typeof window.getUserStatus !== 'function') {
         console.warn('⚠️ getUserStatus not available, defaulting to home page');
@@ -142,7 +209,7 @@ async function loadModules() {
 
       const userStatus = await window.getUserStatus();
       console.log('👤 User status:', userStatus);
-      
+
       if (userStatus.isGuest) {
         console.log('🏠 Routing to home page (guest user)');
         showSPA(rootEl, renderHomePage);
@@ -159,7 +226,7 @@ async function loadModules() {
   registerRoute('', async (rootEl, params) => {
     try {
       console.log('🔍 Checking user status for empty route...');
-      
+
       // Check if getUserStatus is available
       if (typeof window.getUserStatus !== 'function') {
         console.warn('⚠️ getUserStatus not available, defaulting to home page');
@@ -169,7 +236,7 @@ async function loadModules() {
 
       const userStatus = await window.getUserStatus();
       console.log('👤 User status:', userStatus);
-      
+
       if (userStatus.isGuest) {
         console.log('🏠 Routing to home page (guest user)');
         showSPA(rootEl, renderHomePage);
@@ -236,9 +303,7 @@ async function loadModules() {
   });
   registerRoute('/nutricion', async (rootEl, params) => {
     try {
-      const userStatus = await window.getUserStatus();
-      if (userStatus.isGuest) showRegistrationRequiredPage(rootEl, 'nutricion');
-      else showSPA(rootEl, renderNutritionPage);
+      showSPA(rootEl, renderNutritionPage);
     } catch (error) {
       console.error('❌ Error en ruta /nutricion:', error);
       rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
@@ -276,6 +341,20 @@ async function loadModules() {
       </div>`;
     }
   });
+
+  registerRoute('/suscripcion', async (rootEl, params) => {
+    try {
+      showSPA(rootEl, renderSubscriptionPage);
+    } catch (error) {
+      console.error('❌ Error en ruta /suscripcion:', error);
+      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
+        <h2>❌ Error cargando suscripción</h2>
+        <p><strong>Error:</strong> ${error.message}</p>
+        <p>Revisa la consola para más detalles.</p>
+      </div>`;
+    }
+  });
+
   registerRoute('/recetas', async (rootEl, params) => {
     try {
       const userStatus = await window.getUserStatus();
@@ -315,6 +394,26 @@ async function loadModules() {
         <h2>❌ Error cargando receta</h2>
         <p><strong>Error:</strong> ${error.message}</p>
         <p>Revisa la consola para más detalles.</p>
+      </div>`;
+    }
+  });
+  registerRoute('/webhook/gumroad', async (rootEl, params) => {
+    try {
+      // Handle webhook from Gumroad
+      const response = await handleGumroadWebhook(new Request(window.location.href, {
+        method: 'POST',
+        body: JSON.stringify(params),
+        headers: { 'Content-Type': 'application/json' }
+      }));
+      rootEl.innerHTML = `<div style="padding: 20px; color: green; background: #e6ffe6; border: 1px solid #99ff99; margin: 20px; border-radius: 8px;">
+        <h2>✅ Webhook procesado</h2>
+        <p>Estado: ${response.status}</p>
+      </div>`;
+    } catch (error) {
+      console.error('❌ Error procesando webhook:', error);
+      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
+        <h2>❌ Error en webhook</h2>
+        <p><strong>Error:</strong> ${error.message}</p>
       </div>`;
     }
   });

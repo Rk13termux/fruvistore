@@ -1,5 +1,7 @@
-// Combined Nutrition Page: AI analysis + professional data table
+// Combined Nutrition Page: AI analysis + professional data table + personalized plans
 import { getFruitNutritionJSON } from '../services/groqService.js';
+import { calculateBMI, calculateDailyCalories, createPersonalizedNutritionPlan, getNutritionProfile, updateNutritionProfile, saveNutritionAssessment } from '../services/nutritionService.js';
+import { checkPremiumAccess } from '../services/subscriptionService.js';
 
 // Expanded database for 20 common fruits
 const fruitData = [
@@ -28,12 +30,116 @@ const fruitData = [
 // Full list of fruits for AI analysis, ensuring no duplicates and sorted alphabetically
 const allFruitNames = [...new Set([...fruitData.map(f => f.name), ...['Albaricoque','Ciruela','Mora','Grosella','Guayaba','Maracuyá','Pitahaya','Lichi','Dátil','Caqui','Nectarina','Tamarindo','Carambola','Kumquat','Nance','Zapote','Tuna (cacto)','Guanábana','Mamey','Chirimoya','Mangostán','Rambután','Longán','Acerola','Physalis (Uchuva)','Membrillo','Pomelo rosado','Naranjilla','Feijoa','Camu camu','Jabuticaba','Atemoya','Yaca (Jackfruit)','Durión','Caimito','Lucuma','Pequi','Sapodilla (Níspero)','Cajú (Anacardo fruta)','Açaí','Maqui','Mora azul (Blueberry)','Arándano rojo','Boysenberry','Loganberry','Grosella negra','Grosella espinosa','Mora blanca','Uva verde','Uva negra','Uva moscatel','Banano rojo','Banano macho','Plátano dominico','Plátano manzano','Pitanga','Níspero japonés (Loquat)','Tamarillo','Uva Isabella','Uva Concord','Clementina','Satsuma','Mandarina Honey','Naranja Valencia','Naranja Sanguina','Manzana Fuji','Manzana Gala','Manzana Granny Smith','Manzana Pink Lady','Pera Anjou','Pera Bosc','Pera Williams','Melocotón blanco','Melocotón paraguayo','Ciruela roja','Ciruela amarilla','Ciruela negra','Cereza Bing','Cereza Rainier','Fresa silvestre','Frambuesa negra','Mora Boysen','Arándano silvestre','Grosella blanca','Papaya hawaiana','Papaya maradol','Mango ataulfo','Mango kent','Mango tommy','Kiwi dorado','Kiwi verde','Piña golden','Piña cayena','Pitahaya amarilla','Pitahaya roja','Guayaba fresa','Guayaba pera','Maracuyá morada','Maracuyá amarilla','Melón cantalupo','Melón honeydew','Pepino dulce','Melón galia','Sandía crimson','Sandía sin semillas']])].sort();
 
-export function renderNutritionPage(root) {
+export async function renderNutritionPage(root) {
+  // Check user authentication and premium status
+  let currentUser = null;
+  let isPremium = false;
+  let userProfile = null;
+
+  try {
+    currentUser = await window.getUser();
+    if (currentUser) {
+      const access = await checkPremiumAccess(currentUser.id);
+      isPremium = access.hasAccess;
+      userProfile = await getNutritionProfile(currentUser.id);
+    }
+  } catch (e) {
+    console.log('No se pudo verificar estado del usuario:', e.message);
+  }
+
   root.innerHTML = `
+  <!-- Personalized Nutrition Dashboard (Premium) -->
+  ${isPremium ? `
+  <section class="nutrition-dashboard container">
+    <div class="dashboard-header glass">
+      <h2><i class="fas fa-user-md"></i> Mi Panel Nutricional Personal</h2>
+      <p>Bienvenido ${currentUser?.email?.split('@')[0] || 'Usuario'}, aquí tienes tu análisis nutricional personalizado</p>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- BMI Calculator -->
+      <div class="dashboard-card glass">
+        <h3><i class="fas fa-weight"></i> Índice de Masa Corporal</h3>
+        <div class="bmi-calculator">
+          <div class="input-group">
+            <label>Peso (kg):</label>
+            <input type="number" id="weightInput" step="0.1" placeholder="70.5">
+          </div>
+          <div class="input-group">
+            <label>Altura (cm):</label>
+            <input type="number" id="heightInput" placeholder="170">
+          </div>
+          <button id="calculateBMI" class="btn-primary">Calcular BMI</button>
+          <div id="bmiResult" class="bmi-result" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Daily Calories Calculator -->
+      <div class="dashboard-card glass">
+        <h3><i class="fas fa-calculator"></i> Calorías Diarias</h3>
+        <div class="calories-calculator">
+          <div class="input-group">
+            <label>Edad:</label>
+            <input type="number" id="ageInput" placeholder="30">
+          </div>
+          <div class="input-group">
+            <label>Género:</label>
+            <select id="genderSelect">
+              <option value="">Seleccionar...</option>
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Nivel de Actividad:</label>
+            <select id="activitySelect">
+              <option value="sedentary">Sedentario</option>
+              <option value="lightly_active">Ligeramente activo</option>
+              <option value="moderately_active">Moderadamente activo</option>
+              <option value="very_active">Muy activo</option>
+              <option value="extremely_active">Extremadamente activo</option>
+            </select>
+          </div>
+          <button id="calculateCalories" class="btn-primary">Calcular</button>
+          <div id="caloriesResult" class="calories-result" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- Personalized Recommendations -->
+      <div class="dashboard-card glass full-width">
+        <h3><i class="fas fa-clipboard-list"></i> Recomendaciones Personalizadas</h3>
+        <div id="personalizedRecommendations">
+          <p>Complete su perfil nutricional para recibir recomendaciones personalizadas.</p>
+          <button id="createNutritionPlan" class="btn-primary">Crear Plan Nutricional</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  ` : `
+  <!-- Premium Teaser -->
+  <section class="premium-teaser container">
+    <div class="premium-banner glass">
+      <div class="premium-content">
+        <i class="fas fa-crown"></i>
+        <h3>Acceso Premium al Dr. Nutricionista</h3>
+        <p>Obtén análisis nutricional personalizado, planes alimenticios individualizados y seguimiento profesional con el Dr. Alejandro Rivera.</p>
+        <ul>
+          <li><i class="fas fa-check"></i> Consultas médicas especializadas</li>
+          <li><i class="fas fa-check"></i> Planes nutricionales personalizados</li>
+          <li><i class="fas fa-check"></i> Seguimiento de progreso</li>
+          <li><i class="fas fa-check"></i> Calculadora de calorías y BMI</li>
+        </ul>
+        <button class="cta-button premium-upgrade">Actualizar a Premium</button>
+      </div>
+    </div>
+  </section>
+  `}
+
+  <!-- AI Nutrition Analyzer -->
   <section class="ai-nutrition container">
     <div class="ai-nutrition__header">
       <h2>Analizador Nutricional con IA</h2>
-      <p>Consulta datos de cualquier fruta para obtener un análisis detallado.</p>
+      <p>Consulta datos científicos de cualquier fruta para obtener un análisis detallado.</p>
     </div>
 
     <form id="nutritionSearch" class="ai-nutrition__search">
@@ -72,6 +178,7 @@ export function renderNutritionPage(root) {
     <div id="nutritionError" class="ai-nutrition__error" style="display:none;"></div>
   </section>
 
+  <!-- Nutrition Database Table -->
   <section class="nutrition container" style="padding-top: 5px;">
     <h2 class="section__title">Biblioteca de Datos Nutricionales</h2>
     <div class="filters-container glass" style="margin-bottom: 20px;">
@@ -111,6 +218,118 @@ export function renderNutritionPage(root) {
   const tbody = root.querySelector('#fruitsTable tbody');
   const tableFilter = root.querySelector('#tableFilter');
   const sortSelect = root.querySelector('#sortSelect');
+
+  // Premium features event listeners
+  if (isPremium) {
+    // BMI Calculator
+    const calculateBMI = root.querySelector('#calculateBMI');
+    const weightInput = root.querySelector('#weightInput');
+    const heightInput = root.querySelector('#heightInput');
+    const bmiResult = root.querySelector('#bmiResult');
+
+    if (calculateBMI) {
+      calculateBMI.addEventListener('click', () => {
+        const weight = parseFloat(weightInput.value);
+        const height = parseFloat(heightInput.value);
+
+        if (!weight || !height) {
+          bmiResult.innerHTML = '<p class="error">Por favor ingrese peso y altura válidos.</p>';
+          bmiResult.style.display = 'block';
+          return;
+        }
+
+        const bmiData = calculateBMI(weight, height);
+        if (bmiData) {
+          bmiResult.innerHTML = `
+            <div class="bmi-summary">
+              <h4>Tu BMI: ${bmiData.bmi}</h4>
+              <p><strong>Categoría:</strong> ${bmiData.category}</p>
+              <p><strong>Riesgo:</strong> ${bmiData.risk}</p>
+              <p><strong>Peso ideal:</strong> ${bmiData.idealWeightRange.min} - ${bmiData.idealWeightRange.max} kg</p>
+            </div>
+          `;
+          bmiResult.style.display = 'block';
+        }
+      });
+    }
+
+    // Daily Calories Calculator
+    const calculateCalories = root.querySelector('#calculateCalories');
+    const ageInput = root.querySelector('#ageInput');
+    const genderSelect = root.querySelector('#genderSelect');
+    const activitySelect = root.querySelector('#activitySelect');
+    const caloriesResult = root.querySelector('#caloriesResult');
+
+    if (calculateCalories) {
+      calculateCalories.addEventListener('click', () => {
+        const age = parseInt(ageInput.value);
+        const gender = genderSelect.value;
+        const activity = activitySelect.value;
+        const weight = parseFloat(weightInput.value);
+        const height = parseFloat(heightInput.value);
+
+        if (!age || !gender || !weight || !height) {
+          caloriesResult.innerHTML = '<p class="error">Por favor complete todos los campos.</p>';
+          caloriesResult.style.display = 'block';
+          return;
+        }
+
+        const caloriesData = calculateDailyCalories(age, gender, weight, height, activity);
+        if (caloriesData) {
+          caloriesResult.innerHTML = `
+            <div class="calories-summary">
+              <h4>Tu Metabolismo Basal: ${caloriesData.bmr} kcal/día</h4>
+              <p><strong>Calorías diarias recomendadas:</strong> ${caloriesData.dailyCalories} kcal</p>
+              <div class="macros-breakdown">
+                <h5>Distribución de Macronutrientes:</h5>
+                <ul>
+                  <li><strong>Proteína:</strong> ${caloriesData.macronutrients.protein_g}g</li>
+                  <li><strong>Carbohidratos:</strong> ${caloriesData.macronutrients.carbs_g}g</li>
+                  <li><strong>Grasas:</strong> ${caloriesData.macronutrients.fat_g}g</li>
+                </ul>
+              </div>
+            </div>
+          `;
+          caloriesResult.style.display = 'block';
+        }
+      });
+    }
+
+    // Create Nutrition Plan
+    const createPlanBtn = root.querySelector('#createNutritionPlan');
+    const recommendationsDiv = root.querySelector('#personalizedRecommendations');
+
+    if (createPlanBtn) {
+      createPlanBtn.addEventListener('click', async () => {
+        try {
+          const plan = await createPersonalizedNutritionPlan(userProfile || {}, ['general_health'], {});
+          recommendationsDiv.innerHTML = `
+            <div class="nutrition-plan">
+              <h4>Tu Plan Nutricional Personalizado</h4>
+              <div class="plan-summary">
+                <p><strong>Calorías diarias:</strong> ${plan.dailyCalories || 'Calcular primero'}</p>
+                <h5>Frutas Recomendadas:</h5>
+                <ul>
+                  ${plan.fruitRecommendations.map(fruit => `<li>${fruit}</li>`).join('')}
+                </ul>
+                <h5>Sugerencias de Comidas:</h5>
+                ${plan.mealSuggestions.map(meal => `
+                  <div class="meal-suggestion">
+                    <h6>${meal.meal}:</h6>
+                    <p>${meal.suggestion}</p>
+                    <small>Beneficios: ${meal.benefits}</small>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        } catch (error) {
+          console.error('Error creando plan nutricional:', error);
+          recommendationsDiv.innerHTML = '<p class="error">Error al crear el plan. Intente nuevamente.</p>';
+        }
+      });
+    }
+  }
 
   function renderTable(data) {
     tbody.innerHTML = data.map(fruitName => {

@@ -1619,6 +1619,109 @@
             </div>
         </section>
 
+        <!-- Dr. AI Credit Management -->
+        <section class="admin-section">
+            <div class="admin-section-title">
+                <i class="fas fa-brain"></i>
+                <span>Gestión de Créditos Dr. AI</span>
+            </div>
+            <div class="admin-grid">
+                <!-- Credit Statistics -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Estadísticas de Créditos</h3>
+                    </div>
+                    <div id="creditStatsContainer">
+                        <p style="color: #666; text-align: center; padding: 2rem;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Cargando estadísticas...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- User Credit Management -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-users"></i>
+                        <h3>Gestión de Créditos por Usuario</h3>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="userSearch">Buscar Usuario (ID o Nombre):</label>
+                        <input type="text" id="userSearch" placeholder="Ingresa ID o nombre del usuario" onkeyup="filterUsers()">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="creditAmount">Créditos a Agregar:</label>
+                        <input type="number" id="creditAmount" min="1" placeholder="10" value="10">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="creditReason">Razón:</label>
+                        <input type="text" id="creditReason" placeholder="Recarga manual de créditos">
+                    </div>
+
+                    <div class="flex flex-wrap">
+                        <button class="btn btn-success" onclick="addCreditsToUser()">
+                            <i class="fas fa-plus"></i> Agregar Créditos
+                        </button>
+                        <button class="btn btn-info" onclick="refreshCreditStats()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Credit Transactions History -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-history"></i>
+                        <h3>Historial de Transacciones</h3>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="transactionUserFilter">Filtrar por Usuario:</label>
+                        <input type="text" id="transactionUserFilter" placeholder="ID o nombre del usuario" onkeyup="filterTransactions()">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="transactionLimit">Límite de registros:</label>
+                        <select id="transactionLimit">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="loadCreditTransactions()">
+                        <i class="fas fa-search"></i> Ver Historial
+                    </button>
+
+                    <div id="transactionsContainer" style="margin-top: 1rem;">
+                        <p style="color: #666; text-align: center; padding: 2rem;">
+                            <i class="fas fa-info-circle"></i>
+                            Selecciona un usuario para ver su historial
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Users Credit Table -->
+                <div class="admin-card">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i>
+                        <h3>Tabla de Créditos de Usuarios</h3>
+                    </div>
+
+                    <div id="usersCreditTableContainer">
+                        <p style="color: #666; text-align: center; padding: 2rem;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Cargando usuarios...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Herramientas para Cajas -->
         <section class="admin-section">
             <div class="admin-section-title">
@@ -1937,6 +2040,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="/scripts/services/storeService.js"></script>
     <script src="/scripts/services/productManager.js"></script>
+    <script type="module" src="/scripts/services/subscriptionService.js"></script>
     <script>
         let productManager;
         let boxManager;
@@ -5725,6 +5829,498 @@
 
 
 
+        // Credit Management Functions
+        let allUsersCredits = [];
+        let allCreditTransactions = [];
+
+        async function loadCreditStats() {
+            try {
+                const stats = await window.getCreditStats();
+                const container = document.getElementById('creditStatsContainer');
+
+                if (stats) {
+                    container.innerHTML = `
+                        <div class="stats-grid" style="margin-bottom: 0;">
+                            <div class="stat-card">
+                                <i class="fas fa-users"></i>
+                                <div class="value">${formatNumber(stats.totalUsers || 0)}</div>
+                                <div class="label">Usuarios Totales</div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-coins"></i>
+                                <div class="value">${formatNumber(stats.totalCreditsInCirculation || 0)}</div>
+                                <div class="label">Créditos en Circulación</div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-plus-circle"></i>
+                                <div class="value">${formatNumber(stats.totalCreditsEarned || 0)}</div>
+                                <div class="label">Créditos Otorgados</div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-minus-circle"></i>
+                                <div class="value">${formatNumber(stats.totalCreditsSpent || 0)}</div>
+                                <div class="label">Créditos Gastados</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <p style="color: #666; text-align: center; padding: 2rem;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Error cargando estadísticas
+                        </p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading credit stats:', error);
+                document.getElementById('creditStatsContainer').innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 2rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Error cargando estadísticas
+                    </p>
+                `;
+            }
+        }
+
+        async function loadUsersCreditTable() {
+            try {
+                const users = await window.getAllUsersCredits();
+                allUsersCredits = users || [];
+                renderUsersCreditTable(allUsersCredits);
+            } catch (error) {
+                console.error('Error loading users credits:', error);
+                document.getElementById('usersCreditTableContainer').innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 2rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Error cargando usuarios
+                    </p>
+                `;
+            }
+        }
+
+        // Get all credit transactions (admin function)
+        async function getAllCreditTransactions(limit = 100) {
+            try {
+                if (!window.supabaseClient) return [];
+
+                const { data, error } = await window.supabaseClient
+                    .from('credit_transactions')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(limit);
+
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Error getting all credit transactions:', error);
+                return [];
+            }
+        }
+
+        function renderUsersCreditTable(users) {
+            const container = document.getElementById('usersCreditTableContainer');
+
+            if (!users || users.length === 0) {
+                container.innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 2rem;">
+                        <i class="fas fa-info-circle"></i>
+                        No hay usuarios registrados
+                    </p>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="table-container" style="max-height: 400px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Usuario</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Créditos</th>
+                                <th>Estado</th>
+                                <th>Última Actividad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            users.forEach(user => {
+                const lastActivity = user.last_credit_update ?
+                    new Date(user.last_credit_update).toLocaleDateString('es-CO') : 'Nunca';
+                const userName = user.user_name || 'Sin nombre';
+                const userEmail = user.user_email || 'Sin email';
+                const userPhone = user.user_phone || '-';
+                const userStatus = user.user_status || 'Activo';
+                const creditsBalance = user.credits_balance || 0;
+
+                // Status badge
+                const statusClass = userStatus === 'Verificado' ? 'status-verified' : 'status-unverified';
+                const statusIcon = userStatus === 'Verificado' ? 'fas fa-check-circle' : 'fas fa-clock';
+
+                html += `
+                    <tr>
+                        <td>
+                            <div class="product-name">
+                                <i class="fas fa-user"></i>
+                                <span style="font-family: monospace; font-size: 0.85em;">${user.user_id}</span>
+                            </div>
+                        </td>
+                        <td>${escapeHtml(userName)}</td>
+                        <td>${escapeHtml(userEmail)}</td>
+                        <td>${userPhone}</td>
+                        <td>
+                            <span class="price-display ${creditsBalance > 0 ? 'positive' : 'zero'}">
+                                <i class="fas fa-coins"></i>
+                                ${formatNumber(creditsBalance)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${statusClass}">
+                                <i class="${statusIcon}"></i>
+                                ${userStatus}
+                            </span>
+                        </td>
+                        <td>${lastActivity}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-sm btn-success" onclick="quickAddCredits('${user.user_id}', '${escapeHtml(userName).replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-plus"></i> Agregar
+                                </button>
+                                <button class="btn-sm btn-info" onclick="viewUserTransactions('${user.user_id}')">
+                                    <i class="fas fa-history"></i> Historial
+                                </button>
+                                <button class="btn-sm btn-warning" onclick="editUserCredits('${user.user_id}', '${escapeHtml(userName).replace(/'/g, "\\'")}', ${creditsBalance})">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const filteredUsers = allUsersCredits.filter(user =>
+                user.user_id.toLowerCase().includes(searchTerm) ||
+                (user.user_name && user.user_name.toLowerCase().includes(searchTerm))
+            );
+            renderUsersCreditTable(filteredUsers);
+        }
+
+        async function addCreditsToUser() {
+            const userSearch = document.getElementById('userSearch').value.trim();
+            const amount = parseInt(document.getElementById('creditAmount').value);
+            const reason = document.getElementById('creditReason').value.trim();
+
+            if (!userSearch) {
+                showWarning('Usuario requerido', 'Ingresa el ID o nombre del usuario');
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                showWarning('Cantidad inválida', 'Ingresa una cantidad de créditos válida');
+                return;
+            }
+
+            try {
+                showLoading('Agregando créditos...');
+
+                // Find user by ID or name
+                let userId = userSearch;
+                const user = allUsersCredits.find(u =>
+                    u.user_id === userSearch ||
+                    (u.user_name && u.user_name.toLowerCase() === userSearch.toLowerCase())
+                );
+
+                if (user) {
+                    userId = user.user_id;
+                }
+
+                const result = await window.addCredits(userId, amount, reason, 'admin');
+
+                if (result.success) {
+                    showSuccess('💰 Créditos agregados exitosamente', `Se agregaron ${amount} créditos al usuario ${userId}`);
+                    document.getElementById('userSearch').value = '';
+                    document.getElementById('creditAmount').value = '10';
+                    document.getElementById('creditReason').value = '';
+                    await loadCreditStats();
+                    await loadUsersCreditTable();
+                } else {
+                    showError('❌ Error agregando créditos', result.error || 'No se pudieron agregar los créditos');
+                }
+            } catch (error) {
+                console.error('Error adding credits:', error);
+                showError('💥 Error del sistema', `Error inesperado: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function quickAddCredits(userId, userName) {
+            document.getElementById('userSearch').value = userId;
+            document.getElementById('creditAmount').focus();
+            showInfo('Usuario seleccionado', `Agregando créditos a ${userName} (${userId})`);
+        }
+
+        function editUserCredits(userId, userName, currentCredits) {
+            const newAmount = prompt(`Editar créditos para ${userName}\n\nCréditos actuales: ${currentCredits}\n\nNuevo saldo de créditos:`, currentCredits);
+
+            if (newAmount === null) return; // Cancelled
+
+            const amount = parseInt(newAmount);
+            if (isNaN(amount) || amount < 0) {
+                showError('Cantidad inválida', 'Ingresa un número válido de créditos');
+                return;
+            }
+
+            const difference = amount - currentCredits;
+            if (difference === 0) {
+                showInfo('Sin cambios', 'El saldo de créditos no cambió');
+                return;
+            }
+
+            const action = difference > 0 ? 'agregar' : 'quitar';
+            const confirmMessage = `¿Estás seguro de ${action} ${Math.abs(difference)} créditos a ${userName}?\n\nSaldo actual: ${currentCredits} créditos\nNuevo saldo: ${amount} créditos`;
+
+            if (!confirm(confirmMessage)) return;
+
+            // Perform the credit adjustment
+            adjustUserCredits(userId, difference, `Ajuste manual por admin - ${difference > 0 ? 'incremento' : 'decremento'}`, userName);
+        }
+
+        async function adjustUserCredits(userId, amount, reason, userName) {
+            try {
+                showLoading('Ajustando créditos...');
+
+                if (amount > 0) {
+                    // Add credits
+                    const result = await window.addCredits(userId, amount, reason, 'admin-user-id');
+                    if (result) {
+                        showSuccess('Créditos agregados', `Se agregaron ${amount} créditos a ${userName}`);
+                    } else {
+                        throw new Error('Error agregando créditos');
+                    }
+                } else {
+                    // Remove credits (using deductCredits)
+                    const result = await window.deductCredits(userId, Math.abs(amount), reason);
+                    if (result) {
+                        showSuccess('Créditos removidos', `Se removieron ${Math.abs(amount)} créditos de ${userName}`);
+                    } else {
+                        throw new Error('Error removiendo créditos');
+                    }
+                }
+
+                // Refresh data
+                await loadCreditStats();
+                await loadUsersCreditTable();
+
+            } catch (error) {
+                console.error('Error adjusting credits:', error);
+                showError('Error ajustando créditos', error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function viewUserTransactions(userId) {
+            try {
+                showLoading('Cargando historial...');
+                const transactions = await window.getCreditHistory(userId, 50);
+
+                if (!transactions || transactions.length === 0) {
+                    document.getElementById('transactionsContainer').innerHTML = `
+                        <p style="color: #666; text-align: center; padding: 2rem;">
+                            <i class="fas fa-info-circle"></i>
+                            No hay transacciones para este usuario
+                        </p>
+                    `;
+                    return;
+                }
+
+                let html = `
+                    <div class="table-container" style="max-height: 300px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Razón</th>
+                                    <th>Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                transactions.forEach(transaction => {
+                    const date = new Date(transaction.created_at).toLocaleString('es-CO');
+                    const type = transaction.transaction_type;
+                    const amount = transaction.amount;
+                    const reason = transaction.reason || 'Sin razón';
+                    const balance = transaction.balance_after;
+
+                    const typeIcon = type === 'credit' ? 'fas fa-plus text-success' : 'fas fa-minus text-danger';
+                    const typeText = type === 'credit' ? 'Crédito' : 'Débito';
+
+                    html += `
+                        <tr>
+                            <td>${date}</td>
+                            <td><i class="${typeIcon}"></i> ${typeText}</td>
+                            <td>${formatNumber(Math.abs(amount))}</td>
+                            <td>${reason}</td>
+                            <td>${formatNumber(balance)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table></div>';
+                document.getElementById('transactionsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactionsContainer').innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 2rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Error cargando historial
+                    </p>
+                `;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function loadCreditTransactions() {
+            const userFilter = document.getElementById('transactionUserFilter').value.trim();
+            const limit = parseInt(document.getElementById('transactionLimit').value);
+
+            try {
+                showLoading('Cargando transacciones...');
+
+                let transactions;
+                if (userFilter) {
+                    // Find user ID
+                    const user = allUsersCredits.find(u =>
+                        u.user_id === userFilter ||
+                        (u.user_name && u.user_name.toLowerCase() === userFilter.toLowerCase())
+                    );
+                    const userId = user ? user.user_id : userFilter;
+                    transactions = await window.getCreditHistory(userId, limit);
+                } else {
+                    // Get all transactions
+                    transactions = await getAllCreditTransactions(limit);
+                }
+
+                allCreditTransactions = transactions || [];
+                renderTransactionsTable(allCreditTransactions);
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                document.getElementById('transactionsContainer').innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 2rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Error cargando transacciones
+                    </p>
+                `;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderTransactionsTable(transactions) {
+            const container = document.getElementById('transactionsContainer');
+
+            if (!transactions || transactions.length === 0) {
+                container.innerHTML = `
+                    <p style="color: #666; text-align: center; padding: 2rem;">
+                        <i class="fas fa-info-circle"></i>
+                        No hay transacciones
+                    </p>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="table-container" style="max-height: 300px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Razón</th>
+                                <th>Balance Final</th>
+                                <th>Admin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            transactions.forEach(transaction => {
+                const date = new Date(transaction.created_at).toLocaleString('es-CO');
+                const type = transaction.transaction_type;
+                const amount = transaction.amount;
+                const reason = transaction.reason || 'Sin razón';
+                const balance = transaction.balance_after;
+                const userId = transaction.user_id;
+                const userName = transaction.user_name || 'Sin nombre';
+                const userEmail = transaction.user_email || 'Sin email';
+                const adminName = transaction.admin_name || '-';
+
+                const typeIcon = type === 'admin_add' ? 'fas fa-plus text-success' :
+                                type === 'usage' ? 'fas fa-minus text-danger' :
+                                type === 'initial_credits' ? 'fas fa-star text-warning' :
+                                'fas fa-exchange-alt text-info';
+                const typeText = type === 'admin_add' ? 'Recarga Admin' :
+                                type === 'usage' ? 'Uso' :
+                                type === 'initial_credits' ? 'Iniciales' :
+                                type;
+
+                const amountClass = amount > 0 ? 'text-success' : amount < 0 ? 'text-danger' : 'text-muted';
+                const amountSign = amount > 0 ? '+' : amount < 0 ? '' : '';
+
+                html += `
+                    <tr>
+                        <td>
+                            <span style="font-family: monospace; font-size: 0.85em;">${userId}</span>
+                        </td>
+                        <td>${escapeHtml(userName)}</td>
+                        <td>${escapeHtml(userEmail)}</td>
+                        <td>${date}</td>
+                        <td><i class="${typeIcon}"></i> ${typeText}</td>
+                        <td class="${amountClass}">${amountSign}${formatNumber(Math.abs(amount))}</td>
+                        <td title="${escapeHtml(reason)}">${escapeHtml(reason.length > 30 ? reason.substring(0, 30) + '...' : reason)}</td>
+                        <td><strong>${formatNumber(balance)}</strong></td>
+                        <td>${adminName}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function filterTransactions() {
+            const searchTerm = document.getElementById('transactionUserFilter').value.toLowerCase();
+            const filteredTransactions = allCreditTransactions.filter(transaction =>
+                transaction.user_id.toLowerCase().includes(searchTerm)
+            );
+            renderTransactionsTable(filteredTransactions);
+        }
+
+        async function refreshCreditStats() {
+            await loadCreditStats();
+            await loadUsersCreditTable();
+        }
+
         // Initialize when page loads
         window.addEventListener('load', function() {
             // Ensure modal is hidden on load
@@ -5749,6 +6345,11 @@
                 setTimeout(() => {
                     if (window.supabase) {
                         init();
+                        // Load credit management data after main init
+                        setTimeout(() => {
+                            loadCreditStats();
+                            loadUsersCreditTable();
+                        }, 2000);
                     } else {
                         updateConnectionStatus(false, 'Error cargando Supabase. Verifica tu conexión a internet.');
                     }
@@ -5756,6 +6357,11 @@
             } else {
                 // Initialize immediately
                 init();
+                // Load credit management data
+                setTimeout(() => {
+                    loadCreditStats();
+                    loadUsersCreditTable();
+                }, 1000);
             }
         });
     </script>

@@ -41,6 +41,12 @@ function initializeProductsClient() {
     });
 
     if (isValidEnvVar(PRODUCTS_SUPABASE_URL) && isValidEnvVar(PRODUCTS_SUPABASE_ANON_KEY)) {
+      // Check if we already have a client with the same URL to avoid multiple instances
+      if (productsClient && productsClient.supabaseUrl === PRODUCTS_SUPABASE_URL) {
+        console.log('✅ Cliente de productos ya existe, reutilizando instancia');
+        return true;
+      }
+
       productsClient = supabase.createClient(PRODUCTS_SUPABASE_URL, PRODUCTS_SUPABASE_ANON_KEY, {
         auth: {
           storageKey: 'fruvi-products-auth',

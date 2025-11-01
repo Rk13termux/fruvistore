@@ -138,9 +138,156 @@ Las cantidades son aproximadas y por cada 100 g. Si no hay datos, usa null. Nunc
   return parsed;
 }
 
-// Enhanced chat completion with database integration
+// Enhanced chat completion with database integration and AI Doctor personality
 export async function chatCompletionWithDatabase(userMessage, userId = null, userName = '') {
   try {
+    // Check premium access first
+    let isPremium = false;
+    let subscriptionInfo = null;
+    if (userId) {
+      try {
+        const { checkPremiumAccess } = await import('./subscriptionService.js');
+        const access = await checkPremiumAccess(userId);
+        isPremium = access.hasAccess;
+        subscriptionInfo = access;
+      } catch (e) {
+        console.log('No se pudo verificar acceso premium:', e.message);
+      }
+    }
+
+    // Get doctor personality from database
+    let doctorPersonality = {};
+    try {
+      const { supabaseClient } = await import('./supabaseService.js');
+      if (supabaseClient) {
+        const { data } = await supabaseClient
+          .from('ai_doctor_personality')
+          .select('*')
+          .eq('is_active', true)
+          .single();
+        if (data) doctorPersonality = data;
+      }
+    } catch (e) {
+      console.log('No se pudo obtener personalidad del doctor:', e.message);
+    }
+
+    // Get user nutrition profile if premium
+    let userProfile = null;
+    if (isPremium && userId) {
+      try {
+        const { supabaseClient } = await import('./supabaseService.js');
+        const { data } = await supabaseClient
+          .from('user_nutrition_profiles')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
+        if (data) userProfile = data;
+      } catch (e) {
+        console.log('No se pudo obtener perfil nutricional:', e.message);
+      }
+    }
+
+    // Get conversation history for context (last 10 messages)
+    let conversationHistory = [];
+    if (userId) {
+      try {
+        const { supabaseClient } = await import('./supabaseService.js');
+        const { data } = await supabaseClient
+          .from('ai_doctor_conversations')
+          .select('message_type, message_content, message_metadata, timestamp')
+          .eq('user_id', userId)
+          .order('timestamp', { ascending: false })
+          .limit(20); // Get more to filter
+
+        if (data) {
+          // Convert to chronological order and format
+          conversationHistory = data
+            .reverse()
+            .slice(-10) // Keep last 10 messages
+            .map(msg => ({
+              role: msg.message_type,
+              content: msg.message_content,
+              metadata: msg.message_metadata
+            }));
+        }
+      } catch (e) {
+        console.log('No se pudo obtener historial de conversación:', e.message);
+      }
+    }
+
+    // Get medical knowledge base for specific conditions mentioned
+    let medicalKnowledge = '';
+    if (isPremium && userMessage) {
+      try {
+        // Extract potential health conditions from user message
+        const healthKeywords = ['diabetes', 'hipertension', 'colesterol', 'digest', 'estrenimiento', 'inmun', 'depresion', 'ansiedad', 'cancer', 'corazon', 'higado', 'rinon', 'tiroides', 'anemia', 'obesidad', 'delgadez', 'vitamina', 'mineral', 'alergia', 'intolerancia'];
+
+        const mentionedConditions = healthKeywords.filter(condition =>
+          userMessage.toLowerCase().includes(condition)
+        );
+
+        if (mentionedConditions.length > 0) {
+          try {
+            const { supabaseClient } = await import('./supabaseService.js');
+            // Get relevant medical knowledge
+            const { data: knowledgeData } = await supabaseClient
+              .from('ai_medical_knowledge')
+              .select('title, content, scientific_sources')
+              .or(mentionedConditions.map(cond => `content.ilike.%${cond}%`).join(','))
+              .limit(3);
+
+            if (knowledgeData && knowledgeData.length > 0) {
+              medicalKnowledge = '\n\nCONOCIMIENTO MÉDICO RELEVANTE:\n' +
+                knowledgeData.map(k => `- ${k.title}: ${k.content.substring(0, 300)}...`).join('\n');
+            }
+
+            // Get fruit medical applications for mentioned conditions
+            const { data: fruitApps } = await supabaseClient
+              .from('fruit_medical_applications')
+              .select('fruit_name, health_condition, medical_evidence, recommended_dosage, effectiveness_rating')
+              .or(mentionedConditions.map(cond => `health_condition.ilike.%${cond}%`).join(','))
+              .order('effectiveness_rating', { ascending: false })
+              .limit(5);
+
+            if (fruitApps && fruitApps.length > 0) {
+              medicalKnowledge += '\n\nAPLICACIONES MÉDICAS DE FRUTAS:\n' +
+                fruitApps.map(app =>
+                  `- ${app.fruit_name} para ${app.health_condition}: ${app.medical_evidence.substring(0, 200)}... (Dosis: ${app.recommended_dosage})`
+                ).join('\n');
+            }
+          } catch (dbError) {
+            console.log('No se pudo obtener conocimiento médico de BD:', dbError.message);
+          }
+        }
+      } catch (e) {
+        console.log('No se pudo obtener conocimiento médico:', e.message);
+      }
+    }
+
+    // Get personalized fruit recommendations for this user
+    let personalizedRecommendations = '';
+    if (isPremium && userId) {
+      try {
+        const { supabaseClient } = await import('./supabaseService.js');
+        const { data: recommendations } = await supabaseClient
+          .from('personalized_fruit_recommendations')
+          .select('fruit_name, health_reason, recommended_frequency, serving_size, expected_benefits')
+          .eq('user_id', userId)
+          .eq('is_active', true)
+          .order('priority_level', { ascending: false })
+          .limit(5);
+
+        if (recommendations && recommendations.length > 0) {
+          personalizedRecommendations = '\n\nRECOMENDACIONES PERSONALES PARA ESTE PACIENTE:\n' +
+            recommendations.map(rec =>
+              `- ${rec.fruit_name}: ${rec.health_reason} (${rec.recommended_frequency}, ${rec.serving_size}). Beneficios: ${rec.expected_benefits.join(', ')}`
+            ).join('\n');
+        }
+      } catch (e) {
+        console.log('No se pudieron obtener recomendaciones personalizadas:', e.message);
+      }
+    }
+
     // Get user context if available
     let userContext = '';
     if (userId) {
@@ -148,6 +295,15 @@ export async function chatCompletionWithDatabase(userMessage, userId = null, use
         const user = await window.getUser();
         if (user) {
           userContext = `Usuario: ${user.email || 'Usuario registrado'}. `;
+          if (userProfile) {
+            userContext += `Perfil: ${userProfile.age ? userProfile.age + ' años' : ''}, ${userProfile.gender || ''}, ${userProfile.height_cm ? userProfile.height_cm + 'cm' : ''}, ${userProfile.weight_kg ? userProfile.weight_kg + 'kg' : ''}. `;
+            if (userProfile.health_goals?.length > 0) {
+              userContext += `Objetivos: ${userProfile.health_goals.join(', ')}. `;
+            }
+            if (userProfile.medical_conditions?.length > 0) {
+              userContext += `Condiciones médicas: ${userProfile.medical_conditions.join(', ')}. `;
+            }
+          }
         }
       } catch (e) {
         console.log('No se pudo obtener contexto de usuario:', e.message);
@@ -187,63 +343,170 @@ export async function chatCompletionWithDatabase(userMessage, userId = null, use
       console.log('No se pudo obtener información de productos:', e.message);
     }
 
-    const systemPrompt = `Eres Fruvi, el VENDEDOR MÁS CARISMÁTICO de frutas premium. 🍎✨
+    // Build system prompt based on premium status
+    let systemPrompt;
+    if (isPremium) {
+      systemPrompt = `Eres el Dr. ${doctorPersonality.doctor_name || 'Alejandro Rivera'}, un médico nutricionista especializado en frutas y alimentación funcional. 🍎⚕️
+
+📋 TU PERFIL PROFESIONAL:
+- ${doctorPersonality.credentials || 'Médico graduado de Harvard con 15 años de experiencia'}
+- Especialidad: ${doctorPersonality.specialty || 'Nutrición y Alimentación Funcional'}
+- Enfoque: ${doctorPersonality.approach || 'Holístico y preventivo'}
+- Filosofía: ${doctorPersonality.philosophy || 'Las frutas son medicina natural'}
+
+${medicalKnowledge}
+${personalizedRecommendations}
+
+🎯 ESTILO DE COMUNICACIÓN PROFESIONAL:
+${doctorPersonality.communication_style || 'Profesional pero cercano, empático y motivador'}
+
+🩺 FUNCIONES MÉDICAS PREMIUM:
+- Análisis nutricional personalizado basado en perfil del paciente
+- Recomendaciones médicas fundamentadas científicamente
+- Planes de alimentación individualizados
+- Seguimiento de progreso y ajustes terapéuticos
+- Consejos preventivos y de bienestar integral
+
+${userContext}
+
+📊 INFORMACIÓN DE PRODUCTOS PARA RECOMENDACIONES:
+${productInfo}
+
+🔬 PROTOCOLO MÉDICO DE CONSULTA:
+1. 📋 EVALUACIÓN INICIAL: Preguntar por síntomas, historial y objetivos
+2. 🔍 ANÁLISIS PROFESIONAL: Basado en evidencia científica y perfil del paciente
+3. 💊 RECOMENDACIONES TERAPÉUTICAS: Planes de alimentación con frutas específicas
+4. 🛒 INTEGRACIÓN COMERCIAL: Sugerir productos de Fruvi cuando sea relevante
+5. 📈 SEGUIMIENTO: Monitorear progreso y ajustar recomendaciones
+
+⚕️ ESTÁNDARES DE CUIDADO MÉDICO:
+- Siempre recordar información personal del paciente entre consultas
+- Adaptar recomendaciones según condiciones médicas y restricciones
+- Priorizar seguridad alimentaria y posibles interacciones
+- Mantener confidencialidad médica absoluta
+- Usar terminología médica precisa pero accesible
+
+🧠 CONOCIMIENTO MÉDICO INTEGRADO:
+- Utiliza la base de conocimiento médico para recomendaciones fundamentadas
+- Recomienda frutas específicas para condiciones de salud mencionadas
+- Considera interacciones medicamentosas y contraindicaciones
+- Adapta sugerencias según el perfil personalizado del paciente
+
+🎨 TONO PROFESIONAL ADAPTABLE:
+- Para consultas médicas: Formal, preciso, empático
+- Para recomendaciones nutricionales: Educativo y motivador
+- Para sugerencias de compra: Profesional pero persuasivo
+- Siempre mantener el rol de médico especialista`;
+    } else {
+      // Free tier - basic assistant with upsell prompts
+      systemPrompt = `Eres Fruvi, el asistente especializado en frutas premium. 🍎✨
+
 ${userContext}
 INFORMACIÓN DE PRODUCTOS:
 ${productInfo}
 
-🎯 REGLAS DE VENTA CARISMÁTICA Y PROFESIONAL:
+🎯 FUNCIONES BÁSICAS:
+- Información general sobre frutas y nutrición
+- Recomendaciones básicas de consumo
+- Información de productos y precios
+- Soporte para compras
 
-🔥 ACTITUD DE VENDEDOR ESTRELLA:
-- Responde SIEMPRE en español con energía, carisma y entusiasmo contagioso
-- Dirige la conversación hacia la venta con sutileza pero efectividad
-- Usa el nombre del cliente cuando sea apropiado (ej: "¡Perfecto, ${userName || 'amigo'}!")
-- Varía el estilo de respuesta: a veces formal, a veces cercano, siempre persuasivo
+💡 LIMITACIONES DEL PLAN GRATUITO:
+- Consultas limitadas por día
+- Sin análisis médico personalizado
+- Sin planes de alimentación individualizados
+- Sin seguimiento médico profesional
 
-💰 ESTRATEGIA DE PRECIOS Y STOCK:
-- Usa EXACTAMENTE los precios de la base de datos - nunca inventes
-- Si stock < 10kg: "🚨 ¡Quedan solo X kg! ¡Últimas unidades disponibles!"
-- Si stock < 5kg: "⚡ ¡URGENTE! Solo X kg restantes - ¡se van volando!"
-- Destaca beneficios: "¡Fresco de temporada!", "¡Orgánico premium!", "¡Súper nutritivo!"
+🆙 PROMOCIÓN DE PREMIUM:
+Cuando el usuario necesite análisis detallados, planes personalizados o consultas médicas, sugiere amablemente actualizar a Premium para acceder al Dr. Nutricionista especialista.
 
-🛒 TÉCNICAS DE VENTA INTELIGENTE:
-- Pregunta por cantidades: "¿Cuántos kilos te regalo hoy?"
-- Sugiere combinaciones: "Con este producto, te recomiendo añadir..."
-- Crea urgencia positiva: "¡Hoy tenemos envío gratis en pedidos +$50.000!"
-- Ofrece alternativas premium: "Si buscas algo especial, prueba nuestro..."
+🎨 ESTILO DE COMUNICACIÓN:
+- Amigable y servicial
+- Informativo pero no médico
+- Siempre promover el upgrade cuando sea apropiado
+- Mantener el enfoque en frutas y productos`;
+    }
 
-📱 MOMENTOS PARA FINALIZAR COMPRA:
-- Después de 2-3 productos en carrito: "¡Qué rico pedido llevas! ¿Estás listo para confirmar?"
-- Antes de finalizar: "¡Aprovecha y cuida tu salud con frutas frescas! 🌱💚"
-- Mensaje de cierre: "¡Listo! Te envío todo por WhatsApp para coordinar entrega 🚀"
+    // Build messages array with conversation history
+    const messages = [{ role: 'system', content: systemPrompt }];
 
-🎨 ESTRUCTURA DE RESPUESTA ADAPTABLE:
-1. 🎉 Saludo carismático + reconocimiento del interés
-2. 📋 Información detallada con precios y stock REALES
-3. 🌟 Beneficios + sugerencias personalizadas
-4. ❓ Pregunta persuasiva que lleve a la acción
-5. 🎯 Llamada a acción clara cuando corresponda
+    // Add conversation history for context (but not too much to avoid token limits)
+    if (conversationHistory.length > 0) {
+      messages.push(...conversationHistory.slice(-6)); // Last 6 messages for context
+    }
 
-🎭 VARIEDAD EN EL ESTILO:
-- Usa emojis relevantes pero no excesivos
-- Varía frases: "¡Excelente!", "¡Perfecto!", "¡Qué buena idea!", "¡Me encanta!"
-- Sé conversacional pero profesional
-- Adapta el tono según el cliente y contexto`;
+    // Add current user message
+    messages.push({ role: 'user', content: userMessage });
 
     const body = {
       model: getGroqModel(),
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage }
-      ],
-      temperature: 0.3,
-      max_tokens: 800,
+      messages: messages,
+      temperature: isPremium ? 0.2 : 0.3, // More precise for premium
+      max_tokens: isPremium ? 1000 : 800, // More tokens for premium
       stream: false
     };
 
     const res = await callGroq(body);
     const data = await res.json();
-    return data?.choices?.[0]?.message?.content || 'No se recibió respuesta.';
+    const response = data?.choices?.[0]?.message?.content || 'No se recibió respuesta.';
+
+    // Save conversation to database if user is logged in
+    if (userId) {
+      try {
+        const { supabaseClient } = await import('./supabaseService.js');
+        // Detect fruits mentioned in the conversation
+        const fruitKeywords = ['manzana', 'pera', 'plátano', 'naranja', 'uva', 'fresa', 'kiwi', 'mango', 'piña', 'sandía', 'melón', 'cereza', 'durazno', 'nectarina', 'ciruela', 'granada', 'higo', 'aguacate', 'papaya', 'limón', 'mandarina', 'arándano', 'frambuesa', 'mora', 'guanábana', 'maracuyá', 'lulo', 'feijoa', 'carambolo', 'pitahaya', 'lichi', 'longan', 'rambután', 'jaca', 'nance', 'zapote', 'mamey', 'anona', 'chirimoya', 'guayaba', 'tomate de árbol', 'coco', 'dátil', 'higo', 'tuna', 'nopal', 'aloe vera'];
+
+        const mentionedFruits = fruitKeywords.filter(fruit =>
+          userMessage.toLowerCase().includes(fruit) ||
+          response.toLowerCase().includes(fruit)
+        );
+
+        // Save user message
+        await supabaseClient
+          .from('ai_doctor_conversations')
+          .insert({
+            user_id: userId,
+            session_id: `session_${userId}_${Date.now()}`,
+            message_type: 'user',
+            message_content: userMessage,
+            message_metadata: { fruits_mentioned: mentionedFruits, is_premium: isPremium },
+            is_premium: isPremium
+          });
+
+        // Save assistant response
+        await supabaseClient
+          .from('ai_doctor_conversations')
+          .insert({
+            user_id: userId,
+            session_id: `session_${userId}_${Date.now()}`,
+            message_type: 'assistant',
+            message_content: response,
+            message_metadata: { fruits_mentioned: mentionedFruits, is_premium: isPremium },
+            is_premium: isPremium
+          });
+
+        // Track usage
+        const { trackAIUsage } = await import('./subscriptionService.js');
+        await trackAIUsage(userId, 'chat_assistant', Math.ceil(response.length / 4)); // Rough token estimate
+
+        // Analyze conversation for insights and update personalization
+        if (isPremium) {
+          try {
+            const { analyzeUserPatterns, updateProfileFromInsights } = await import('./personalizationService.js');
+            await analyzeUserPatterns(userId);
+            await updateProfileFromInsights(userId);
+          } catch (e) {
+            console.log('No se pudieron actualizar insights de usuario:', e.message);
+          }
+        }
+
+      } catch (e) {
+        console.log('No se pudo guardar conversación:', e.message);
+      }
+    }
+
+    return response;
   } catch (error) {
     console.error('Error en chatCompletionWithDatabase:', error);
     // Fallback to basic completion
