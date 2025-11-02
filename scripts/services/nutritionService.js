@@ -1,6 +1,8 @@
 // Nutrition Service - Advanced nutritional analysis and personalized recommendations
 // Handles user profiles, nutritional calculations, and personalized plans
 
+import { supabaseClient } from './supabaseService.js';
+
 // Calculate BMI and nutritional status
 export function calculateBMI(weightKg, heightCm) {
   if (!weightKg || !heightCm) return null;

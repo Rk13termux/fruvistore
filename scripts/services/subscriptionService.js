@@ -78,6 +78,7 @@ export async function initializeUserCredits(userId) {
         balance_after: 25
       });
 
+    console.log(`✅ Créditos inicializados para usuario ${userName}: 25 créditos`);
     return data[0];
   } catch (error) {
     console.error('Error initializing user credits:', error);
@@ -91,6 +92,11 @@ export async function checkPremiumAccess(userId) {
     if (!supabaseClient) {
       console.log('No supabaseClient available, returning free access');
       return { hasAccess: false, plan: 'free', reason: 'no_supabase' };
+    }
+
+    if (!userId) {
+      console.log('No userId provided, returning free access');
+      return { hasAccess: false, plan: 'free', reason: 'no_user_id' };
     }
 
     console.log('Checking premium access for user:', userId);
@@ -115,10 +121,9 @@ export async function checkPremiumAccess(userId) {
         .from('user_subscriptions')
         .select('*')
         .eq('user_id', userId)
-        .eq('status', 'active')
-        .single();
+        .eq('status', 'active');
 
-      console.log('Supabase response:', { data, error });
+      console.log('Supabase subscription response:', { data: !!data, error: error?.message });
 
       if (error) {
         if (error.code === 'PGRST116') {
@@ -130,19 +135,28 @@ export async function checkPremiumAccess(userId) {
           return { hasAccess: false, plan: 'free', reason: 'error' };
         }
       }
+
+      // Handle the case where data is returned but not an array
+      if (!data) {
+        console.log('No subscription data returned');
+        return { hasAccess: false, plan: 'free', reason: 'no_subscription' };
+      }
     } catch (subscriptionError) {
       console.log('Subscription query failed, assuming no subscription:', subscriptionError.message);
       return { hasAccess: false, plan: 'free', reason: 'table_not_exists' };
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       console.log('No subscription data returned');
       return { hasAccess: false, plan: 'free', reason: 'no_subscription' };
     }
 
+    // Get the first active subscription (should only be one)
+    const subscription = data[0];
+
     // Check if subscription is still valid
     const now = new Date();
-    const endDate = data.end_date ? new Date(data.end_date) : null;
+    const endDate = subscription.end_date ? new Date(subscription.end_date) : null;
 
     if (endDate && now > endDate) {
       console.log('Subscription expired, updating status');
@@ -155,16 +169,39 @@ export async function checkPremiumAccess(userId) {
       return { hasAccess: false, plan: 'free', reason: 'expired' };
     }
 
-    console.log('User has active premium subscription:', data.subscription_type);
+    console.log('User has active premium subscription:', subscription.subscription_type);
     return {
       hasAccess: true,
-      plan: data.subscription_type,
-      subscription: data,
-      limits: SUBSCRIPTION_PLANS[data.subscription_type] || SUBSCRIPTION_PLANS.free
+      plan: subscription.subscription_type,
+      subscription: subscription,
+      limits: SUBSCRIPTION_PLANS[subscription.subscription_type] || SUBSCRIPTION_PLANS.free
     };
   } catch (error) {
     console.error('Error in checkPremiumAccess:', error);
     return { hasAccess: false, plan: 'free', reason: 'error' };
+  }
+}
+
+// Force initialize credits for a user (admin function)
+export async function forceInitializeCredits(userId) {
+  try {
+    if (!supabaseClient) throw new Error('Supabase no inicializado');
+
+    console.log('Forzando inicialización de créditos para usuario:', userId);
+
+    // Delete existing credits if any
+    await supabaseClient
+      .from('user_ai_credits')
+      .delete()
+      .eq('user_id', userId);
+
+    // Initialize fresh
+    const result = await initializeUserCredits(userId);
+    console.log('✅ Créditos forzados inicializados correctamente');
+    return result;
+  } catch (error) {
+    console.error('Error forcing credit initialization:', error);
+    throw error;
   }
 }
 
@@ -453,11 +490,16 @@ export function hasFeatureAccess(plan, feature) {
 // Get user credit balance
 export async function getCreditBalance(userId) {
   try {
-    if (!supabaseClient) return 0;
-    if (!userId || userId === 'undefined') {
+    if (!supabaseClient) {
+      console.warn('getCreditBalance: Supabase client not initialized');
+      return 0;
+    }
+    if (!userId || userId === 'undefined' || userId === null) {
       console.warn('getCreditBalance called with invalid userId:', userId);
       return 0;
     }
+
+    console.log('🔍 getCreditBalance: Fetching credits for user:', userId);
 
     const { data, error } = await supabaseClient
       .from('user_ai_credits')
@@ -468,17 +510,24 @@ export async function getCreditBalance(userId) {
     if (error) {
       if (error.code === 'PGRST116') {
         // No credits record, initialize
-        console.log('No credits record found, initializing for user:', userId);
-        await initializeUserCredits(userId);
-        return 25; // Return initial credits
+        console.log('📝 No credits record found, initializing for user:', userId);
+        try {
+          await initializeUserCredits(userId);
+          return 25; // Return initial credits
+        } catch (initError) {
+          console.error('❌ Failed to initialize credits:', initError);
+          return 0;
+        }
       }
-      console.error('Error getting credit balance:', error);
+      console.error('❌ Error getting credit balance:', error);
       return 0;
     }
 
-    return data?.credits_balance || 0;
+    const balance = data?.credits_balance || 0;
+    console.log('✅ getCreditBalance: User', userId, 'has', balance, 'credits');
+    return balance;
   } catch (error) {
-    console.error('Error getting credit balance:', error);
+    console.error('❌ Error getting credit balance:', error);
     return 0;
   }
 }
@@ -616,11 +665,8 @@ export async function getAllUsersCredits() {
       if (!supabaseClient) return [];
     }
 
-    // Get all users from auth.users table first
-    const { data: authUsers, error: authError } = await supabaseClient.auth.admin.listUsers();
-    if (authError) {
-      console.warn('Could not get auth users, falling back to credits table only:', authError);
-    }
+    // Skip auth.users query that requires admin privileges - use only customer and credit data
+    console.log('Getting users from customers and credits tables only (avoiding admin auth query)');
 
     // Get all credit records
     const { data: creditData, error: creditError } = await supabaseClient
@@ -628,7 +674,11 @@ export async function getAllUsersCredits() {
       .select('*')
       .order('updated_at', { ascending: false });
 
-    if (creditError) throw creditError;
+    if (creditError) {
+      console.warn('Could not get credit data, trying fallback:', creditError);
+      // Return empty array instead of throwing to allow graceful degradation
+      return [];
+    }
 
     // Get all customer records for user info
     const { data: customerData, error: customerError } = await supabaseClient
@@ -645,25 +695,18 @@ export async function getAllUsersCredits() {
       customerMap.set(customer.user_id, customer);
     });
 
-    // Create a map of user_id to auth user info
-    const authUserMap = new Map();
-    (authUsers?.users || []).forEach(user => {
-      authUserMap.set(user.id, user);
-    });
-
-    // Combine all data
+    // Combine credit data with customer data
     const enrichedData = (creditData || []).map(credit => {
       const customer = customerMap.get(credit.user_id);
-      const authUser = authUserMap.get(credit.user_id);
 
       return {
         ...credit,
-        user_name: customer?.full_name || authUser?.user_metadata?.full_name || 'Sin nombre',
-        user_email: customer?.email || authUser?.email || 'Sin email',
-        user_phone: customer?.phone || authUser?.phone || null,
-        user_created_at: authUser?.created_at || customer?.created_at || null,
-        user_last_sign_in: authUser?.last_sign_in_at || null,
-        user_status: authUser?.email_confirmed_at ? 'Verificado' : 'No verificado'
+        user_name: customer?.full_name || 'Sin nombre',
+        user_email: customer?.email || 'Sin email',
+        user_phone: customer?.phone || null,
+        user_created_at: customer?.created_at || credit.created_at,
+        user_last_sign_in: null, // Not available without admin auth
+        user_status: customer ? 'Registrado' : 'Sin verificar'
       };
     });
 
@@ -673,7 +716,6 @@ export async function getAllUsersCredits() {
     );
 
     usersWithoutCredits.forEach(customer => {
-      const authUser = authUserMap.get(customer.user_id);
       enrichedData.push({
         user_id: customer.user_id,
         credits_balance: 0,
@@ -685,9 +727,9 @@ export async function getAllUsersCredits() {
         user_name: customer.full_name || 'Sin nombre',
         user_email: customer.email || 'Sin email',
         user_phone: customer.phone || null,
-        user_created_at: authUser?.created_at || customer.created_at,
-        user_last_sign_in: authUser?.last_sign_in_at || null,
-        user_status: authUser?.email_confirmed_at ? 'Verificado' : 'No verificado'
+        user_created_at: customer.created_at,
+        user_last_sign_in: null,
+        user_status: 'Registrado'
       });
     });
 
@@ -839,3 +881,4 @@ window.hasFeatureAccess = hasFeatureAccess;
 window.canMakeAIQuery = canMakeAIQuery;
 window.trackAIUsage = trackAIUsage;
 window.initializeUserCredits = initializeUserCredits;
+window.forceInitializeCredits = forceInitializeCredits;

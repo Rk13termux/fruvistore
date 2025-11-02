@@ -432,10 +432,15 @@ Cuando el usuario necesite análisis detallados, planes personalizados o consult
 
     // Add conversation history for context (but not too much to avoid token limits)
     if (conversationHistory.length > 0) {
-      messages.push(...conversationHistory.slice(-6)); // Last 6 messages for context
+      // Clean conversation history to only include role and content (remove metadata)
+      const cleanHistory = conversationHistory.slice(-6).map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+      messages.push(...cleanHistory);
     }
 
-    // Add current user message
+    // Add current user message (remove metadata to avoid Groq API error)
     messages.push({ role: 'user', content: userMessage });
 
     const body = {

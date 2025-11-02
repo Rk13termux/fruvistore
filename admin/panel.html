@@ -102,6 +102,7 @@
                 <button class="btn btn-primary" onclick="toggleForm()">➕ Agregar Producto</button>
                 <button class="btn btn-success" onclick="loadProducts()">🔄 Cargar Productos</button>
                 <button class="btn btn-success" onclick="exportData()">📊 Exportar</button>
+                <button class="btn btn-danger" onclick="showCreditsPanel()">💰 Gestionar Créditos</button>
             </div>
 
             <div class="form-container" id="productForm">
@@ -153,6 +154,19 @@
             <div class="message" id="message"></div>
         </div>
 
+        <!-- Credits Management Panel (hidden by default) -->
+        <div class="panel" id="creditsPanel" style="display: none;">
+            <h2 class="title">💰 Gestión de Créditos Dr. AI</h2>
+            <div class="controls">
+                <button class="btn btn-success" onclick="loadUsersCredits()">🔄 Cargar Usuarios</button>
+                <button class="btn btn-primary" onclick="showAddCreditsForm()">➕ Agregar Créditos</button>
+                <button class="btn btn-danger" onclick="showInitializeCreditsForm()">🔄 Inicializar Créditos</button>
+            </div>
+            <div id="creditsContainer">
+                <div class="loading">Cargando usuarios y créditos...</div>
+            </div>
+        </div>
+
         <div class="panel">
             <h2 class="title">Lista de Productos</h2>
             <div id="productsContainer">
@@ -169,8 +183,9 @@
             window.location.href = './privacy.html';
         }
 
-        // Importar servicio
-        import { storeService } from './scripts/services/supabaseService.js';
+        // Importar servicios
+        import { storeService } from '../scripts/services/supabaseService.js';
+        import { getAllUsersCredits, addCredits, forceInitializeCredits } from '../scripts/services/subscriptionService.js';
         
         let editingId = null;
 
@@ -314,6 +329,91 @@
                 showMessage('Error: ' + error.message, 'error');
             }
         });
+
+        // Credits management functions
+        window.showCreditsPanel = () => {
+            document.getElementById('creditsPanel').style.display = 'block';
+            document.getElementById('productsContainer').closest('.panel').style.display = 'none';
+            loadUsersCredits();
+        };
+
+        window.loadUsersCredits = async () => {
+            const container = document.getElementById('creditsContainer');
+            container.innerHTML = '<div class="loading">Cargando usuarios y créditos...</div>';
+
+            try {
+                const users = await getAllUsersCredits();
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="loading">No hay usuarios registrados.</div>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));">
+                        ${users.map(user => `
+                            <div class="product-card">
+                                <div class="product-name">${user.user_name || 'Sin nombre'}</div>
+                                <div class="product-price">💰 ${user.credits_balance || 0} créditos</div>
+                                <div class="product-details">
+                                    <div><strong>Email:</strong> ${user.user_email || 'N/A'}</div>
+                                    <div><strong>Estado:</strong> ${user.user_status || 'N/A'}</div>
+                                    <div><strong>Ganados:</strong> ${user.total_credits_earned || 0}</div>
+                                    <div><strong>Gastados:</strong> ${user.total_credits_spent || 0}</div>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn btn-success btn-small" onclick="addCreditsToUser('${user.user_id}', '${user.user_name}')">➕ Agregar Créditos</button>
+                                    <button class="btn btn-danger btn-small" onclick="initializeUserCredits('${user.user_id}', '${user.user_name}')">🔄 Inicializar</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                showMessage(`${users.length} usuarios cargados.`);
+            } catch (error) {
+                container.innerHTML = '<div class="error">Error al cargar usuarios.</div>';
+                showMessage('Error: ' + error.message, 'error');
+            }
+        };
+
+        window.addCreditsToUser = async (userId, userName) => {
+            const amount = prompt(`¿Cuántos créditos agregar a ${userName}?`, '10');
+            if (!amount || isNaN(amount) || amount <= 0) return;
+
+            try {
+                await addCredits(userId, parseInt(amount), `Créditos agregados por admin`);
+                showMessage(`✅ ${amount} créditos agregados a ${userName}`);
+                loadUsersCredits();
+            } catch (error) {
+                showMessage('Error agregando créditos: ' + error.message, 'error');
+            }
+        };
+
+        window.initializeUserCredits = async (userId, userName) => {
+            if (!confirm(`¿Reinicializar créditos de ${userName} a 25?`)) return;
+
+            try {
+                await forceInitializeCredits(userId);
+                showMessage(`✅ Créditos reinicializados para ${userName}`);
+                loadUsersCredits();
+            } catch (error) {
+                showMessage('Error inicializando créditos: ' + error.message, 'error');
+            }
+        };
+
+        window.showAddCreditsForm = () => {
+            const userId = prompt('ID del usuario:');
+            const amount = prompt('Cantidad de créditos:');
+            if (userId && amount) {
+                addCreditsToUser(userId, 'Usuario');
+            }
+        };
+
+        window.showInitializeCreditsForm = () => {
+            const userId = prompt('ID del usuario para inicializar:');
+            if (userId) {
+                initializeUserCredits(userId, 'Usuario');
+            }
+        };
 
         // Cargar productos al inicio
         loadProducts();

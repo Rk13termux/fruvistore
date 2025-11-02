@@ -1,6 +1,8 @@
 // Personalization Service - Manages user-specific recommendations and insights
 // Handles individual user profiles, medical insights, and personalized fruit suggestions
 
+import { supabaseClient } from './supabaseService.js';
+
 // Generate personalized fruit recommendations based on user profile
 export async function generatePersonalizedRecommendations(userId, userProfile) {
   try {

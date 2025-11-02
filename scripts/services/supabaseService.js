@@ -173,10 +173,59 @@ window.configureSupabase = function configureSupabase(url, anonKey) {
   return success;
 };
 
+// Función para verificar y crear tablas faltantes
+window.checkAndCreateTables = async function checkAndCreateTables() {
+  try {
+    console.log('🔍 Verificando tablas de base de datos...');
+
+    if (!supabaseClient) {
+      console.error('❌ Supabase no inicializado');
+      return false;
+    }
+
+    // Verificar tabla customers
+    try {
+      const { error } = await supabaseClient.from('customers').select('count', { count: 'exact', head: true });
+      if (error) throw error;
+      console.log('✅ Tabla customers existe');
+    } catch (error) {
+      console.error('❌ Tabla customers no existe o no accesible:', error.message);
+      return false;
+    }
+
+    // Verificar tabla user_ai_credits
+    try {
+      const { error } = await supabaseClient.from('user_ai_credits').select('count', { count: 'exact', head: true });
+      if (error) throw error;
+      console.log('✅ Tabla user_ai_credits existe');
+    } catch (error) {
+      console.error('❌ Tabla user_ai_credits no existe o no accesible:', error.message);
+      console.log('💡 Ejecuta el script database/setup-credits-only.sql en Supabase SQL Editor');
+      return false;
+    }
+
+    // Verificar tabla user_subscriptions
+    try {
+      const { error } = await supabaseClient.from('user_subscriptions').select('count', { count: 'exact', head: true });
+      if (error) throw error;
+      console.log('✅ Tabla user_subscriptions existe');
+    } catch (error) {
+      console.error('⚠️ Tabla user_subscriptions no existe - algunas funciones premium no funcionarán');
+      console.log('💡 Ejecuta el script database/setup.sql completo en Supabase SQL Editor');
+    }
+
+    console.log('✅ Verificación de tablas completada');
+    return true;
+  } catch (error) {
+    console.error('❌ Error verificando tablas:', error);
+    return false;
+  }
+};
+
 // Hacer funciones disponibles globalmente para consola de desarrollo
 if (typeof window !== 'undefined') {
-window.getSupabaseConfig = getSupabaseConfig;
-window.isSupabaseConfigured = () => supabaseClient !== null;
+  window.getSupabaseConfig = getSupabaseConfig;
+  window.isSupabaseConfigured = () => supabaseClient !== null;
 }
 
 // Función para configuración rápida desde consola (para desarrollo)
@@ -216,114 +265,163 @@ window.setupSupabase = function setupSupabase(url, anonKey) {
   }
 };
 
-// Función para probar conexión con Supabase y diagnosticar problemas
-window.testSupabaseConnection = async function testSupabaseConnection() {
+// Función para verificar y crear tablas faltantes
+window.checkAndCreateTables = async function checkAndCreateTables() {
   try {
-console.log('🔍 Probando conexión con Supabase...');
+    console.log('🔍 Verificando tablas de base de datos...');
 
-if (!url || !anonKey) {
-console.error('❌ Uso: testSupabaseConnection("URL", "CLAVE")');
-console.log('💡 Tu configuración actual requiere:');
-console.log('   URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
-console.log('   Clave: clave anónima real de tu proyecto');
-return false;
-}
+    if (!supabaseClient) {
+      console.error('❌ Supabase no inicializado');
+      return false;
+    }
 
-// Crear cliente temporal para probar
-const testClient = supabase.createClient(url, anonKey, {
-  auth: {
-    storageKey: `fruvi-test-${Date.now()}`,
-    autoRefreshToken: false,
-    persistSession: false
+    // Verificar tabla customers
+    try {
+      const { error } = await supabaseClient.from('customers').select('count', { count: 'exact', head: true });
+      if (error) throw error;
+      console.log('✅ Tabla customers existe');
+    } catch (error) {
+      console.error('❌ Tabla customers no existe o no accesible:', error.message);
+      return false;
+    }
+
+    // Verificar tabla user_ai_credits
+    try {
+      const { error } = await supabaseClient.from('user_ai_credits').select('count', { count: 'exact', head: true });
+      if (error) throw error;
+      console.log('✅ Tabla user_ai_credits existe');
+    } catch (error) {
+      console.error('❌ Tabla user_ai_credits no existe o no accesible:', error.message);
+      console.log('💡 Ejecuta el script database/setup-credits-only.sql en Supabase SQL Editor');
+      return false;
+    }
+
+    // Verificar tabla user_subscriptions
+    try {
+      const { error } = await supabaseClient.from('user_subscriptions').select('count', { count: 'exact', head: true });
+      if (error) throw error;
+      console.log('✅ Tabla user_subscriptions existe');
+    } catch (error) {
+      console.error('⚠️ Tabla user_subscriptions no existe - algunas funciones premium no funcionarán');
+      console.log('💡 Ejecuta el script database/setup.sql completo en Supabase SQL Editor');
+    }
+
+    console.log('✅ Verificación de tablas completada');
+    return true;
+  } catch (error) {
+    console.error('❌ Error verificando tablas:', error);
+    return false;
   }
-});
+};
 
-console.log('📋 Probando consulta simple...');
+// Función para probar conexión con Supabase y diagnosticar problemas
+window.testSupabaseConnection = async function testSupabaseConnection(url, anonKey) {
+  try {
+    console.log('🔍 Probando conexión con Supabase...');
 
-// Probar una consulta básica
-const { data, error } = await testClient
-.from('customers')
-.select('count', { count: 'exact', head: true });
+    if (!url || !anonKey) {
+      console.error('❌ Uso: testSupabaseConnection("URL", "CLAVE")');
+      console.log('💡 Tu configuración actual requiere:');
+      console.log('   URL: https://ipjkpgmptexkhilrjnsl.supabase.co');
+      console.log('   Clave: clave anónima real de tu proyecto');
+      return false;
+    }
 
-if (error) {
-console.error('❌ Error de conexión:', error.message);
-console.error('🔍 Código de error:', error.code);
+    // Crear cliente temporal para probar
+    const testClient = supabase.createClient(url, anonKey, {
+      auth: {
+        storageKey: `fruvi-test-${Date.now()}`,
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    });
 
-if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
-console.error('🚨 Error típico de red o configuración:');
-console.error('   - Verifica que la URL sea correcta');
-console.error('   - Verifica que la clave anónima sea válida');
-console.error('   - Verifica tu conexión a internet');
-console.error('   - Verifica que el proyecto Supabase esté activo');
-}
+    console.log('📋 Probando consulta simple...');
 
-return false;
-} else {
-console.log('✅ Conexión exitosa con Supabase');
-console.log('📊 Proyecto Supabase operativo');
-return true;
-}
-} catch (error) {
-console.error('❌ Error general:', error.message);
-return false;
-}
+    // Probar una consulta básica
+    const { data, error } = await testClient
+      .from('customers')
+      .select('count', { count: 'exact', head: true });
+
+    if (error) {
+      console.error('❌ Error de conexión:', error.message);
+      console.error('🔍 Código de error:', error.code);
+
+      if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
+        console.error('🚨 Error típico de red o configuración:');
+        console.error('   - Verifica que la URL sea correcta');
+        console.error('   - Verifica que la clave anónima sea válida');
+        console.error('   - Verifica tu conexión a internet');
+        console.error('   - Verifica que el proyecto Supabase esté activo');
+      }
+
+      return false;
+    } else {
+      console.log('✅ Conexión exitosa con Supabase');
+      console.log('📊 Proyecto Supabase operativo');
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ Error general:', error.message);
+    return false;
+  }
 };
 
 // Función específica para solucionar problemas de login
 window.fixLoginConnection = async function fixLoginConnection() {
   try {
-console.log('🔧 Solucionando problemas de conexión para login...');
+    console.log('🔧 Solucionando problemas de conexión para login...');
 
-// Verificar configuración actual
-const config = getSupabaseConfig();
-console.log('📋 Configuración actual:', config);
+    // Verificar configuración actual
+    const config = getSupabaseConfig();
+    console.log('📋 Configuración actual:', config);
 
-if (!config.configured) {
-console.error('❌ Variables de entorno no configuradas correctamente');
-console.log('💡 Solución: Usa setupSupabase() con tu clave real');
-return false;
-}
+    if (!config.configured) {
+      console.error('❌ Variables de entorno no configuradas correctamente');
+      console.log('💡 Solución: Usa setupSupabase() con tu clave real');
+      return false;
+    }
 
-if (!config.initialized) {
-console.log('🔄 Inicializando cliente de Supabase...');
+    if (!config.initialized) {
+      console.log('🔄 Inicializando cliente de Supabase...');
 
-const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co';
-const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+      const url = window.__ENV__?.VITE_SUPABASE_URL || 'https://ipjkpgmptexkhilrjnsl.supabase.co';
+      const anonKey = window.__ENV__?.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
 
-// Solo proceder si tenemos variables reales
-if (url.includes('ipjkpgmptexkhilrjnsl.supabase.co') && anonKey !== 'your-anon-key') {
-supabaseClient = supabase.createClient(url, anonKey, {
-  auth: {
-    storageKey: 'fruvi-users-auth-fallback',
-    autoRefreshToken: true,
-    persistSession: true
+      // Solo proceder si tenemos variables reales
+      if (url.includes('ipjkpgmptexkhilrjnsl.supabase.co') && anonKey !== 'your-anon-key') {
+        supabaseClient = supabase.createClient(url, anonKey, {
+          auth: {
+            storageKey: 'fruvi-users-auth-fallback',
+            autoRefreshToken: true,
+            persistSession: true
+          }
+        });
+        console.log('✅ Cliente inicializado exitosamente');
+
+        // Probar conexión inmediatamente
+        const { error } = await supabaseClient.from('customers').select('count', { count: 'exact', head: true });
+
+        if (error) {
+          console.error('❌ Error en prueba de conexión:', error.message);
+          return false;
+        } else {
+          console.log('✅ Conexión verificada correctamente');
+          return true;
+        }
+      } else {
+        console.error('❌ Clave de API no válida detectada');
+        console.log('💡 Necesitas configurar tu clave anónima real');
+        return false;
+      }
+    } else {
+      console.log('✅ Cliente ya está inicializado');
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ Error solucionando conexión:', error);
+    return false;
   }
-});
-console.log('✅ Cliente inicializado exitosamente');
-
-// Probar conexión inmediatamente
-const { error } = await supabaseClient.from('customers').select('count', { count: 'exact', head: true });
-
-if (error) {
-console.error('❌ Error en prueba de conexión:', error.message);
-return false;
-} else {
-console.log('✅ Conexión verificada correctamente');
-return true;
-}
-} else {
-console.error('❌ Clave de API no válida detectada');
-console.log('💡 Necesitas configurar tu clave anónima real');
-return false;
-}
-} else {
-console.log('✅ Cliente ya está inicializado');
-return true;
-}
-} catch (error) {
-console.error('❌ Error solucionando conexión:', error);
-return false;
-}
 };
 
 // Upload avatar to Supabase Storage (bucket: 'avatars'). Returns public URL.
@@ -605,13 +703,21 @@ function ensureSupabaseFunctions() {
 // Ejecutar verificación automática después de un breve delay
 setTimeout(() => {
   ensureSupabaseFunctions();
+  // También verificar tablas después de inicialización
+  setTimeout(() => {
+    if (typeof checkAndCreateTables === 'function') {
+      checkAndCreateTables();
+    }
+  }, 1000);
 }, 2000);
 
 // Hacer la función disponible globalmente
 window.ensureSupabaseFunctions = ensureSupabaseFunctions;
+window.checkAndCreateTables = checkAndCreateTables;
 
 console.log('🚀 Sistema de verificación de funciones iniciado');
 console.log('💡 Usa ensureSupabaseFunctions() en consola para verificar manualmente');
+console.log('💡 Usa checkAndCreateTables() para verificar tablas de base de datos');
 
 // ===== DASHBOARD FUNCTIONS =====
 

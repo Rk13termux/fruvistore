@@ -1,5 +1,6 @@
 // Assistant Page (AI Chat powered by Groq) - Full-screen ChatGPT-like UI with Database Integration
 import { chatCompletionWithHistory, chatCompletionWithDatabase } from '../services/groqService.js';
+import { supabaseClient } from '../services/supabaseService.js';
 
 export function renderAssistantPage(root) {
   // Full page chat layout with professional introduction
@@ -20,7 +21,44 @@ export function renderAssistantPage(root) {
               </div>
             </div>
           </div>
-          <p class="ai-intro__subtitle">Tu asistente inteligente de nutrición y salud</p>
+
+          <!-- Pain Points Section -->
+          <div class="pain-points">
+            <div class="pain-point">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>¿Cansado de dietas que no funcionan?</span>
+            </div>
+            <div class="pain-point">
+              <i class="fas fa-weight"></i>
+              <span>¿Problemas con el peso y la salud?</span>
+            </div>
+            <div class="pain-point">
+              <i class="fas fa-brain"></i>
+              <span>¿Confundido con tanta información nutricional?</span>
+            </div>
+          </div>
+
+          <!-- Solutions Section -->
+          <div class="solutions">
+            <h2>¡La Solución Está Aquí!</h2>
+            <div class="solution-features">
+              <div class="feature">
+                <i class="fas fa-user-md"></i>
+                <h3>Asesoramiento Profesional</h3>
+                <p>Consultas personalizadas con IA especializada en nutrición</p>
+              </div>
+              <div class="feature">
+                <i class="fas fa-apple-alt"></i>
+                <h3>Planes Basados en Frutas</h3>
+                <p>Recomendaciones fundamentadas en frutas frescas y naturales</p>
+              </div>
+              <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <h3>Seguimiento Continuo</h3>
+                <p>Monitorea tu progreso y ajusta tu alimentación</p>
+              </div>
+            </div>
+          </div>
 
           <div class="credits-info" id="creditsInfo">
             <div class="credits-display">
@@ -30,76 +68,77 @@ export function renderAssistantPage(root) {
             </div>
           </div>
 
-          <button class="cta-button ai-start-chat" id="startChatBtn">
-            <i class="fas fa-comments"></i>
-            Comenzar Consulta
-          </button>
+          <!-- Call to Action Buttons -->
+          <div class="cta-section">
+            <button class="cta-button ai-start-chat primary-cta" id="startChatBtn">
+              <i class="fas fa-comments"></i>
+              ¡Comienza Tu Consulta Ahora!
+            </button>
 
-          <div class="quick-actions">
-            <a href="#/suscripcion" class="btn-outline">
-              <i class="fas fa-plus"></i>
-              Comprar Créditos
-            </a>
-            <a href="#/nutrition" class="btn-secondary">
-              <i class="fas fa-search"></i>
-              Buscar Frutas
-            </a>
-          </div>
-        </div>
-        <div class="ai-intro__visual">
-          <div class="ai-animation-container">
-            <div class="floating-fruits">
-              <div class="fruit apple"><i class="fas fa-apple-whole"></i></div>
-              <div class="fruit banana"><i class="fas fa-lemon"></i></div>
-              <div class="fruit orange"><i class="fas fa-circle"></i></div>
-              <div class="fruit grape"><i class="fas fa-circle"></i></div>
+            <div class="secondary-ctas">
+              <a href="#/suscripcion" class="btn-premium">
+                <i class="fas fa-crown"></i>
+                Obtener Premium Ilimitado
+              </a>
+              <a href="#/nutrition" class="btn-explore">
+                <i class="fas fa-search"></i>
+                Explorar Frutas
+              </a>
             </div>
-            <div class="ai-brain">
-              <i class="fas fa-brain"></i>
-              <div class="brain-particles">
-                <span></span><span></span><span></span><span></span><span></span>
+          </div>
+
+          <!-- Social Proof -->
+          <div class="social-proof">
+            <div class="trust-indicators">
+              <div class="trust-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Información Confidencial</span>
+              </div>
+              <div class="trust-item">
+                <i class="fas fa-brain"></i>
+                <span>IA Especializada</span>
+              </div>
+              <div class="trust-item">
+                <i class="fas fa-heart"></i>
+                <span>Enfoque en Salud</span>
               </div>
             </div>
-            <div class="health-icons">
-              <i class="fas fa-heart"></i>
-              <i class="fas fa-leaf"></i>
-              <i class="fas fa-seedling"></i>
-            </div>
           </div>
         </div>
+
+        <div class="ai-intro__visual">
+          <!-- Icono eliminado según solicitud del usuario -->
+        </div>
+      </div>
+    </div>
+  </section>
       </div>
     </div>
   </section>
 
   <!-- Chat Interface (hidden initially) -->
   <section class="fruvi-chatgpt medical-chat" id="chatSection" style="display: none;">
-    <header class="fruvi-chatgpt__header medical-header">
-      <div class="container fruvi-chatgpt__header__inner">
-        <div class="brand medical-brand">
-          <div class="dr-ai-logo-small">
-            <i class="fas fa-brain"></i>
-          </div>
-          <div class="doctor-info">
-            <span class="doctor-name">Dr. Nutricionista IA</span>
-            <span class="doctor-title">Asistente Inteligente de Salud</span>
-          </div>
-        </div>
-        <div class="chat-status" id="chatStatus">
-          <div class="credits-indicator">
-            <i class="fas fa-coins"></i>
-            <span id="chatCredits">Cargando...</span>
-          </div>
-        </div>
-        <button class="btn-secondary back-to-intro" id="backToIntroBtn">
-          <i class="fas fa-arrow-left"></i>
-          Volver
-        </button>
-      </div>
-    </header>
     <main class="fruvi-chatgpt__main">
       <div class="container fruvi-chatgpt__scroll" id="chatMessages" aria-live="polite"></div>
     </main>
+
     <footer class="fruvi-chatgpt__input medical-input">
+      <!-- Credits Progress Bar -->
+      <div class="credits-progress-section" id="creditsProgressSection">
+        <div class="container">
+          <div class="credits-progress-container">
+            <div class="credits-progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="credits-progress-info">
+              <span class="credits-current" id="progressCurrentCredits">0</span>
+              <span class="credits-separator">/</span>
+              <span class="credits-total" id="progressTotalCredits">25</span>
+              <span class="credits-label">créditos</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="container">
         <form id="chatForm" class="fruvi-chatgpt__form" autocomplete="off">
           <textarea id="userInput" rows="1" placeholder="Describe tus síntomas, objetivos de salud o preguntas médicas nutricionales..." aria-label="Escribe tu consulta médica"></textarea>
@@ -139,17 +178,49 @@ export function renderAssistantPage(root) {
   const input = root.querySelector('#userInput');
   const chatSection = root.querySelector('#chatSection');
   const startChatBtn = root.querySelector('#startChatBtn');
-  const backToIntroBtn = root.querySelector('#backToIntroBtn');
 
-  // Cart management for chat
-  let chatCart = JSON.parse(localStorage.getItem('fruvi_chat_cart') || '[]');
-  let currentProducts = []; // Store current products for button generation
+  // Removed cart functionality - focus on medical consultation only
 
   // Load user status and credits on page load
   loadUserStatus();
 
   // Make loadUserStatus globally available for cross-page updates
   window.loadUserStatus = loadUserStatus;
+
+  // Add credits update animation function
+  function animateCreditsUpdate() {
+    const creditsEl = document.getElementById('chatCredits');
+    if (creditsEl) {
+      creditsEl.classList.add('credits-update-animation');
+      setTimeout(() => creditsEl.classList.remove('credits-update-animation'), 800);
+    }
+  }
+
+  // Update credits progress bar
+  function updateCreditsProgress(currentCredits, totalCredits = 25) {
+    const progressFill = document.getElementById('progressFill');
+    const currentEl = document.getElementById('progressCurrentCredits');
+    const totalEl = document.getElementById('progressTotalCredits');
+
+    if (progressFill && currentEl && totalEl) {
+      // Calculate percentage (bar fills completely when user recharges)
+      const percentage = Math.min((currentCredits / totalCredits) * 100, 100);
+      progressFill.style.width = `${percentage}%`;
+
+      // Update text
+      currentEl.textContent = currentCredits;
+      totalEl.textContent = totalCredits;
+    }
+  }
+
+  // Make animation function globally available
+  window.animateCreditsUpdate = animateCreditsUpdate;
+  window.updateCreditsProgress = updateCreditsProgress;
+
+  // Initialize credits for new users (will check database)
+  setTimeout(() => {
+    initializeCreditsForNewUser();
+  }, 1000); // Delay to ensure database is ready
 
   async function loadUserStatus() {
     try {
@@ -176,26 +247,48 @@ export function renderAssistantPage(root) {
             '<span class="status-free">FREE</span>';
         }
 
-        // Load credits - initialize with 25 credits if first time
-        let credits = await window.getCreditBalance();
+        // Load credits - always get from database (no local initialization)
+        let credits = await window.getCreditBalance(user.id);
+        console.log(`💰 Créditos actuales en BD para usuario ${user.id}: ${credits}`);
+
+        // If still 0, try to initialize once
         if (credits === 0) {
-          // Initialize user with 25 credits on first access
+          console.log('🔄 Intentando inicializar créditos para usuario nuevo...');
           try {
             const { initializeUserCredits } = await import('../services/subscriptionService.js');
             await initializeUserCredits(user.id);
-            credits = 25; // Set initial credits
-            console.log('✅ Usuario inicializado con 25 créditos');
+            credits = await window.getCreditBalance(); // Re-check after initialization
+            console.log(`✅ Créditos inicializados: ${credits}`);
           } catch (e) {
             console.log('Error initializing credits:', e);
             credits = 0;
           }
         }
 
+        // Force refresh credits display after loading
         if (creditsInfo) {
           document.getElementById('currentCredits').textContent = credits;
         }
         if (chatCredits) {
           chatCredits.textContent = credits;
+          // Animate credits update
+          animateCreditsUpdate();
+        }
+
+        // Update progress bar
+        updateCreditsProgress(credits);
+
+        // Load and display credits used
+        try {
+          const { getCreditStats } = await import('../services/subscriptionService.js');
+          const stats = await getCreditStats(user.id);
+          const creditsUsed = stats.total_credits_spent || 0;
+          const creditsUsedEl = document.getElementById('creditsUsed');
+          if (creditsUsedEl) {
+            creditsUsedEl.textContent = creditsUsed;
+          }
+        } catch (e) {
+          console.log('No se pudieron cargar estadísticas de créditos:', e);
         }
       } else {
         // Not logged in
@@ -214,6 +307,40 @@ export function renderAssistantPage(root) {
     }
   }
 
+  async function initializeCreditsForNewUser() {
+    try {
+      const user = await window.getUser();
+      if (user && user.id) {
+        // Always check database credits
+        const currentCredits = await window.getCreditBalance(user.id);
+        console.log(`🔍 Créditos actuales en BD para ${user.id}: ${currentCredits}`);
+
+        if (currentCredits === 0) {
+          console.log('🔄 Inicializando créditos para nuevo usuario...');
+          try {
+            const { initializeUserCredits } = await import('../services/subscriptionService.js');
+            await initializeUserCredits(user.id);
+            const newCredits = await window.getCreditBalance(user.id);
+            console.log(`✅ Créditos inicializados: ${newCredits}`);
+            // Reload status to show updated credits
+            await loadUserStatus();
+            // Animate credits update
+            animateCreditsUpdate();
+            // Update progress bar
+            const updatedCredits = await window.getCreditBalance(user.id);
+            updateCreditsProgress(updatedCredits);
+          } catch (e) {
+            console.error('❌ Error inicializando créditos:', e);
+          }
+        }
+      } else {
+        console.log('⚠️ Usuario no disponible para inicialización de créditos');
+      }
+    } catch (e) {
+      console.log('Error checking user credits initialization:', e);
+    }
+  }
+
   // Handle start chat
   startChatBtn.addEventListener('click', async () => {
     root.querySelector('.ai-assistant-intro').style.display = 'none';
@@ -221,6 +348,8 @@ export function renderAssistantPage(root) {
 
     // Update credits in chat header
     await loadUserStatus();
+    // Animate credits update
+    animateCreditsUpdate();
 
     // Personalized greeting based on user status and premium access
     let greeting = '¡Hola! Soy el Dr. Nutricionista IA 🤖. Puedo ayudarte con información general sobre nutrición y frutas.';
@@ -254,12 +383,12 @@ export function renderAssistantPage(root) {
         if (isPremium) {
           greeting = `¡Hola ${fullUserName}! 👨‍⚕️ Soy el <strong>Dr. Nutricionista IA</strong>, tu asistente premium de salud. Tengo acceso completo a funciones avanzadas y puedo ofrecerte consultas especializadas, planes nutricionales personalizados y seguimiento profesional. ¿Cómo te sientes hoy? ¿En qué puedo ayudarte con tu salud y nutrición?`;
         } else {
-          const credits = await window.getCreditBalance();
-          greeting = `¡Hola ${fullUserName}! 🤖 Soy el Dr. Nutricionista IA. Actualmente tienes <strong>${credits} créditos</strong> disponibles. Cada consulta cuesta entre 1-8 créditos según la complejidad. ¿Qué te gustaría consultar sobre nutrición y salud?`;
+          const credits = await window.getCreditBalance(user.id);
+          greeting = `¡Hola ${fullUserName}! Soy el Dr. Nutricionista IA, tu asistente de salud inteligente. ¿En qué puedo ayudarte hoy?`;
 
           // If user has 0 credits, show warning
           if (credits === 0) {
-            greeting += `\n\n⚠️ **¡Atención!** No tienes créditos disponibles. Compra créditos para continuar consultando.`;
+            greeting += `\n\n⚠️ Créditos insuficientes. Compra más créditos para continuar consultando.`;
           }
         }
       }
@@ -271,14 +400,7 @@ export function renderAssistantPage(root) {
     setTimeout(() => appendMessage('assistant', greeting), 300);
   });
 
-  // Handle back to intro
-  backToIntroBtn.addEventListener('click', () => {
-    chatSection.style.display = 'none';
-    root.querySelector('.ai-assistant-intro').style.display = 'block';
-    // Clear chat history
-    messagesEl.innerHTML = '';
-    history.length = 0;
-  });
+  // Handle back to intro (removed - no back button in current design)
 
   // Autosize textarea
   input.addEventListener('input', autosize);
@@ -347,28 +469,29 @@ export function renderAssistantPage(root) {
         const access = await checkPremiumAccess(currentUserId);
 
         if (!access.hasAccess) {
-          // Check credits balance
-          const currentCredits = await window.getCreditBalance();
+          // Check credits balance - ALWAYS get fresh from database
+          const currentCredits = await window.getCreditBalance(currentUserId);
+          console.log(`💰 Verificando créditos para consulta: ${currentCredits} disponibles, costo: ${creditCost}`);
 
           if (currentCredits < creditCost) {
-            appendMessage('assistant', `❌ **Créditos insuficientes**\n\nNecesitas ${creditCost} crédito${creditCost > 1 ? 's' : ''} para esta consulta, pero solo tienes ${currentCredits}.\n\n💳 **Compra más créditos** para continuar consultando al Dr. Nutricionista IA.\n\n[Ir a Comprar Créditos](#/suscripcion)`);
+            appendMessage('assistant', `❌ Créditos insuficientes. Necesitas ${creditCost} crédito${creditCost > 1 ? 's' : ''} para esta consulta.\n\n💳 Compra más créditos para continuar.`);
             input.value = '';
             autosize();
             return;
           }
 
-          // Show credit cost before deduction
-          appendMessage('assistant', `💰 **Costo de consulta:** ${creditCost} crédito${creditCost > 1 ? 's' : ''}\n\nProcesando pago...`);
+          // No verbose messages - just process silently
 
           // Deduct credits from database
           try {
-            const deducted = await window.deductCredits(creditCost, `Consulta IA: ${text.substring(0, 50)}...`);
+            const deducted = await window.deductCredits(currentUserId, creditCost, `Consulta IA: ${text.substring(0, 50)}...`);
             if (!deducted) {
               appendMessage('assistant', '❌ Error procesando el pago de créditos. Intenta nuevamente.');
               input.value = '';
               autosize();
               return;
             }
+            console.log(`✅ Créditos deducidos: ${creditCost}, usuario: ${currentUserId}`);
           } catch (deductError) {
             console.error('Error deducting credits:', deductError);
             appendMessage('assistant', '❌ Error procesando el pago de créditos. Intenta nuevamente.');
@@ -379,21 +502,17 @@ export function renderAssistantPage(root) {
 
           // Update credits display in real-time
           await loadUserStatus();
-          // Also update credits in subscription page if it's open
-          if (window.location.hash.includes('#/suscripcion')) {
-            try {
-              const subscriptionScript = document.querySelector('script[src*="subscription.js"]');
-              if (subscriptionScript && window.loadCreditsBalance) {
-                await window.loadCreditsBalance();
-              }
-            } catch (e) {
-              console.log('Could not refresh subscription page credits');
-            }
-          }
 
-          // Show credit deduction message
-          const remainingCredits = currentCredits - creditCost;
-          appendMessage('assistant', `✅ **Pago procesado:** ${creditCost} crédito${creditCost > 1 ? 's' : ''} deducido${creditCost > 1 ? 's' : ''}.\n\n💰 **Créditos restantes:** ${remainingCredits}`);
+          // Animate credits update
+          animateCreditsUpdate();
+
+          // Update progress bar
+          const currentCreditsAfter = await window.getCreditBalance(currentUserId);
+          updateCreditsProgress(currentCreditsAfter);
+
+          // Show credit deduction message (without verbose text)
+          const remainingCredits = await window.getCreditBalance(currentUserId);
+          appendMessage('assistant', `✅ Consulta procesada - ${remainingCredits} créditos restantes`);
         } else {
           // Premium user - unlimited credits
           if (costDisplay) {
@@ -413,14 +532,7 @@ export function renderAssistantPage(root) {
     const stopTyping = showTyping();
 
     try {
-      // Load current products for button generation
-      if (currentProducts.length === 0) {
-        try {
-          currentProducts = await window.getStoreProducts() || [];
-        } catch (e) {
-          console.log('No se pudieron cargar productos para botones:', e.message);
-        }
-      }
+      // No product loading needed - focus on medical consultation
 
       // Use database-integrated completion for better responses
       const reply = await chatCompletionWithDatabase(text, currentUserId, fullUserName);
@@ -449,66 +561,8 @@ export function renderAssistantPage(root) {
     const icon = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-user-md"></i>';
     const textHtml = renderSafeMarkdown(content);
 
-    // Add action buttons for assistant messages - dynamic based on content
+    // No action buttons for assistant messages - keep it clean for doctor responses
     let actionButtons = '';
-    if (role === 'assistant') {
-      const buttons = [];
-
-      // Check if user is asking about prices - don't show cart buttons in that case
-      const isAskingAboutPrices = content.toLowerCase().includes('precio') ||
-                                  content.toLowerCase().includes('cuánto') ||
-                                  content.toLowerCase().includes('costo') ||
-                                  content.toLowerCase().includes('valor') ||
-                                  content.toLowerCase().includes('pagar') ||
-                                  content.toLowerCase().includes('cuanto') ||
-                                  content.toLowerCase().includes('creditos') ||
-                                  content.toLowerCase().includes('créditos') ||
-                                  content.toLowerCase().includes('comprar');
-
-      // Only show cart buttons if NOT asking about prices
-      if (!isAskingAboutPrices) {
-        // Extract product names from content and create buttons
-        const productMatches = content.match(/\b(aguacate|manzana|mango|pera|platano|uva|fresa|kiwi|naranja|limon|papaya|piña|sandia|melon|cereza|ciruela|durazno|nectarina|mandarina|granada|frambuesa|arandano|morá|guanabana|maracuya|lulo|feijoa|carambolo|pitahaya|lichi|longan|rambutan|jaca|nance|zapote|mamey|anona|chirimoya|guayaba|tomate de arbol|coco|datil|dátil|higo|tuna|nopal|aloe vera|acelga|espinaca|lechuga|repollo|coliflor|brocoli|zanahoria|remolacha|cebolla|ajo|papá|yuca|arracacha|ñame|malanga|plátano|guineo|banano|cambur)\b/gi) || [];
-
-        if (productMatches.length > 0) {
-          // Get unique products
-          const uniqueProducts = [...new Set(productMatches.map(p => p.toLowerCase()))];
-
-          uniqueProducts.forEach(product => {
-            // Try to find product in database to get real price
-            try {
-              // Find product in current products array
-              const productData = currentProducts.find(p => p.name.toLowerCase().includes(product));
-              if (productData) {
-                buttons.push(`
-                  <button class="btn-sm btn-success chat-add-to-cart" data-product="${productData.name}" data-price="${productData.priceKg || 10000}">
-                    <i class="fas fa-cart-plus"></i> Agregar ${productData.name}
-                  </button>
-                `);
-              }
-            } catch (e) {
-              // Fallback with generic button
-              buttons.push(`
-                <button class="btn-sm btn-success chat-add-to-cart" data-product="${product}" data-price="10000">
-                  <i class="fas fa-cart-plus"></i> Agregar ${product}
-                </button>
-              `);
-            }
-          });
-        }
-
-        // Always add view cart button (only if not asking about prices)
-        buttons.push(`
-          <button class="btn-sm btn-info chat-view-cart">
-            <i class="fas fa-shopping-cart"></i> Ver Carrito
-          </button>
-        `);
-      }
-
-      if (buttons.length > 0) {
-        actionButtons = `<div class="chat-action-buttons">${buttons.join('')}</div>`;
-      }
-    }
 
     item.innerHTML = `
       <div class="fruvi-msg__avatar">${icon}</div>
@@ -518,20 +572,7 @@ export function renderAssistantPage(root) {
     messagesEl.appendChild(item);
     messagesEl.scrollTop = messagesEl.scrollHeight;
 
-    // Add event listeners for action buttons
-    if (role === 'assistant') {
-      item.querySelectorAll('.chat-add-to-cart').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const product = e.target.dataset.product;
-          const price = parseInt(e.target.dataset.price);
-          addToCartFromChat(product, price);
-        });
-      });
-
-      item.querySelectorAll('.chat-view-cart').forEach(btn => {
-        btn.addEventListener('click', viewCartFromChat);
-      });
-    }
+      // No action buttons to handle - clean medical interface
   }
 
   function showTyping() {
@@ -570,138 +611,6 @@ export function renderAssistantPage(root) {
   function escapeHtml(s = '') {
     return s.replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   }
-  // Cart functions for chat
-  function addToCartFromChat(productName, price) {
-    // Ask for quantity
-    const quantity = prompt(`¿Cuántos kilos de ${productName} deseas agregar?`, '1');
-    if (!quantity || isNaN(quantity) || quantity <= 0) return;
-
-    const qty = parseFloat(quantity);
-    const existingItem = chatCart.find(item => item.product === productName);
-
-    if (existingItem) {
-      existingItem.quantity += qty;
-      existingItem.total = existingItem.price * existingItem.quantity;
-    } else {
-      chatCart.push({
-        product: productName,
-        price: price,
-        quantity: qty,
-        total: price * qty
-      });
-    }
-
-    saveChatCart();
-
-    // Personalized response based on cart size
-    const totalItems = chatCart.reduce((sum, item) => sum + item.quantity, 0);
-    const totalValue = chatCart.reduce((sum, item) => sum + item.total, 0);
-
-    let response = `¡Perfecto! 🎉 Agregué ${qty} kg de ${productName} a tu carrito. `;
-
-    if (totalItems >= 3) {
-      response += `¡Qué rico pedido llevas! Ya tienes ${totalItems} kg de frutas frescas por $${totalValue.toLocaleString('es-CO')}. ¿Estás listo para confirmar tu pedido? ¡Aprovecha y cuida tu salud con frutas frescas! 🌱💚`;
-    } else {
-      response += `Ahora llevas ${totalItems} kg en total. ¿Te gustaría agregar algo más para completar tu pedido?`;
-    }
-
-    appendMessage('assistant', response);
-
-    // Show cart summary
-    showCartSummary();
-  }
-
-  function viewCartFromChat() {
-    if (chatCart.length === 0) {
-      appendMessage('assistant', 'Tu carrito está vacío. ¿Qué frutas te gustaría agregar?');
-      return;
-    }
-
-    showCartSummary();
-  }
-
-  function showCartSummary() {
-    if (chatCart.length === 0) return;
-
-    const total = chatCart.reduce((sum, item) => sum + item.total, 0);
-    const cartHtml = `
-      <div class="chat-cart-summary">
-        <h4>🛒 Tu Carrito de Compras</h4>
-        ${chatCart.map(item => `
-          <div class="cart-item">
-            <span>${item.product}</span>
-            <span>${item.quantity} kg x $${item.price.toLocaleString('es-CO')}</span>
-            <span>$${item.total.toLocaleString('es-CO')}</span>
-          </div>
-        `).join('')}
-        <div class="cart-total">
-          <strong>Total: $${total.toLocaleString('es-CO')}</strong>
-        </div>
-        <div class="cart-actions">
-          <button class="btn-sm btn-success" onclick="finalizeOrder()">
-            <i class="fab fa-whatsapp"></i> Finalizar por WhatsApp
-          </button>
-          <button class="btn-sm btn-secondary" onclick="clearChatCart()">
-            <i class="fas fa-trash"></i> Vaciar Carrito
-          </button>
-        </div>
-      </div>
-    `;
-
-    appendMessage('assistant', cartHtml);
-  }
-
-  function saveChatCart() {
-    localStorage.setItem('fruvi_chat_cart', JSON.stringify(chatCart));
-  }
-
-  // Global functions for cart actions
-  window.finalizeOrder = async function() {
-    const total = chatCart.reduce((sum, item) => sum + item.total, 0);
-    const orderText = chatCart.map(item =>
-      `${item.quantity}kg ${item.product} - $${item.total.toLocaleString('es-CO')}`
-    ).join('\n');
-
-    const whatsappMessage = `¡Hola Fruvi! 🍎 Quiero hacer este pedido:\n\n${orderText}\n\n💰 Total: $${total.toLocaleString('es-CO')}\n\n🚚 ¿Me puedes ayudar con el envío? ¿Dónde te gustaría recibirlo?\n\n¡Gracias! 😊`;
-
-    const whatsappUrl = `https://wa.me/573001234567?text=${encodeURIComponent(whatsappMessage)}`;
-    window.open(whatsappUrl, '_blank');
-
-    // Get user name for personalized message
-    let userName = '';
-    try {
-      const user = await window.getUser();
-      if (user) {
-        // Get full name from customers table
-        try {
-          const { supabaseClient } = await import('../services/supabaseService.js');
-          const { data: customer } = await supabaseClient
-            .from('customers')
-            .select('full_name')
-            .eq('user_id', user.id)
-            .single();
-          userName = customer?.full_name || user.email?.split('@')[0] || '';
-        } catch (e) {
-          userName = user.email?.split('@')[0] || '';
-        }
-      }
-    } catch (e) {}
-
-    const farewellMessage = userName
-      ? `¡Perfecto ${userName}! 🚀 Te envié todo por WhatsApp para coordinar la entrega. ¡Gracias por elegir Fruvi para cuidar tu salud! 🌱💚`
-      : '¡Perfecto! 🚀 Te envié todo por WhatsApp para coordinar la entrega. ¡Gracias por elegir Fruvi! 🌱💚';
-
-    appendMessage('assistant', farewellMessage);
-
-    // Clear cart after successful order
-    chatCart = [];
-    saveChatCart();
-  };
-
-  window.clearChatCart = function() {
-    chatCart = [];
-    saveChatCart();
-    appendMessage('assistant', 'Carrito vaciado. ¿Qué más te gustaría comprar?');
-  };
+  // Removed all cart functionality - focus purely on medical consultation
 }
 

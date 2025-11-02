@@ -1,6 +1,8 @@
 // Gumroad Payment Integration Service
 // Handles subscription payments, webhooks, and license management
 
+import { supabaseClient } from './supabaseService.js';
+
 const GUMROAD_CONFIG = {
   baseUrl: 'https://api.gumroad.com/v2',
   // Environment variables for Gumroad

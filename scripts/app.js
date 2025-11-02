@@ -70,6 +70,10 @@ async function loadModules() {
 
       // Define global credit functions
       window.getCreditBalance = async function(userId) {
+        if (!userId) {
+          console.warn('getCreditBalance called without userId');
+          return 0;
+        }
         return await subscriptionService.getCreditBalance(userId);
       };
 
@@ -92,6 +96,10 @@ async function loadModules() {
       window.getAllUsersCredits = async function() {
         return await subscriptionService.getAllUsersCredits();
       };
+
+      // Also load checkAndCreateTables function
+      window.checkAndCreateTables = subscriptionService.checkAndCreateTables;
+      window.forceInitializeCredits = subscriptionService.forceInitializeCredits;
 
       console.log('✅ All credit functions loaded globally from subscriptionService');
       console.log('Available credit functions:', {
@@ -165,6 +173,8 @@ async function loadModules() {
   console.log('window.deductCredits:', typeof window.deductCredits);
   console.log('window.addCredits:', typeof window.addCredits);
   console.log('window.getCreditHistory:', typeof window.getCreditHistory);
+  console.log('window.checkAndCreateTables:', typeof window.checkAndCreateTables);
+  console.log('window.forceInitializeCredits:', typeof window.forceInitializeCredits);
 
   // Add development helper for dashboard testing
   console.log('🔧 Adding development helpers...');

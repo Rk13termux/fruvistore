@@ -13,6 +13,7 @@
     "vite": "^5.0.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.78.0",
     "xlsx": "^0.18.5"
   }
 }
