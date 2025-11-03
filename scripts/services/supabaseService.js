@@ -828,10 +828,11 @@ window.getUserStats = async function getUserStats(userId) {
     }
 
     // Get orders count and total spent from Supabase
+    // Note: The orders table uses customer_id as UUID, not bigint
     const { data: orders, error: ordersError } = await supabaseClient
-      .from('orders')
+      .from('management_orders')
       .select('total_amount, status, created_at')
-      .eq('customer_id', userId);
+      .eq('user_id', userId);
 
     if (ordersError) throw ordersError;
 

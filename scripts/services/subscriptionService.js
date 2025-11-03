@@ -116,6 +116,9 @@ export async function checkPremiumAccess(userId) {
       return { hasAccess: false, plan: 'free', reason: 'table_not_exists' };
     }
 
+    // Declare data variable outside try-catch to avoid scope issues
+    let subscriptionData = null;
+
     try {
       const { data, error } = await supabaseClient
         .from('user_subscriptions')
@@ -141,18 +144,23 @@ export async function checkPremiumAccess(userId) {
         console.log('No subscription data returned');
         return { hasAccess: false, plan: 'free', reason: 'no_subscription' };
       }
+
+      // Store data in outer scope variable
+      subscriptionData = data;
+
     } catch (subscriptionError) {
       console.log('Subscription query failed, assuming no subscription:', subscriptionError.message);
       return { hasAccess: false, plan: 'free', reason: 'table_not_exists' };
     }
 
-    if (!data || data.length === 0) {
+    // At this point, if we reach here, the query was successful
+    if (!subscriptionData || subscriptionData.length === 0) {
       console.log('No subscription data returned');
       return { hasAccess: false, plan: 'free', reason: 'no_subscription' };
     }
 
     // Get the first active subscription (should only be one)
-    const subscription = data[0];
+    const subscription = subscriptionData[0];
 
     // Check if subscription is still valid
     const now = new Date();
