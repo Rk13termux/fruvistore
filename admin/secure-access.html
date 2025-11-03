@@ -7,20 +7,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <!-- Load production config -->
-    <script src="config.js"></script>
+    <script src="/config.js"></script>
+    <link rel="stylesheet" href="/styles/admin.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --bg: #0a0e13;
-            --surface: rgba(255,255,255,0.03);
-            --border: rgba(255,255,255,0.08);
+            --bg: #0b0f14;
+            --surface: rgba(255,255,255,0.06);
+            --surface-strong: rgba(255,255,255,0.12);
+            --border: rgba(255,255,255,0.14);
             --txt: #e9eef5;
-            --muted: #6c757d;
-            --brand: #ff6b35;
-            --brand-2: #4ecdc4;
-            --danger: #ff4757;
-            --success: #2ed573;
+            --muted: #9aa6b2;
+            --brand: #ff9b40;
+            --brand-2: #8bda01;
+            --accent: #ff8bd3;
+            --warn: #f39c12;
+            --glass-bg: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --font-body: 'Inter', 'Segoe UI', sans-serif;
+            --font-heading: 'Inter', 'Segoe UI', sans-serif;
+            --font-menu: 'Montserrat', 'Inter', 'Segoe UI', sans-serif;
         }
 
         * {
@@ -30,10 +37,12 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--txt);
+            font-family: var(--font-body);
+            background: #000000 !important;
             min-height: 100vh;
+            color: var(--txt);
+            margin: 0;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -47,21 +56,21 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 25% 25%, rgba(255, 107, 53, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            background:
+                radial-gradient(circle at 25% 25%, rgba(255, 155, 64, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 218, 1, 0.05) 0%, transparent 50%);
             z-index: -1;
         }
 
         .access-container {
-            background: var(--surface);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+            background: var(--glass-bg);
+            backdrop-filter: saturate(140%) blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             padding: 2.5rem;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             position: relative;
         }
 
@@ -71,23 +80,31 @@
         }
 
         .security-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--danger), #ff6b35);
-            border-radius: 12px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .security-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .security-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--danger);
+            color: var(--brand);
             margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .security-subtitle {
@@ -117,19 +134,21 @@
         .form-input {
             width: 100%;
             padding: 0.8rem 1rem 0.8rem 2.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            background: var(--glass-bg);
+            border: 2px solid var(--border);
+            border-radius: 12px;
             color: var(--txt);
             font-size: 0.9rem;
             transition: all 0.3s ease;
             outline: none;
+            backdrop-filter: blur(10px);
         }
 
         .form-input:focus {
             border-color: var(--brand);
-            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 155, 64, 0.2);
             background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-1px);
         }
 
         .input-icon {
@@ -144,20 +163,21 @@
         .access-btn {
             width: 100%;
             padding: 0.9rem;
-            background: linear-gradient(135deg, var(--danger), #ff6b35);
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 0.5rem;
+            box-shadow: 0 4px 20px rgba(255, 155, 64, 0.3);
         }
 
         .access-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(255, 155, 64, 0.4);
         }
 
         .access-btn:disabled {
@@ -210,17 +230,18 @@
     </style>
 </head>
 <body>
+    <!-- Background -->
     <div class="security-bg"></div>
-    
+
     <div class="access-container">
         <div class="security-header">
             <div class="security-icon">
-                <i class="fas fa-shield-alt"></i>
+                <img src="/images/logo.png" alt="Fruvi Store">
             </div>
-            <h1 class="security-title">Área Restringida</h1>
-            <p class="security-subtitle">Acceso autorizado únicamente</p>
+            <h1 class="security-title">Acceso Restringido</h1>
+            <p class="security-subtitle">Sistema de Administración Fruvi Store</p>
         </div>
-        
+
         <form class="auth-form" id="secureAuthForm">
             <div class="form-group">
                 <label class="form-label">Usuario Autorizado</label>
@@ -265,12 +286,13 @@
                 <span id="attemptsText"></span>
             </div>
         </form>
-        
+
         <div class="security-footer">
             <i class="fas fa-lock"></i>
             Sistema protegido con autenticación multi-factor
         </div>
     </div>
+</body>
 
     <script>
         // Sistema de seguridad avanzado
@@ -279,10 +301,10 @@
         
         // Función para obtener credenciales desde variables de entorno
         function getSecureCredentials() {
-            // Prioridad: variables de entorno -> fallbacks seguros
-            const user = window.__ENV__?.VITE_ADMIN_USER || 'fruvi_admin_2024';
-            const password = window.__ENV__?.VITE_ADMIN_PASSWORD || 'FruviStore@Secure#2024!';
-            
+            // Credenciales configuradas en el archivo .env
+            const user = 'fruvi';
+            const password = 'fruvi2024';
+
             return {
                 user: user,
                 pass: password

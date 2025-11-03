@@ -5,13 +5,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Fruvi Store</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/main.css">
     <link rel="stylesheet" href="/styles/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
     <!-- Production Configuration -->
     <style>
+        /* Admin Panel Header Styles - Using Main Theme */
+        .header {
+            background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.55)) !important;
+            backdrop-filter: saturate(140%) blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #e9eef5;
+        }
+
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .logo span {
+            color: #ffffff;
+            letter-spacing: 0.3px;
+        }
+
+        /* Main content area */
+            .admin-main {
+                padding: 2rem 0;
+                min-height: calc(100vh - 80px);
+                width: 100%;
+                margin: 0 auto;
+                display: block;
+            }
+
+        /* Admin Panel Container */
+            .admin-container {
+                min-height: 100vh;
+                background: #000000;
+                width: 100%;
+                margin: 0 auto;
+                display: block;
+            }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links .nav-item {
+            color: #e9eef5;
+            opacity: 0.9;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Montserrat', 'Inter', 'Segoe UI', sans-serif;
+            letter-spacing: 0.04em;
+        }
+
+        .nav-links .nav-item:hover {
+            color: #ff9b40;
+            opacity: 1;
+            transform: translateY(-2px) scale(1.02);
+            text-shadow: 0 0 8px rgba(255,155,64,0.3);
+        }
+
+        .nav-links .nav-item.active {
+            color: #ff9b40;
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(255,155,64,0.08), rgba(139,218,1,0.08));
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255,155,64,0.15);
+        }
+
+        .nav-links .nav-item.active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -8px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff9b40, #8bda01);
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(255,155,64,0.4);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            color: #e9eef5;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.08);
+            color: #e9eef5;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,71,87,0.2);
+            border-color: #ff4757;
+            color: #ffffff;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: #e9eef5;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-menu:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* Button Styles */
         .btn {
             font-weight: 600;
-            font-family: var(--font-menu);
+            font-family: 'Montserrat', 'Inter', 'Segoe UI', sans-serif;
             letter-spacing: 0.04em;
             transition: all 0.3s ease;
             margin: 0.25rem;
@@ -24,12 +186,13 @@
         }
 
         .btn-secondary {
-            background: var(--surface-strong);
-            color: var(--txt);
+            background: rgba(255,255,255,0.08);
+            color: #e9eef5;
             box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
         }
 
         .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
             box-shadow: 0 8px 30px rgba(255, 255, 255, 0.15);
         }
 
@@ -43,12 +206,62 @@
         }
 
         .btn-success {
-            background: linear-gradient(135deg, var(--brand-2), #20c997);
+            background: linear-gradient(135deg, #8bda01, #20c997);
             box-shadow: 0 4px 20px rgba(139, 218, 1, 0.3);
         }
 
         .btn-success:hover {
             box-shadow: 0 8px 30px rgba(139, 218, 1, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.95);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                gap: 0;
+                padding: 1rem 0;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-links .nav-item {
+                padding: 1rem 2rem;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+
+            .nav-links .nav-item:last-child {
+                border-bottom: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .header-actions {
+                gap: 0.5rem;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .logout-btn .btn-text {
+                display: none;
+            }
         }
 
         .input-group {
@@ -597,7 +810,7 @@
             display: none !important;
         }
 
-        /* Professional Dashboard Analytics */
+        /* Professional Dashboard Analytics - Using Main Theme */
         .dashboard-analytics {
             margin-bottom: 2rem;
         }
@@ -620,18 +833,18 @@
         }
 
         .chart-card {
-            background: var(--glass-bg);
-            backdrop-filter: saturate(140%) blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             padding: 1.5rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+            backdrop-filter: blur(12px) saturate(130%);
             transition: all 0.3s ease;
         }
 
         .chart-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .chart-header {
@@ -640,7 +853,7 @@
             align-items: center;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
         .chart-header h3 {
@@ -708,24 +921,24 @@
             .charts-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .chart-container {
                 height: 250px;
             }
         }
 
-        /* Product Management Section */
+        /* Product Management Section - Using Main Theme */
         .product-management {
             margin-bottom: 2rem;
         }
 
         .management-header {
-            background: var(--glass-bg);
-            backdrop-filter: saturate(140%) blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+            backdrop-filter: blur(12px) saturate(130%);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -758,13 +971,13 @@
                 flex-direction: column;
                 text-align: center;
             }
-            
+
             .management-actions {
                 justify-content: center;
             }
         }
 
-        /* Add Product Modal */
+        /* Add Product Modal - Using Main Theme */
         .product-modal {
             position: fixed;
             top: 0;
@@ -789,15 +1002,14 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--glass-bg);
-            backdrop-filter: saturate(140%) blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             padding: 2rem;
             max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             width: 90%;
         }
 
@@ -807,7 +1019,7 @@
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
         .modal-header h3 {
@@ -873,7 +1085,7 @@
         .form-group input,
         .form-group select,
         .form-group textarea {
-            background: var(--glass-bg);
+            background: var(--surface);
             border: 2px solid var(--border);
             color: var(--txt);
             padding: 0.875rem 1rem;
@@ -1267,26 +1479,53 @@
     <div id="notificationContainer" class="notification-container"></div>
     
     <div class="admin-container">
-        <!-- Header -->
-        <div class="admin-header">
-            <div class="header-content">
-                <div class="header-left">
-                    <h1>
-                        <i class="fas fa-store"></i>
-                        Panel de Administración - Fruvi Store
-                    </h1>
-                    <p>Gestión completa de productos, precios e inventario</p>
+        <!-- Header with Navigation Menu -->
+        <header class="header">
+            <div class="navbar">
+                <div class="logo">
+                    <img src="/images/logo.png" alt="Fruvi Store" class="logo-mark" onerror="this.style.display='none'">
+                    <span>Fruvi Store</span>
                 </div>
-                <div class="header-right">
+
+                <!-- Main Navigation Menu -->
+                <nav class="nav-links">
+                    <a href="admin-panel-secure.html" class="nav-item active">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="store-management.html" class="nav-item">
+                        <i class="fas fa-store"></i>
+                        <span>Tienda</span>
+                    </a>
+                    <a href="boxes-management.html" class="nav-item">
+                        <i class="fas fa-boxes-stacked"></i>
+                        <span>Cajas</span>
+                    </a>
+                    <a href="credits-management.html" class="nav-item">
+                        <i class="fas fa-brain"></i>
+                        <span>Créditos</span>
+                    </a>
+                </nav>
+
+                <div class="header-actions">
                     <div class="user-info" id="userInfo">
                         <!-- Se llena dinámicamente con JavaScript -->
                     </div>
-                    <button class="logout-btn" onclick="logout()" title="Cerrar Sesión">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    <button class="btn-secondary logout-btn" onclick="logout()" title="Cerrar Sesión">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="btn-text">Salir</span>
                     </button>
                 </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="mobile-menu" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
-        </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="admin-main">
 
         <!-- Connection Status -->
         <div id="connectionStatus" class="alert alert-warning">
@@ -1296,629 +1535,183 @@
 
 
 
-        <!-- Professional Dashboard Analytics -->
-        <div class="dashboard-analytics">
-            <!-- Main Stats Overview -->
-            <div id="statsContainer" class="stats-grid">
-                <!-- Stats will be populated here -->
-            </div>
+            <!-- Dashboard Section - Only Analytics and Charts -->
+            <div id="dashboard-section" class="content-section active">
+                <!-- Professional Dashboard Analytics -->
+                <div class="dashboard-analytics">
+                    <!-- Main Stats Overview -->
+                    <div id="statsContainer" class="stats-grid">
+                        <!-- Stats will be populated here -->
+                    </div>
 
-            <!-- Charts Section -->
-            <div class="charts-section">
-                <div class="charts-grid">
-                    <!-- Categories Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-chart-pie"></i> Distribución por Categorías</h3>
-                            <div class="chart-controls">
-                                <button class="btn-chart" onclick="refreshCategoriesChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
+                    <!-- Charts Section -->
+                    <div class="charts-section">
+                        <div class="charts-grid">
+                            <!-- Categories Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-chart-pie"></i> Distribución por Categorías</h3>
+                                    <div class="chart-controls">
+                                        <button class="btn-chart" onclick="refreshCategoriesChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="categoriesChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Prices Trend Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-chart-line"></i> Tendencia de Precios</h3>
+                                    <div class="chart-controls">
+                                        <select id="pricesPeriod" class="chart-select">
+                                            <option value="week">Última Semana</option>
+                                            <option value="month" selected>Último Mes</option>
+                                            <option value="quarter">Último Trimestre</option>
+                                        </select>
+                                        <button class="btn-chart" onclick="refreshPricesChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="pricesChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Stock Levels Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-chart-bar"></i> Niveles de Stock</h3>
+                                    <div class="chart-controls">
+                                        <button class="btn-chart" onclick="refreshStockChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="stockChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Revenue Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-dollar-sign"></i> Valor de Inventario</h3>
+                                    <div class="chart-controls">
+                                        <button class="btn-chart" onclick="refreshRevenueChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Box Categories Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-box-open"></i> Distribución de Cajas</h3>
+                                    <div class="chart-controls">
+                                        <button class="btn-chart" onclick="refreshBoxCategoryChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="boxCategoryChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Box Status Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-toggle-on"></i> Estado de las Cajas</h3>
+                                    <div class="chart-controls">
+                                        <button class="btn-chart" onclick="refreshBoxStatusChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="boxStatusChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Box Value Chart -->
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-cubes"></i> Top Cajas por Valor</h3>
+                                    <div class="chart-controls">
+                                        <button class="btn-chart" onclick="refreshBoxValueChart()">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="boxValueChart"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div class="chart-container">
-                            <canvas id="categoriesChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Prices Trend Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-chart-line"></i> Tendencia de Precios</h3>
-                            <div class="chart-controls">
-                                <select id="pricesPeriod" class="chart-select">
-                                    <option value="week">Última Semana</option>
-                                    <option value="month" selected>Último Mes</option>
-                                    <option value="quarter">Último Trimestre</option>
-                                </select>
-                                <button class="btn-chart" onclick="refreshPricesChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="pricesChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Stock Levels Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-chart-bar"></i> Niveles de Stock</h3>
-                            <div class="chart-controls">
-                                <button class="btn-chart" onclick="refreshStockChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="stockChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Revenue Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-dollar-sign"></i> Valor de Inventario</h3>
-                            <div class="chart-controls">
-                                <button class="btn-chart" onclick="refreshRevenueChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Box Categories Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-box-open"></i> Distribución de Cajas</h3>
-                            <div class="chart-controls">
-                                <button class="btn-chart" onclick="refreshBoxCategoryChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="boxCategoryChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Box Status Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-toggle-on"></i> Estado de las Cajas</h3>
-                            <div class="chart-controls">
-                                <button class="btn-chart" onclick="refreshBoxStatusChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="boxStatusChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Box Value Chart -->
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3><i class="fas fa-cubes"></i> Top Cajas por Valor</h3>
-                            <div class="chart-controls">
-                                <button class="btn-chart" onclick="refreshBoxValueChart()">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="boxValueChart"></canvas>
-                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Herramientas de la Tienda -->
-        <section class="admin-section">
-            <div class="admin-section-title">
-                <i class="fas fa-store"></i>
-                <span>Gestión de Tienda</span>
-            </div>
-            <div class="admin-grid">
-                <!-- Product Price Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-dollar-sign"></i>
-                        <h3>Gestión de Precios</h3>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="priceProductSelect">Producto:</label>
-                        <select id="priceProductSelect">
-                            <option value="">Seleccionar producto...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="newPrice">Nuevo Precio (COP):</label>
-                        <input type="number" id="newPrice" step="100" min="0" placeholder="5000">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="priceReason">Razón del cambio:</label>
-                        <input type="text" id="priceReason" placeholder="Actualización de mercado">
-                    </div>
-                    
-                    <div class="flex flex-wrap">
-                        <button class="btn" onclick="updateSinglePrice()">
-                            <i class="fas fa-edit"></i> Actualizar Precio
-                        </button>
-                        <button class="btn btn-secondary" onclick="viewPriceHistory()">
-                            <i class="fas fa-history"></i> Ver Historial
-                        </button>
-                    </div>
 
-                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-                    
-                    <div class="input-group">
-                        <label for="categorySelect">Categoría para aumento masivo:</label>
-                        <select id="categorySelect">
-                            <option value="">Todas las categorías</option>
-                            <option value="Bayas">Bayas</option>
-                            <option value="Bananos">Bananos</option>
-                            <option value="Cítricas">Cítricas</option>
-                            <option value="Exóticas">Exóticas</option>
-                            <option value="Frutas Dulces">Frutas Dulces</option>
-                            <option value="Tropicales">Tropicales</option>
-                            <option value="Uvas">Uvas</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="increasePercent">Porcentaje de aumento:</label>
-                        <input type="number" id="increasePercent" step="0.1" min="0" max="50" placeholder="5.0">
-                    </div>
-                    
-                    <button class="btn btn-danger" onclick="applyBulkIncrease()">
-                        <i class="fas fa-percentage"></i> Aplicar Aumento
-                    </button>
-                </div>
-
-                <!-- Product Inventory Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-boxes"></i>
-                        <h3>Gestión de Inventario</h3>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="stockProductSelect">Producto:</label>
-                        <select id="stockProductSelect">
-                            <option value="">Seleccionar producto...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="stockChange">Cambio en stock (kg):</label>
-                        <input type="number" id="stockChange" step="1" placeholder="+50 o -25">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="stockReason">Razón del cambio:</label>
-                        <input type="text" id="stockReason" placeholder="Reposición de inventario">
-                    </div>
-                    
-                    <div class="flex flex-wrap">
-                        <button class="btn btn-success" onclick="updateStock()">
-                            <i class="fas fa-plus"></i> Actualizar Stock
-                        </button>
-                        <button class="btn btn-secondary" onclick="showLowStock()">
-                            <i class="fas fa-exclamation-triangle"></i> Stock Bajo
-                        </button>
-                        <button class="btn" onclick="showAllProducts()">
-                            <i class="fas fa-list"></i> Ver Todos los Productos
-                        </button>
-                    </div>
-
-                    <div id="currentStock" class="mt-2">
-                        <!-- Current stock info will appear here -->
-                    </div>
-                </div>
-
-                <!-- Product Catalog Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-cogs"></i>
-                        <h3>Gestión de Productos</h3>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="manageProductSelect">Producto:</label>
-                        <select id="manageProductSelect">
-                            <option value="">Seleccionar producto...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="flex flex-wrap">
-                        <button class="btn btn-success" onclick="showAddProductModal()">
-                            <i class="fas fa-plus"></i> Agregar Producto
-                        </button>
-                        <button class="btn" onclick="editSelectedProduct()">
-                            <i class="fas fa-edit"></i> Editar Producto
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteSelectedProduct()">
-                            <i class="fas fa-trash"></i> Eliminar Producto
-                        </button>
-                    </div>
-
-                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-                    
-                    <div class="input-group">
-                        <label for="productStatus">Cambiar estado:</label>
-                        <select id="productStatus">
-                            <option value="">Seleccionar estado...</option>
-                            <option value="active">Activar Producto</option>
-                            <option value="inactive">Desactivar Producto</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn btn-secondary" onclick="updateProductStatus()">
-                        <i class="fas fa-toggle-on"></i> Cambiar Estado
-                    </button>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-lightning-bolt"></i>
-                        <h3>Acciones Rápidas</h3>
-                    </div>
-                    
-                    <div class="flex flex-wrap">
-                        <button class="btn" onclick="loadInventoryReport()">
-                            <i class="fas fa-chart-bar"></i> Reporte Inventario
-                        </button>
-                        <button class="btn btn-secondary" onclick="loadDailyReport()">
-                            <i class="fas fa-calendar-day"></i> Reporte Diario
-                        </button>
-                        <button class="btn btn-success" onclick="exportData()">
-                            <i class="fas fa-download"></i> Exportar Datos
-                        </button>
-                    </div>
-
-                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-
-                    <div class="input-group">
-                        <label for="csvFile">Importar precios desde CSV:</label>
-                        <input type="file" id="csvFile" accept=".csv">
-                        <small style="color: #666; font-size: 0.85rem;">
-                            Formato: product_id, new_price, reason
-                        </small>
-                    </div>
-                    
-                    <button class="btn btn-secondary" onclick="importPricesFromCSV()">
-                        <i class="fas fa-upload"></i> Importar CSV
-                    </button>
-                </div>
-
-                <!-- Reports and Analytics -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>Reportes y Análisis</h3>
-                    </div>
-                    
-                    <div id="reportContainer">
-                        <p style="color: #666; text-align: center; padding: 2rem;">
-                            <i class="fas fa-info-circle"></i>
-                            Selecciona una acción para ver reportes
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dr. AI Credit Management -->
-        <section class="admin-section">
-            <div class="admin-section-title">
-                <i class="fas fa-brain"></i>
-                <span>Gestión de Créditos Dr. AI</span>
-            </div>
-            <div class="admin-grid">
-                <!-- Credit Statistics -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line"></i>
-                        <h3>Estadísticas de Créditos</h3>
-                    </div>
-                    <div id="creditStatsContainer">
-                        <p style="color: #666; text-align: center; padding: 2rem;">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            Cargando estadísticas...
-                        </p>
-                    </div>
-                </div>
-
-                <!-- User Credit Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-users"></i>
-                        <h3>Gestión de Créditos por Usuario</h3>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="userSearch">Buscar Usuario (ID o Nombre):</label>
-                        <input type="text" id="userSearch" placeholder="Ingresa ID o nombre del usuario" onkeyup="filterUsers()">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="creditAmount">Créditos a Agregar:</label>
-                        <input type="number" id="creditAmount" min="1" placeholder="10" value="10">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="creditReason">Razón:</label>
-                        <input type="text" id="creditReason" placeholder="Recarga manual de créditos">
-                    </div>
-
-                    <div class="flex flex-wrap">
-                        <button class="btn btn-success" onclick="addCreditsToUser()">
-                            <i class="fas fa-plus"></i> Agregar Créditos
-                        </button>
-                        <button class="btn btn-info" onclick="refreshCreditStats()">
-                            <i class="fas fa-sync-alt"></i> Actualizar
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Credit Transactions History -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-history"></i>
-                        <h3>Historial de Transacciones</h3>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="transactionUserFilter">Filtrar por Usuario:</label>
-                        <input type="text" id="transactionUserFilter" placeholder="ID o nombre del usuario" onkeyup="filterTransactions()">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="transactionLimit">Límite de registros:</label>
-                        <select id="transactionLimit">
-                            <option value="25">25</option>
-                            <option value="50" selected>50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-secondary" onclick="loadCreditTransactions()">
-                        <i class="fas fa-search"></i> Ver Historial
-                    </button>
-
-                    <div id="transactionsContainer" style="margin-top: 1rem;">
-                        <p style="color: #666; text-align: center; padding: 2rem;">
-                            <i class="fas fa-info-circle"></i>
-                            Selecciona un usuario para ver su historial
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Users Credit Table -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-table"></i>
-                        <h3>Tabla de Créditos de Usuarios</h3>
-                    </div>
-
-                    <div id="usersCreditTableContainer">
-                        <p style="color: #666; text-align: center; padding: 2rem;">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            Cargando usuarios...
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Herramientas para Cajas -->
-        <section class="admin-section">
-            <div class="admin-section-title">
-                <i class="fas fa-boxes-stacked"></i>
-                <span>Gestión de Cajas</span>
-            </div>
-            <div class="admin-grid">
-                <!-- Box Price Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-boxes-stacked"></i>
-                        <h3>Gestión de Precios de Cajas</h3>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="boxPriceSelect">Caja:</label>
-                        <select id="boxPriceSelect">
-                            <option value="">Seleccionar caja...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="boxNewPrice">Nuevo Precio (COP):</label>
-                        <input type="number" id="boxNewPrice" step="1000" min="0" placeholder="75000">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="boxNewPriceUSD">Nuevo Precio (USD) (opcional):</label>
-                        <input type="number" id="boxNewPriceUSD" step="0.01" min="0" placeholder="18.50">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="boxPriceReason">Razón del cambio:</label>
-                        <input type="text" id="boxPriceReason" placeholder="Ajuste de temporada">
-                    </div>
-                    
-                    <div class="flex flex-wrap">
-                        <button class="btn" onclick="updateBoxPriceSingle()">
-                            <i class="fas fa-edit"></i> Actualizar Precio
-                        </button>
-                        <button class="btn btn-secondary" onclick="viewBoxPriceHistory()">
-                            <i class="fas fa-history"></i> Ver Historial
-                        </button>
-                    </div>
-
-                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-
-                    <div class="input-group">
-                        <label for="boxCategorySelect">Categoría para aumento masivo:</label>
-                        <select id="boxCategorySelect">
-                            <option value="">Todas las categorías</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="boxIncreasePercent">Porcentaje de aumento:</label>
-                        <input type="number" id="boxIncreasePercent" step="0.1" placeholder="5.0">
-                    </div>
-                    
-                    <button class="btn btn-secondary" onclick="applyBoxPriceIncrease()">
-                        <i class="fas fa-percentage"></i> Aplicar Aumento
-                    </button>
-                </div>
-
-                <!-- Box Inventory Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-warehouse"></i>
-                        <h3>Gestión de Inventario de Cajas</h3>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="boxStockSelect">Caja:</label>
-                        <select id="boxStockSelect">
-                            <option value="">Seleccionar caja...</option>
-                        </select>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="boxStockChange">Cambio en stock (unidades):</label>
-                        <input type="number" id="boxStockChange" placeholder="+20 o -5">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="boxStockReason">Razón del cambio:</label>
-                        <input type="text" id="boxStockReason" placeholder="Reposición de inventario">
-                    </div>
-
-                    <div class="flex flex-wrap">
-                        <button class="btn" onclick="updateBoxStock()">
-                            <i class="fas fa-box-open"></i> Actualizar Stock
-                        </button>
-                        <button class="btn btn-secondary" onclick="showAllBoxes()">
-                            <i class="fas fa-layer-group"></i> Ver Todas las Cajas
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Box Catalog Management -->
-                <div class="admin-card">
-                    <div class="card-header">
-                        <i class="fas fa-box"></i>
-                        <h3>Gestión de Cajas</h3>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="manageBoxSelect">Caja:</label>
-                        <select id="manageBoxSelect">
-                            <option value="">Seleccionar caja...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="flex flex-wrap">
-                        <button class="btn btn-success" onclick="showAddBoxModal()">
-                            <i class="fas fa-plus"></i> Agregar Caja
-                        </button>
-                        <button class="btn" onclick="editSelectedBox()">
-                            <i class="fas fa-edit"></i> Editar Caja
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteSelectedBox()">
-                            <i class="fas fa-trash"></i> Eliminar Caja
-                        </button>
-                        <button class="btn btn-info" onclick="showAllBoxes()">
-                            <i class="fas fa-list"></i> Ver Todas las Cajas
-                        </button>
-                    </div>
-
-                    <hr style="margin: 1.5rem 0; border: 1px solid #e0e0e0;">
-
-                    <div class="input-group">
-                        <label for="boxStatus">Cambiar estado:</label>
-                        <select id="boxStatus">
-                            <option value="">Seleccionar estado...</option>
-                            <option value="active">Activar Caja</option>
-                            <option value="inactive">Desactivar Caja</option>
-                            <option value="featured">Marcar como Destacada</option>
-                            <option value="unfeatured">Quitar Destacada</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn btn-secondary" onclick="updateBoxStatus()">
-                        <i class="fas fa-toggle-on"></i> Cambiar Estado
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Modal for detailed views -->
-        <div id="modal" style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            display: none;
-        ">
-            <div style="
-                background: var(--glass-bg);
-                backdrop-filter: saturate(140%) blur(20px);
-                border: 1px solid var(--glass-border);
-                border-radius: 20px;
-                padding: 2rem;
-                max-width: 90%;
-                max-height: 90%;
-                overflow-y: auto;
-                position: relative;
-                color: var(--txt);
+            <!-- Modal for detailed views -->
+            <div id="modal" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(10px);
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                display: none;
             ">
-                <button onclick="closeModal()" style="
-                    position: absolute;
-                    top: 1rem;
-                    right: 1rem;
-                    background: var(--surface);
-                    border: 1px solid var(--border);
-                    font-size: 1.2rem;
-                    cursor: pointer;
+                <div style="
+                    background: var(--glass-bg);
+                    backdrop-filter: saturate(140%) blur(20px);
+                    border: 1px solid var(--glass-border);
+                    border-radius: 20px;
+                    padding: 2rem;
+                    max-width: 90%;
+                    max-height: 90%;
+                    overflow-y: auto;
+                    position: relative;
                     color: var(--txt);
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.2s ease;
                 ">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div id="modalContent">
-                    <!-- Modal content will be populated here -->
+                    <button onclick="closeModal()" style="
+                        position: absolute;
+                        top: 1rem;
+                        right: 1rem;
+                        background: var(--surface);
+                        border: 1px solid var(--border);
+                        font-size: 1.2rem;
+                        cursor: pointer;
+                        color: var(--txt);
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.2s ease;
+                    ">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div id="modalContent">
+                        <!-- Modal content will be populated here -->
+                    </div>
                 </div>
             </div>
-        </div>
 
         <!-- Add Product Modal -->
         <div id="addProductModal" class="product-modal" style="display: none;">
@@ -3397,9 +3190,9 @@
                         <div class="stat-card">
                             <div class="value">${report.lowStockCount}</div>
                             <div class="label">Stock Bajo</div>
-                        </div>
+                        </main>
+                
                     </div>
-                    
                     <h4>Por Categoría</h4>
                     <div class="table-container">
                         <table>
@@ -6321,8 +6114,37 @@
             await loadUsersCreditTable();
         }
 
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (mobileMenuBtn && navLinks) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('show');
+                });
+
+                // Close menu when clicking on a nav item
+                navLinks.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        navLinks.classList.remove('show');
+                    });
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuBtn.contains(event.target) && !navLinks.contains(event.target)) {
+                        navLinks.classList.remove('show');
+                    }
+                });
+            }
+        }
+
         // Initialize when page loads
         window.addEventListener('load', function() {
+            // Initialize mobile menu
+            initMobileMenu();
+
             // Ensure modal is hidden on load
             const modal = document.getElementById('modal');
             if (modal) {
