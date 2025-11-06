@@ -1,6 +1,6 @@
 // Assistant Page (AI Chat powered by Groq) - Full-screen ChatGPT-like UI with Database Integration
 import { chatCompletionWithHistory, chatCompletionWithDatabase } from '../services/groqService.js';
-import { supabaseClient } from '../services/supabaseService.js';
+import { getUsersClient } from '../services/supabaseService.js';
 
 export function renderAssistantPage(root) {
   // Full page chat layout with professional introduction
@@ -187,6 +187,20 @@ export function renderAssistantPage(root) {
   // Make loadUserStatus globally available for cross-page updates
   window.loadUserStatus = loadUserStatus;
 
+  // AUTO-INITIALIZE credits for user when page loads
+  // This ensures user is added to user_ai_credits table from first moment
+  setTimeout(async () => {
+    try {
+      const user = await window.getUser();
+      if (user && user.id) {
+        console.log('🚀 Auto-inicializando créditos para usuario:', user.id);
+        await initializeCreditsForNewUser();
+      }
+    } catch (e) {
+      console.log('Error en auto-inicialización:', e);
+    }
+  }, 500); // Quick delay to ensure page is ready
+
   // Add credits update animation function
   function animateCreditsUpdate() {
     const creditsEl = document.getElementById('chatCredits');
@@ -216,11 +230,6 @@ export function renderAssistantPage(root) {
   // Make animation function globally available
   window.animateCreditsUpdate = animateCreditsUpdate;
   window.updateCreditsProgress = updateCreditsProgress;
-
-  // Initialize credits for new users (will check database)
-  setTimeout(() => {
-    initializeCreditsForNewUser();
-  }, 1000); // Delay to ensure database is ready
 
   async function loadUserStatus() {
     try {
@@ -360,6 +369,7 @@ export function renderAssistantPage(root) {
         // Get full name from customers table
         let fullUserName = '';
         try {
+          const supabaseClient = getUsersClient();
           const { data: customer } = await supabaseClient
             .from('customers')
             .select('full_name')
@@ -427,7 +437,8 @@ export function renderAssistantPage(root) {
       // Get full name from customers table
       if (currentUserId) {
         try {
-          const { supabaseClient } = await import('../services/supabaseService.js');
+          const { getUsersClient } = await import('../services/supabaseService.js');
+          const supabaseClient = getUsersClient();
           const { data: customer } = await supabaseClient
             .from('customers')
             .select('full_name')

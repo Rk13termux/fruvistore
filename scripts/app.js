@@ -29,7 +29,7 @@ async function loadModules() {
     const boxesModule = await import('./pages/boxes.js');
     ({ renderBoxesPage } = boxesModule);
 
-    const nutritionModule = await import('./pages/nutrition.js');
+    const nutritionModule = await import('./pages/nutrition-new.js');
     ({ renderNutritionPage } = nutritionModule);
 
     const assistantModule = await import('./pages/assistant.js');
@@ -81,6 +81,17 @@ async function loadModules() {
         return await subscriptionService.deductCredits(userId, amount, description);
       };
 
+      // Alias for consumeCredit (same as deductCredits)
+      window.consumeCredit = async function(userId, amount, description) {
+        console.log(`🔥 Consumiendo ${amount} crédito(s) para usuario ${userId}`);
+        const result = await subscriptionService.deductCredits(userId, amount, description);
+        if (result && result.newBalance !== undefined) {
+          console.log(`✅ Crédito consumido. Nuevo balance: ${result.newBalance}`);
+          return result.newBalance;
+        }
+        return 0;
+      };
+
       window.addCredits = async function(userId, amount, description, adminUserId) {
         return await subscriptionService.addCredits(userId, amount, description, adminUserId);
       };
@@ -105,6 +116,7 @@ async function loadModules() {
       console.log('Available credit functions:', {
         getCreditBalance: typeof window.getCreditBalance,
         deductCredits: typeof window.deductCredits,
+        consumeCredit: typeof window.consumeCredit,
         addCredits: typeof window.addCredits,
         getCreditHistory: typeof window.getCreditHistory,
         getCreditStats: typeof window.getCreditStats,

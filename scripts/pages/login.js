@@ -3,6 +3,13 @@
 // window.signInWithEmail(email, password), window.ensureCustomerExists
 // Estas funciones están disponibles globalmente desde supabaseService.js
 
+// Initialize global Supabase when login page loads
+if (typeof window.initializeGlobalSupabase === 'function') {
+  window.initializeGlobalSupabase().then(() => {
+    console.log('✅ Servicios globales inicializados en login');
+  });
+}
+
 export function renderLoginPage(root) {
   root.innerHTML = `
   <section class="auth auth--login">
@@ -82,6 +89,12 @@ export function renderLoginPage(root) {
     try {
       await window.signInWithEmail(email, password);
       try { await window.ensureCustomerExists(); } catch (_) {}
+
+      // Initialize user session and credits after successful login
+      if (typeof window.checkUserSessionAndInitialize === 'function') {
+        await window.checkUserSessionAndInitialize();
+      }
+
       showAuthToast(`Bienvenido, ${email}`);
       setTimeout(() => { location.hash = '#/'; }, 800);
     } catch (err) {

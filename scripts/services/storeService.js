@@ -852,3 +852,6 @@ window.diagnoseProductData = async function diagnoseProductData(productId) {
 
 console.log('🧪 Usa testProductsConnection() para probar la conexión');
 console.log('🔍 Usa diagnoseProductData(productId) para diagnosticar un producto específico');
+
+// Export for ES6 modules
+export { productsClient };

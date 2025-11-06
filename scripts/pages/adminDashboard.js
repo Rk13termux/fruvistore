@@ -13,12 +13,7 @@ const isAuthorized = checkAdminAuth();
 
 if (isAuthorized) {
   document.body?.classList.remove('is-hidden');
-  document.addEventListener('DOMContentLoaded', async () => {
-    const dashboard = new AdminDashboard();
-    window.__adminDashboard = dashboard;
-    attachGlobals(dashboard);
-    await dashboard.init();
-  });
+  // Don't auto-initialize, wait for manual call from HTML
 } else {
   document.body?.classList.add('is-hidden');
 }
@@ -48,7 +43,7 @@ function checkAdminAuth() {
 }
 
 function redirectToLogin() {
-  window.location.replace('./admin-login.html');
+  window.location.replace('./secure-access.html');
 }
 
 function getAdminUser() {
@@ -122,7 +117,7 @@ class AdminDashboard {
 
   async init() {
     this.updateHeaderUserInfo();
-    this.updateConnectionStatus('warning', 'Verificando conexión con Supabase...');
+    this.updateConnectionStatus('warning', 'Inicializando dashboard...');
 
     try {
       await this.ensureSupabase();
@@ -131,7 +126,13 @@ class AdminDashboard {
       await this.testConnectionStatus();
       this.bindFormHandlers();
       await this.refreshData(true);
-      this.updateConnectionStatus('success', '✅ Conectado a base de datos de productos');
+
+      // Start real-time monitoring
+      if (typeof startRealtimeMonitoring === 'function') {
+        startRealtimeMonitoring();
+      }
+
+      this.updateConnectionStatus('success', '✅ Dashboard listo');
       this.connectionChecked = true;
     } catch (error) {
       console.error('Error inicializando panel de administración:', error);
@@ -1958,4 +1959,54 @@ class AdminDashboard {
   wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  // Stop real-time monitoring when dashboard is destroyed
+  destroy() {
+    if (typeof stopRealtimeMonitoring === 'function') {
+      stopRealtimeMonitoring();
+    }
+  }
+
+  // Manual connection test
+  async testConnectionManually() {
+    try {
+      this.showLoading('Probando conexión manualmente...');
+
+      // Test all connections
+      const results = await Promise.allSettled([
+        testDatabaseConnection('products', testProductsConnection),
+        testDatabaseConnection('users', testUsersConnection),
+        testDatabaseConnection('analytics', testAnalyticsConnection)
+      ]);
+
+      const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
+      const totalCount = results.length;
+
+      if (successCount === totalCount) {
+        this.showAlert('✅ Todas las conexiones funcionan correctamente', 'success');
+      } else if (successCount > 0) {
+        this.showAlert(`⚠️ ${successCount}/${totalCount} conexiones funcionando`, 'warning');
+      } else {
+        this.showAlert('❌ No se pudo conectar a ninguna base de datos', 'danger');
+      }
+
+    } catch (error) {
+      console.error('Error en prueba manual:', error);
+      this.showAlert(`Error en prueba de conexión: ${error.message}`, 'danger');
+    } finally {
+      this.hideLoading();
+    }
+  }
 }
+
+// Export for manual initialization
+window.initAdminDashboard = async function() {
+  if (!isAuthorized) return;
+
+  const dashboard = new AdminDashboard();
+  window.adminDashboard = dashboard;
+  window.__adminDashboard = dashboard;
+  attachGlobals(dashboard);
+  await dashboard.init();
+  return dashboard;
+};

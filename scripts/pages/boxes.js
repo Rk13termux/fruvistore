@@ -429,11 +429,21 @@ function getBoxCardHTML(box) {
 }
 
 async function loadBoxesFromDatabase() {
-	if (!window.productsClient) {
+	// Try to get products client
+	let supabase = window.productsClient;
+	
+	if (!supabase && typeof window.getProductsClient === 'function') {
+		try {
+			supabase = window.getProductsClient();
+		} catch (e) {
+			console.warn('Could not get products client:', e);
+		}
+	}
+	
+	if (!supabase) {
 		throw new Error('Supabase client not available');
 	}
 
-	const supabase = window.productsClient;
 	console.log('📦 Cargando cajas desde Supabase...');
 	const { data: boxesData, error } = await supabase
 		.from('current_boxes')

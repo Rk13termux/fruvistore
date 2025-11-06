@@ -1,7 +1,24 @@
 // Subscription Service for AI Doctor Premium Features
 // Handles user subscriptions, usage limits, and premium feature access
 
-import { supabaseClient } from './supabaseService.js';
+// Get Supabase client dynamically
+function getSupabaseClient() {
+  // Try to get from window first
+  if (window.usersClient) {
+    return window.usersClient;
+  }
+  
+  // Try to get using the function
+  if (typeof window.getUsersClient === 'function') {
+    try {
+      return window.getUsersClient();
+    } catch (e) {
+      console.warn('Could not get users client:', e);
+    }
+  }
+  
+  return null;
+}
 
 const SUBSCRIPTION_PLANS = {
   free: {
@@ -27,61 +44,85 @@ const SUBSCRIPTION_PLANS = {
   }
 };
 
-// Initialize user credits with 25 credits on first access
+// Initialize user credits with 25 credits on first access - AUTOMATIC
 export async function initializeUserCredits(userId) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
 
-    // Check if user already has credits
-    const { data: existingCredits } = await supabaseClient
+    console.log(`🔍 Verificando créditos para usuario: ${userId}`);
+
+    // Check if user already exists in user_ai_credits table
+    const { data: existingCredits, error: checkError } = await supabaseClient
       .from('user_ai_credits')
-      .select('credits_balance')
+      .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle to avoid error if not found
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('Error checking credits:', checkError);
+      throw checkError;
+    }
 
     if (existingCredits) {
+      console.log(`✅ Usuario ya tiene créditos: ${existingCredits.credits_balance}`);
       return existingCredits; // User already has credits
     }
+
+    // User doesn't exist - create with 25 initial credits
+    console.log(`🆕 Nuevo usuario detectado - creando registro con 25 créditos iniciales`);
 
     // Get user name from customers table
     const { data: customer } = await supabaseClient
       .from('customers')
       .select('full_name')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
     const userName = customer?.full_name || 'Usuario';
 
-    // Initialize with 25 credits
+    // Insert new user with 25 credits (use INSERT not UPSERT to ensure it's new)
     const { data, error } = await supabaseClient
       .from('user_ai_credits')
-      .upsert({
+      .insert({
         user_id: userId,
         credits_balance: 25,
         total_credits_earned: 25,
         total_credits_spent: 0,
-        last_credit_update: new Date().toISOString()
-      }, { onConflict: 'user_id' })
-      .select();
+        last_credit_update: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error inserting initial credits:', error);
+      throw error;
+    }
 
     // Record initial credit transaction
-    await supabaseClient
-      .from('credit_transactions')
-      .insert({
-        user_id: userId,
-        transaction_type: 'initial_credits',
-        amount: 25,
-        description: `Créditos iniciales asignados a ${userName}`,
-        balance_before: 0,
-        balance_after: 25
-      });
+    try {
+      await supabaseClient
+        .from('credit_transactions')
+        .insert({
+          user_id: userId,
+          transaction_type: 'initial_credits',
+          amount: 25,
+          description: `🎁 Créditos iniciales bienvenida para ${userName}`,
+          balance_before: 0,
+          balance_after: 25,
+          created_at: new Date().toISOString()
+        });
+    } catch (txError) {
+      console.warn('No se pudo registrar transacción inicial:', txError);
+      // No fallar si la tabla de transacciones no existe
+    }
 
-    console.log(`✅ Créditos inicializados para usuario ${userName}: 25 créditos`);
-    return data[0];
+    console.log(`🎉 ¡Créditos inicializados! Usuario ${userName} recibió 25 créditos de bienvenida`);
+    return data;
   } catch (error) {
-    console.error('Error initializing user credits:', error);
+    console.error('❌ Error initializing user credits:', error);
     throw error;
   }
 }
@@ -89,6 +130,7 @@ export async function initializeUserCredits(userId) {
 // Check if user has active premium subscription
 export async function checkPremiumAccess(userId) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) {
       console.log('No supabaseClient available, returning free access');
       return { hasAccess: false, plan: 'free', reason: 'no_supabase' };
@@ -193,6 +235,7 @@ export async function checkPremiumAccess(userId) {
 // Force initialize credits for a user (admin function)
 export async function forceInitializeCredits(userId) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
 
     console.log('Forzando inicialización de créditos para usuario:', userId);
@@ -216,6 +259,7 @@ export async function forceInitializeCredits(userId) {
 // Check if user can make AI query based on daily/monthly limits
 export async function canMakeAIQuery(userId, feature = 'chat_assistant') {
   try {
+    const supabaseClient = getSupabaseClient();
     const access = await checkPremiumAccess(userId);
 
     if (!access.hasAccess) {
@@ -321,6 +365,7 @@ export async function canMakeAIQuery(userId, feature = 'chat_assistant') {
 // Track AI usage
 export async function trackAIUsage(userId, feature, tokensUsed = 0) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) return;
 
     const today = new Date().toISOString().split('T')[0];
@@ -342,6 +387,7 @@ export async function trackAIUsage(userId, feature, tokensUsed = 0) {
 // Create or update subscription
 export async function createSubscription(userId, planType, paymentMethod = null) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
 
     const plan = SUBSCRIPTION_PLANS[planType];
@@ -418,6 +464,7 @@ export async function getSubscriptionStatus(userId) {
 // Get usage statistics
 async function getUsageStats(userId, plan) {
   try {
+    const supabaseClient = getSupabaseClient();
     const today = new Date().toISOString().split('T')[0];
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
@@ -463,6 +510,7 @@ async function getUsageStats(userId, plan) {
 // Cancel subscription
 export async function cancelSubscription(userId) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
 
     const { data, error } = await supabaseClient
@@ -498,6 +546,7 @@ export function hasFeatureAccess(plan, feature) {
 // Get user credit balance
 export async function getCreditBalance(userId) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) {
       console.warn('getCreditBalance: Supabase client not initialized');
       return 0;
@@ -543,15 +592,13 @@ export async function getCreditBalance(userId) {
 // Add credits to user account (admin function)
 export async function addCredits(userId, amount, description = 'Admin credit addition', adminUserId = null) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) {
       console.warn('Supabase client not initialized, attempting to initialize...');
-      // Try to initialize if not ready
-      if (window.initializeSupabase) {
-        window.initializeSupabase();
-        // Wait a bit for initialization
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-      if (!supabaseClient) throw new Error('Supabase no inicializado');
+      // Wait a bit for initialization
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const retryClient = getSupabaseClient();
+      if (!retryClient) throw new Error('Supabase no inicializado');
     }
 
     if (amount <= 0) throw new Error('Amount must be positive');
@@ -596,45 +643,75 @@ export async function addCredits(userId, amount, description = 'Admin credit add
 // Deduct credits from user account
 export async function deductCredits(userId, amount, description = 'AI query usage') {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
     if (amount <= 0) throw new Error('Amount must be positive');
 
+    console.log(`💳 Deduciendo ${amount} créditos para usuario ${userId}`);
+
     // Get current balance
     const currentBalance = await getCreditBalance(userId);
+    console.log(`📊 Balance actual: ${currentBalance}`);
 
     if (currentBalance < amount) {
-      throw new Error('Insufficient credits');
+      console.error(`❌ Créditos insuficientes: tiene ${currentBalance}, necesita ${amount}`);
+      throw new Error(`Créditos insuficientes. Tienes ${currentBalance}, necesitas ${amount}`);
     }
 
-    // Update balance
+    // Calculate new balance
     const newBalance = currentBalance - amount;
+
+    // Get current stats for total_credits_spent
+    const stats = await getCreditStats(userId);
+    const newTotalSpent = (stats.total_credits_spent || 0) + amount;
+
+    // Update balance using UPDATE not UPSERT (record should exist)
     const { data: updateData, error: updateError } = await supabaseClient
       .from('user_ai_credits')
-      .upsert({
-        user_id: userId,
+      .update({
         credits_balance: newBalance,
-        total_credits_spent: (await getCreditStats(userId)).total_credits_spent + amount,
-        last_credit_update: new Date().toISOString()
-      }, { onConflict: 'user_id' })
-      .select();
+        total_credits_spent: newTotalSpent,
+        last_credit_update: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', userId)
+      .select()
+      .single();
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error('❌ Error actualizando créditos:', updateError);
+      throw updateError;
+    }
 
     // Record transaction
-    await supabaseClient
-      .from('credit_transactions')
-      .insert({
-        user_id: userId,
-        transaction_type: 'usage',
-        amount: -amount, // Negative for deductions
-        description: description,
-        balance_before: currentBalance,
-        balance_after: newBalance
-      });
+    try {
+      await supabaseClient
+        .from('credit_transactions')
+        .insert({
+          user_id: userId,
+          transaction_type: 'usage',
+          amount: -amount, // Negative for deductions
+          description: description,
+          balance_before: currentBalance,
+          balance_after: newBalance,
+          created_at: new Date().toISOString()
+        });
+    } catch (txError) {
+      console.warn('⚠️ No se pudo registrar transacción:', txError);
+      // No fallar si la transacción no se registra
+    }
 
-    return updateData[0];
+    console.log(`✅ Créditos deducidos: ${currentBalance} → ${newBalance}`);
+
+    // Return data with newBalance property for compatibility
+    return {
+      ...updateData,
+      newBalance: newBalance,
+      oldBalance: currentBalance,
+      amountDeducted: amount
+    };
   } catch (error) {
-    console.error('Error deducting credits:', error);
+    console.error('❌ Error deducting credits:', error);
     throw error;
   }
 }
@@ -642,6 +719,7 @@ export async function deductCredits(userId, amount, description = 'AI query usag
 // Get credit transaction history
 export async function getCreditHistory(userId, limit = 50) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) return [];
 
     const { data, error } = await supabaseClient
@@ -662,15 +740,10 @@ export async function getCreditHistory(userId, limit = 50) {
 // Get all users with their credit balances (admin function)
 export async function getAllUsersCredits() {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) {
-      console.warn('Supabase client not initialized, attempting to initialize...');
-      // Try to initialize if not ready
-      if (window.initializeSupabase) {
-        window.initializeSupabase();
-        // Wait a bit for initialization
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-      if (!supabaseClient) return [];
+      console.warn('Supabase client not initialized');
+      return [];
     }
 
     // Skip auth.users query that requires admin privileges - use only customer and credit data
@@ -758,15 +831,10 @@ export async function getAllUsersCredits() {
 // Get credit statistics (admin function)
 export async function getCreditStats(userId = null) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) {
-      console.warn('Supabase client not initialized, attempting to initialize...');
-      // Try to initialize if not ready
-      if (window.initializeSupabase) {
-        window.initializeSupabase();
-        // Wait a bit for initialization
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-      if (!supabaseClient) return userId ? { total_credits_earned: 0, total_credits_spent: 0 } : {};
+      console.warn('Supabase client not initialized');
+      return userId ? { total_credits_earned: 0, total_credits_spent: 0 } : {};
     }
 
     let query = supabaseClient
@@ -806,6 +874,7 @@ export async function getCreditStats(userId = null) {
 // Get all credit transactions (admin function)
 export async function getAllCreditTransactions(limit = 100) {
   try {
+    const supabaseClient = getSupabaseClient();
     if (!supabaseClient) return [];
 
     // Get all transactions
@@ -868,25 +937,619 @@ export async function getAllCreditTransactions(limit = 100) {
   }
 }
 
-// ===== EXPOSE FUNCTIONS GLOBALLY FOR ADMIN PANEL =====
+// ===== ADMIN DATABASE SERVICE INTEGRATION =====
+// Centralized database service for all admin operations
+// Provides unified access to products, boxes, credits, and analytics
 
-// Credit management functions
-window.getCreditBalance = getCreditBalance;
-window.addCredits = addCredits;
-window.deductCredits = deductCredits;
-window.getCreditHistory = getCreditHistory;
-window.getAllUsersCredits = getAllUsersCredits;
-window.getCreditStats = getCreditStats;
-window.getAllCreditTransactions = getAllCreditTransactions;
+class AdminDatabaseService {
+    constructor() {
+        this.productsClient = null;
+        this.supabaseClient = null;
+        this.productManager = null;
+        this.boxManager = null;
+        this.initialized = false;
+    }
 
-// Subscription functions
-window.checkPremiumAccess = checkPremiumAccess;
-window.getSubscriptionStatus = getSubscriptionStatus;
-window.createSubscription = createSubscription;
-window.cancelSubscription = cancelSubscription;
-window.getAvailablePlans = getAvailablePlans;
-window.hasFeatureAccess = hasFeatureAccess;
-window.canMakeAIQuery = canMakeAIQuery;
-window.trackAIUsage = trackAIUsage;
-window.initializeUserCredits = initializeUserCredits;
-window.forceInitializeCredits = forceInitializeCredits;
+    async initialize() {
+        if (this.initialized) return true;
+
+        try {
+            // Wait for Supabase clients to be available
+            await this.waitForClients();
+
+            // Initialize product manager
+            if (typeof window.initProductManager === 'function') {
+                this.productManager = window.initProductManager();
+            }
+
+            // Initialize box manager
+            this.boxManager = this.createBoxManager();
+
+            this.initialized = true;
+            console.log('✅ Admin Database Service initialized');
+            return true;
+        } catch (error) {
+            console.error('❌ Failed to initialize Admin Database Service:', error);
+            throw error;
+        }
+    }
+
+    async waitForClients() {
+        let attempts = 0;
+        const maxAttempts = 50;
+
+        while (attempts < maxAttempts) {
+            if (window.productsClient && window.supabaseClient) {
+                this.productsClient = window.productsClient;
+                this.supabaseClient = window.supabaseClient;
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+
+        throw new Error('Database clients not available after maximum attempts');
+    }
+
+    // ===== PRODUCTS MANAGEMENT =====
+
+    async getAllProducts() {
+        await this.ensureInitialized();
+        if (this.productManager?.getAllProducts) {
+            return await this.productManager.getAllProducts();
+        }
+        return [];
+    }
+
+    async updateProductPrice(productId, newPrice, reason, updatedBy = 'admin') {
+        await this.ensureInitialized();
+        if (this.productManager?.updateProductPrice) {
+            return await this.productManager.updateProductPrice(productId, newPrice, reason, updatedBy);
+        }
+        throw new Error('Product manager not available');
+    }
+
+    async updateStock(productId, quantityChange, reason) {
+        await this.ensureInitialized();
+        if (this.productManager?.updateStock) {
+            return await this.productManager.updateStock(productId, quantityChange, reason);
+        }
+        throw new Error('Product manager not available');
+    }
+
+    async createProduct(productData) {
+        await this.ensureInitialized();
+        if (typeof window.createProduct === 'function') {
+            return await window.createProduct(productData);
+        }
+        throw new Error('Create product function not available');
+    }
+
+    async updateCompleteProduct(productId, updates) {
+        await this.ensureInitialized();
+        if (typeof window.updateCompleteProduct === 'function') {
+            return await window.updateCompleteProduct(productId, updates);
+        }
+        throw new Error('Update product function not available');
+    }
+
+    async deleteProduct(productId) {
+        await this.ensureInitialized();
+        if (typeof window.deleteProduct === 'function') {
+            return await window.deleteProduct(productId);
+        }
+        throw new Error('Delete product function not available');
+    }
+
+    // ===== BOXES MANAGEMENT =====
+
+    async getAllBoxes() {
+        await this.ensureInitialized();
+        if (this.boxManager?.getAllBoxes) {
+            return await this.boxManager.getAllBoxes();
+        }
+        return [];
+    }
+
+    async getBoxWithContents(boxId) {
+        await this.ensureInitialized();
+        if (this.boxManager?.getBoxWithContents) {
+            return await this.boxManager.getBoxWithContents(boxId);
+        }
+        throw new Error('Box manager not available');
+    }
+
+    async createBox(boxData) {
+        await this.ensureInitialized();
+        if (this.boxManager?.addBox) {
+            return await this.boxManager.addBox(boxData);
+        }
+        throw new Error('Box creation not available');
+    }
+
+    async updateBox(boxId, updates) {
+        await this.ensureInitialized();
+        if (this.boxManager?.updateBox) {
+            return await this.boxManager.updateBox(boxId, updates);
+        }
+        throw new Error('Box update not available');
+    }
+
+    async deleteBox(boxId) {
+        await this.ensureInitialized();
+        if (this.boxManager?.deleteBox) {
+            return await this.boxManager.deleteBox(boxId);
+        }
+        throw new Error('Box deletion not available');
+    }
+
+    async updateBoxPrice(boxId, newPriceCOP, newPriceUSD, reason) {
+        await this.ensureInitialized();
+        if (this.boxManager?.updateBoxPrice) {
+            return await this.boxManager.updateBoxPrice(boxId, newPriceCOP, newPriceUSD, reason);
+        }
+        throw new Error('Box price update not available');
+    }
+
+    async updateBoxStock(boxId, change) {
+        await this.ensureInitialized();
+        if (this.boxManager?.adjustBoxStock) {
+            return await this.boxManager.adjustBoxStock(boxId, change);
+        }
+        throw new Error('Box stock adjustment not available');
+    }
+
+    async updateBoxStatus(boxId, status) {
+        await this.ensureInitialized();
+        if (this.boxManager?.updateBoxStatus) {
+            return await this.boxManager.updateBoxStatus(boxId, status);
+        }
+        throw new Error('Box status update not available');
+    }
+
+    async updateBoxContents(boxId, items) {
+        await this.ensureInitialized();
+        if (this.boxManager?.updateBoxContents) {
+            return await this.boxManager.updateBoxContents(boxId, items);
+        }
+        throw new Error('Box contents update not available');
+    }
+
+    // ===== CREDITS MANAGEMENT =====
+
+    async getUsersCredits() {
+        await this.ensureInitialized();
+        try {
+            const { data, error } = await this.supabaseClient
+                .from('user_credits')
+                .select(`
+                    *,
+                    user_profiles:user_id (
+                        id,
+                        email,
+                        full_name,
+                        phone
+                    )
+                `)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching users credits:', error);
+            throw error;
+        }
+    }
+
+    async addCredits(userId, amount, reason, addedBy = 'admin') {
+        await this.ensureInitialized();
+        try {
+            const { data, error } = await this.supabaseClient
+                .from('user_credits')
+                .insert([{
+                    user_id: userId,
+                    amount: amount,
+                    reason: reason,
+                    added_by: addedBy
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error adding credits:', error);
+            throw error;
+        }
+    }
+
+    async updateCredits(creditId, updates) {
+        await this.ensureInitialized();
+        try {
+            const { data, error } = await this.supabaseClient
+                .from('user_credits')
+                .update(updates)
+                .eq('id', creditId)
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error updating credits:', error);
+            throw error;
+        }
+    }
+
+    async deleteCredits(creditId) {
+        await this.ensureInitialized();
+        try {
+            const { error } = await this.supabaseClient
+                .from('user_credits')
+                .delete()
+                .eq('id', creditId);
+
+            if (error) throw error;
+            return true;
+        } catch (error) {
+            console.error('Error deleting credits:', error);
+            throw error;
+        }
+    }
+
+    // ===== ANALYTICS & REPORTS =====
+
+    async getInventoryReport() {
+        await this.ensureInitialized();
+        if (this.productManager?.getInventoryReport) {
+            return await this.productManager.getInventoryReport();
+        }
+        return { report: null, products: [] };
+    }
+
+    async getLowStockProducts() {
+        await this.ensureInitialized();
+        if (this.productManager?.getLowStockProducts) {
+            return await this.productManager.getLowStockProducts();
+        }
+        return [];
+    }
+
+    async getDailyPriceReport() {
+        await this.ensureInitialized();
+        if (this.productManager?.getDailyPriceReport) {
+            return await this.productManager.getDailyPriceReport();
+        }
+        return [];
+    }
+
+    async getBoxAnalytics() {
+        await this.ensureInitialized();
+        if (this.boxManager?.getBoxAnalytics) {
+            return await this.boxManager.getBoxAnalytics();
+        }
+        return [];
+    }
+
+    // ===== UTILITY METHODS =====
+
+    async ensureInitialized() {
+        if (!this.initialized) {
+            await this.initialize();
+        }
+    }
+
+    createBoxManager() {
+        return {
+            getAllBoxes: async () => {
+                try {
+                    const { data: boxes, error } = await this.productsClient
+                        .from('current_boxes')
+                        .select('*')
+                        .order('featured', { ascending: false })
+                        .order('name');
+
+                    if (error) throw error;
+                    return boxes || [];
+                } catch (error) {
+                    console.error('Error fetching boxes:', error);
+                    throw error;
+                }
+            },
+
+            getBoxWithContents: async (boxId) => {
+                try {
+                    const { data: box, error: boxError } = await this.productsClient
+                        .from('current_boxes')
+                        .select('*')
+                        .eq('id', boxId)
+                        .single();
+
+                    if (boxError) throw boxError;
+
+                    const { data: contents, error: contentsError } = await this.productsClient
+                        .from('box_contents')
+                        .select('*')
+                        .eq('box_id', boxId)
+                        .order('display_order');
+
+                    if (contentsError) throw contentsError;
+
+                    return { ...box, contents: contents || [] };
+                } catch (error) {
+                    console.error('Error fetching box with contents:', error);
+                    throw error;
+                }
+            },
+
+            addBox: async (boxData) => {
+                try {
+                    const { data, error } = await this.productsClient
+                        .from('current_boxes')
+                        .insert([boxData])
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    return data;
+                } catch (error) {
+                    console.error('Error creating box:', error);
+                    throw error;
+                }
+            },
+
+            updateBox: async (boxId, updates) => {
+                try {
+                    const { data, error } = await this.productsClient
+                        .from('current_boxes')
+                        .update(updates)
+                        .eq('id', boxId)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    return data;
+                } catch (error) {
+                    console.error('Error updating box:', error);
+                    throw error;
+                }
+            },
+
+            deleteBox: async (boxId) => {
+                try {
+                    const { error } = await this.productsClient
+                        .from('current_boxes')
+                        .delete()
+                        .eq('id', boxId);
+
+                    if (error) throw error;
+                    return true;
+                } catch (error) {
+                    console.error('Error deleting box:', error);
+                    throw error;
+                }
+            },
+
+            updateBoxPrice: async (boxId, newPriceCOP, newPriceUSD, reason) => {
+                try {
+                    const { data: currentBox } = await this.productsClient
+                        .from('current_boxes')
+                        .select('price_cop, price_usd')
+                        .eq('id', boxId)
+                        .single();
+
+                    await this.productsClient
+                        .from('box_price_history')
+                        .insert([{
+                            box_id: boxId,
+                            old_price_cop: currentBox.price_cop,
+                            new_price_cop: newPriceCOP,
+                            old_price_usd: currentBox.price_usd,
+                            new_price_usd: newPriceUSD,
+                            change_reason: reason,
+                            updated_by: 'admin'
+                        }]);
+
+                    const { data, error } = await this.productsClient
+                        .from('current_boxes')
+                        .update({
+                            price_cop: newPriceCOP,
+                            price_usd: newPriceUSD,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', boxId)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    return data;
+                } catch (error) {
+                    console.error('Error updating box price:', error);
+                    throw error;
+                }
+            },
+
+            adjustBoxStock: async (boxId, change) => {
+                try {
+                    const { data: current, error: fetchError } = await this.productsClient
+                        .from('current_boxes')
+                        .select('stock_quantity, available')
+                        .eq('id', boxId)
+                        .single();
+
+                    if (fetchError) throw fetchError;
+
+                    const delta = Number(change || 0);
+                    const previousStock = Number(current?.stock_quantity || 0);
+                    const newStock = Math.max(0, previousStock + delta);
+
+                    const updates = {
+                        stock_quantity: newStock,
+                        in_stock: newStock > 0,
+                        updated_at: new Date().toISOString()
+                    };
+
+                    if (newStock <= 0) {
+                        updates.available = false;
+                      }
+
+                    const { data, error } = await this.productsClient
+                        .from('current_boxes')
+                        .update(updates)
+                        .eq('id', boxId)
+                        .select('id, name, category, stock_quantity, available')
+                        .single();
+
+                    if (error) throw error;
+
+                    return {
+                        box: data,
+                        previousStock,
+                        newStock,
+                        change: delta
+                    };
+                } catch (error) {
+                    console.error('Error adjusting box stock:', error);
+                    throw error;
+                }
+            },
+
+            updateBoxStatus: async (boxId, status) => {
+                try {
+                    let updates = {};
+
+                    switch(status) {
+                        case 'active':
+                            updates = { available: true, in_stock: true };
+                            break;
+                        case 'inactive':
+                            updates = { available: false };
+                            break;
+                        case 'featured':
+                            updates = { featured: true };
+                            break;
+                        case 'unfeatured':
+                            updates = { featured: false };
+                            break;
+                    }
+
+                    const { data, error } = await this.productsClient
+                        .from('current_boxes')
+                        .update(updates)
+                        .eq('id', boxId)
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    return data;
+                } catch (error) {
+                    console.error('Error updating box status:', error);
+                    throw error;
+                }
+            },
+
+            updateBoxContents: async (boxId, items) => {
+                try {
+                    const entries = Array.isArray(items) ? items : [];
+                    const sanitized = entries
+                        .map((item, index) => {
+                            const name = typeof item === 'string'
+                                ? item.trim()
+                                : (item && item.product_name ? String(item.product_name).trim() : '');
+                            if (!name) {
+                                return null;
+                            }
+                            return {
+                                box_id: boxId,
+                                product_name: name,
+                                display_order: index + 1
+                            };
+                        })
+                        .filter(Boolean);
+
+                    await this.productsClient
+                        .from('box_contents')
+                        .delete()
+                        .eq('box_id', boxId);
+
+                    if (!sanitized.length) {
+                        return [];
+                    }
+
+                    const { data, error } = await this.productsClient
+                        .from('box_contents')
+                        .insert(sanitized)
+                        .select();
+
+                    if (error) throw error;
+                    return data || [];
+                } catch (error) {
+                    console.error('Error updating box contents:', error);
+                    throw error;
+                }
+            },
+
+            getBoxAnalytics: async () => {
+                try {
+                    const { data, error } = await this.productsClient
+                        .from('box_analytics')
+                        .select(`
+                            *,
+                            current_boxes!inner(name, category)
+                        `)
+                        .order('revenue_cop', { ascending: false });
+
+                    if (error) throw error;
+                    return data || [];
+                } catch (error) {
+                    console.error('Error fetching box analytics:', error);
+                    return [];
+                }
+            }
+        };
+    }
+}
+
+// Create singleton instance
+const adminDatabaseService = new AdminDatabaseService();
+
+// ===== EXPOSE ADMIN DATABASE FUNCTIONS GLOBALLY =====
+
+// Products management
+window.getAllProducts = async () => await adminDatabaseService.getAllProducts();
+window.updateProductPrice = async (productId, newPrice, reason, updatedBy) =>
+    await adminDatabaseService.updateProductPrice(productId, newPrice, reason, updatedBy);
+window.updateStock = async (productId, quantityChange, reason) =>
+    await adminDatabaseService.updateStock(productId, quantityChange, reason);
+window.createProduct = async (productData) => await adminDatabaseService.createProduct(productData);
+window.updateCompleteProduct = async (productId, updates) =>
+    await adminDatabaseService.updateCompleteProduct(productId, updates);
+window.deleteProduct = async (productId) => await adminDatabaseService.deleteProduct(productId);
+
+// Boxes management
+window.getAllBoxes = async () => await adminDatabaseService.getAllBoxes();
+window.getBoxWithContents = async (boxId) => await adminDatabaseService.getBoxWithContents(boxId);
+window.createBox = async (boxData) => await adminDatabaseService.createBox(boxData);
+window.updateBox = async (boxId, updates) => await adminDatabaseService.updateBox(boxId, updates);
+window.deleteBox = async (boxId) => await adminDatabaseService.deleteBox(boxId);
+window.updateBoxPrice = async (boxId, newPriceCOP, newPriceUSD, reason) =>
+    await adminDatabaseService.updateBoxPrice(boxId, newPriceCOP, newPriceUSD, reason);
+window.updateBoxStock = async (boxId, change) => await adminDatabaseService.updateBoxStock(boxId, change);
+window.updateBoxStatus = async (boxId, status) => await adminDatabaseService.updateBoxStatus(boxId, status);
+window.updateBoxContents = async (boxId, items) => await adminDatabaseService.updateBoxContents(boxId, items);
+
+// Credits management (legacy system)
+window.getUsersCreditsLegacy = async () => await adminDatabaseService.getUsersCredits();
+window.addCreditsLegacy = async (userId, amount, reason, addedBy) =>
+    await adminDatabaseService.addCredits(userId, amount, reason, addedBy);
+window.updateCreditsLegacy = async (creditId, updates) => await adminDatabaseService.updateCredits(creditId, updates);
+window.deleteCreditsLegacy = async (creditId) => await adminDatabaseService.deleteCredits(creditId);
+
+// Analytics & reports
+window.getInventoryReport = async () => await adminDatabaseService.getInventoryReport();
+window.getLowStockProducts = async () => await adminDatabaseService.getLowStockProducts();
+window.getDailyPriceReport = async () => await adminDatabaseService.getDailyPriceReport();
+window.getBoxAnalytics = async () => await adminDatabaseService.getBoxAnalytics();
+
+// Initialize admin database service
+window.adminDatabaseService = adminDatabaseService;

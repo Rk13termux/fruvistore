@@ -1,7 +1,7 @@
 // Gumroad Payment Integration Service
 // Handles subscription payments, webhooks, and license management
 
-import { supabaseClient } from './supabaseService.js';
+import { getUsersClient } from './supabaseService.js';
 
 const GUMROAD_CONFIG = {
   baseUrl: 'https://api.gumroad.com/v2',
@@ -276,7 +276,7 @@ async function handleSubscriptionExpired(subscription) {
 // Update user subscription from Gumroad data
 async function updateUserSubscriptionFromGumroad(userEmail, subscriptionData) {
   try {
-    if (!supabaseClient) throw new Error('Supabase no inicializado');
+    const supabaseClient = getUsersClient();
 
     // Find user by email
     const { data: userData, error: userError } = await supabaseClient
@@ -350,7 +350,7 @@ export function getAvailablePlans() {
 // Check if user has active Gumroad subscription
 export async function checkGumroadSubscription(userId) {
   try {
-    if (!supabaseClient) return null;
+    const supabaseClient = getUsersClient();
 
     const { data, error } = await supabaseClient
       .from('user_subscriptions')

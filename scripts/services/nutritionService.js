@@ -1,7 +1,7 @@
 // Nutrition Service - Advanced nutritional analysis and personalized recommendations
 // Handles user profiles, nutritional calculations, and personalized plans
 
-import { supabaseClient } from './supabaseService.js';
+import { getUsersClient } from './supabaseService.js';
 
 // Calculate BMI and nutritional status
 export function calculateBMI(weightKg, heightCm) {
@@ -240,7 +240,7 @@ export async function createPersonalizedNutritionPlan(userProfile, goals, prefer
 // Save nutrition assessment
 export async function saveNutritionAssessment(userId, assessmentData) {
   try {
-    if (!supabaseClient) throw new Error('Supabase no inicializado');
+    const supabaseClient = getUsersClient();
 
     const { data, error } = await supabaseClient
       .from('nutrition_assessments')
@@ -264,7 +264,7 @@ export async function saveNutritionAssessment(userId, assessmentData) {
 // Get user's nutrition history
 export async function getNutritionHistory(userId) {
   try {
-    if (!supabaseClient) return [];
+    const supabaseClient = getUsersClient();
 
     const { data, error } = await supabaseClient
       .from('nutrition_assessments')
@@ -283,7 +283,7 @@ export async function getNutritionHistory(userId) {
 // Update user nutrition profile
 export async function updateNutritionProfile(userId, profileData) {
   try {
-    if (!supabaseClient) throw new Error('Supabase no inicializado');
+    const supabaseClient = getUsersClient();
 
     const { data, error } = await supabaseClient
       .from('user_nutrition_profiles')
@@ -304,7 +304,7 @@ export async function updateNutritionProfile(userId, profileData) {
 // Get user nutrition profile
 export async function getNutritionProfile(userId) {
   try {
-    if (!supabaseClient) return null;
+    const supabaseClient = getUsersClient();
 
     const { data, error } = await supabaseClient
       .from('user_nutrition_profiles')
