@@ -99,20 +99,6 @@ export function renderHomePage(root) {
               </div>
             </div>
           </div>
-          <div class="showcase-secondary">
-            <div class="mini-card">
-              <i class="fas fa-apple-whole"></i>
-              <span>Manzanas Orgánicas</span>
-            </div>
-            <div class="mini-card">
-              <i class="fas fa-circle"></i>
-              <span>Naranjas Dulces</span>
-            </div>
-            <div class="mini-card">
-              <i class="fas fa-lemon"></i>
-              <span>Plátanos Premium</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
