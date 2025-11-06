@@ -1,11 +1,12 @@
 // Personalization Service - Manages user-specific recommendations and insights
 // Handles individual user profiles, medical insights, and personalized fruit suggestions
 
-import { supabaseClient } from './supabaseService.js';
+import { getUsersClient } from './supabaseService.js';
 
 // Generate personalized fruit recommendations based on user profile
 export async function generatePersonalizedRecommendations(userId, userProfile) {
   try {
+    const supabaseClient = getUsersClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
 
     const recommendations = [];
@@ -135,6 +136,7 @@ export async function generatePersonalizedRecommendations(userId, userProfile) {
 // Analyze user conversation patterns and generate medical insights
 export async function analyzeUserPatterns(userId) {
   try {
+    const supabaseClient = getUsersClient();
     if (!supabaseClient) return;
 
     // Get recent conversations
@@ -218,6 +220,7 @@ export async function analyzeUserPatterns(userId) {
 // Update user nutrition profile from conversation insights
 export async function updateProfileFromInsights(userId) {
   try {
+    const supabaseClient = getUsersClient();
     if (!supabaseClient) return;
 
     // Get recent insights
@@ -268,6 +271,7 @@ export async function updateProfileFromInsights(userId) {
 // Get user's personalized dashboard data
 export async function getPersonalizedDashboard(userId) {
   try {
+    const supabaseClient = getUsersClient();
     if (!supabaseClient) return null;
 
     const [
@@ -319,6 +323,7 @@ export async function getPersonalizedDashboard(userId) {
 // Create nutrition assessment from user input
 export async function createAssessmentFromSymptoms(userId, symptoms, context = '') {
   try {
+    const supabaseClient = getUsersClient();
     if (!supabaseClient) throw new Error('Supabase no inicializado');
 
     const assessmentData = {
