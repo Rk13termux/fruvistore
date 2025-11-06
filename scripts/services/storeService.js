@@ -109,18 +109,34 @@ window.getStoreProducts = async function getStoreProducts() {
     }
 
     // Transform data to match store format
-    const products = data.map(product => ({
-      id: product.id,
-      category: product.category,
-      img: product.image_url || '/images/products/placeholder.jpg',
-      name: product.name,
-      desc: product.description || '',
-      priceKg: parseFloat(product.price_per_kg || 0),
-      organic: product.is_organic || false,
-      rating: parseFloat(product.rating || 4.0),
-      origin: product.origin || 'Colombia',
-      stock: parseInt(product.stock || 0)
-    }));
+    const products = data.map(product => {
+      // Fix image URL - ensure it points to local images
+      let imageUrl = product.image_url || '/images/products/placeholder.jpg';
+      
+      // If image_url is a full URL (http/https), try to extract filename and use local
+      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+        const filename = imageUrl.split('/').pop(); // Get last part of URL
+        imageUrl = `/images/products/${filename}`;
+      }
+      
+      // If image_url doesn't start with /, add it
+      if (!imageUrl.startsWith('/')) {
+        imageUrl = `/images/products/${imageUrl}`;
+      }
+      
+      return {
+        id: product.id,
+        category: product.category,
+        img: imageUrl,
+        name: product.name,
+        desc: product.description || '',
+        priceKg: parseFloat(product.price_per_kg || 0),
+        organic: product.is_organic || false,
+        rating: parseFloat(product.rating || 4.0),
+        origin: product.origin || 'Colombia',
+        stock: parseInt(product.stock || 0)
+      };
+    });
 
     console.log(`✅ Cargados ${products.length} productos de la base de datos`);
     return products;
@@ -155,11 +171,25 @@ window.getProductById = async function getProductById(productId) {
 
     if (!data) return null;
 
+    // Fix image URL - ensure it points to local images
+    let imageUrl = data.image_url || '/images/products/placeholder.jpg';
+    
+    // If image_url is a full URL (http/https), try to extract filename and use local
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      const filename = imageUrl.split('/').pop(); // Get last part of URL
+      imageUrl = `/images/products/${filename}`;
+    }
+    
+    // If image_url doesn't start with /, add it
+    if (!imageUrl.startsWith('/')) {
+      imageUrl = `/images/products/${imageUrl}`;
+    }
+
     // Transform data to match store format
     return {
       id: data.id,
       category: data.category,
-      img: data.image_url || '/images/products/placeholder.jpg',
+      img: imageUrl,
       name: data.name,
       desc: data.description || '',
       priceKg: parseFloat(data.price_per_kg || 0),
