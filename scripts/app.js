@@ -552,6 +552,7 @@ function setupMobileNav() {
       mobileMenuToggle.classList.add('active');
       mobileMenuToggle.setAttribute('aria-expanded', 'true');
       mobileMenuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
+      document.body.style.overflow = 'hidden'; // Prevent scroll when menu is open
       
       // Clone nav links to mobile menu
       const nav = mobileMenuPanel.querySelector('nav');
@@ -578,7 +579,11 @@ function setupMobileNav() {
     mobileMenuPanel.classList.add('hidden');
     mobileMenuToggle.classList.remove('active');
     mobileMenuToggle.setAttribute('aria-expanded', 'false');
-    mobileMenuToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
+    const icon = mobileMenuToggle.querySelector('i');
+    if (icon.classList.contains('fa-times')) {
+      icon.classList.replace('fa-times', 'fa-bars');
+    }
+    document.body.style.overflow = ''; // Restore scroll
   }
 
   // Close menu when clicking outside
