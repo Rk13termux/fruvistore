@@ -9,15 +9,23 @@
   zoom: 1;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
   overflow-x: hidden;
+  max-width: 100vw;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
 }
 
 /* ===== BASE MOBILE MENU STYLES ===== */
@@ -45,6 +53,8 @@ body {
   .app-root,
   #app-root {
     min-height: calc(100vh - 72px);
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   .container,
@@ -58,7 +68,10 @@ body {
   .cta-section {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
-    max-width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
   /* Ajustar padding vertical para secciones */
@@ -66,6 +79,18 @@ body {
   .section {
     padding-top: 2rem !important;
     padding-bottom: 2rem !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Prevenir cualquier desbordamiento en todos los elementos */
+  * {
+    max-width: 100%;
+  }
+
+  img, video, iframe, embed {
+    max-width: 100% !important;
+    height: auto !important;
   }
 }
 
@@ -82,6 +107,18 @@ body {
     backdrop-filter: saturate(180%) blur(20px);
     border-bottom: 1px solid rgba(255,155,64,0.15);
     box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Header oculto al hacer scroll down */
+  .header.header-hidden {
+    transform: translateY(-100%);
+  }
+
+  /* Header visible al hacer scroll up */
+  .header.header-visible {
+    transform: translateY(0);
   }
 
   .navbar {
@@ -315,6 +352,85 @@ body {
     letter-spacing: 0.01em;
     color: #ffffff;
     font-size: 0.95rem;
+  }
+
+  /* Widget de créditos en menú móvil */
+  .mobile-credits-widget {
+    margin: 1rem 1rem 0.5rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(135deg, 
+      rgba(255,155,64,0.15) 0%, 
+      rgba(139,218,1,0.1) 100%
+    );
+    border: 1px solid rgba(255,155,64,0.3);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(255,155,64,0.2);
+  }
+
+  .mobile-credits-widget__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .mobile-credits-widget__icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--brand), #ff8533);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(255,155,64,0.4);
+  }
+
+  .mobile-credits-widget__info {
+    flex: 1;
+  }
+
+  .mobile-credits-widget__label {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .mobile-credits-widget__amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--brand);
+    line-height: 1.2;
+  }
+
+  .mobile-credits-widget__btn {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: linear-gradient(135deg, var(--brand), #ff7820);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(255,155,64,0.3);
+  }
+
+  .mobile-credits-widget__btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(255,155,64,0.4);
+  }
+
+  .mobile-credits-widget__btn i {
+    font-size: 1.1rem;
   }
 
   /* Separador visual elegante */

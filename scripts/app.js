@@ -465,6 +465,7 @@ async function loadModules() {
     initChatWidget();
     renderAuthNav();
     setupAccountDropdown();
+    setupHeaderScrollBehavior(); // Comportamiento de ocultar/mostrar header en scroll
 
     // Initialize checkout modals after DOM is ready
     window.checkoutModalStore = new CheckoutModalStore();
@@ -568,6 +569,9 @@ function setupMobileNav() {
             }
           }
         });
+        
+        // Agregar widget de créditos después de clonar los links
+        updateMobileCreditsWidget();
       }
     } else {
       closeMobileMenu();
@@ -606,6 +610,120 @@ function setupMobileNav() {
       closeMobileMenu();
     }
   });
+
+  // Agregar widget de créditos al menú móvil
+  updateMobileCreditsWidget();
+}
+
+// Función para actualizar el widget de créditos en el menú móvil
+async function updateMobileCreditsWidget() {
+  const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+  if (!mobileMenuPanel) return;
+
+  const nav = mobileMenuPanel.querySelector('nav');
+  if (!nav) return;
+
+  // Verificar si el usuario está logueado
+  let user = null;
+  try {
+    user = await window.getUser();
+  } catch (error) {
+    console.log('Usuario no logueado, no se muestra widget de créditos');
+    return;
+  }
+
+  if (!user) return;
+
+  // Eliminar widget existente si lo hay
+  const existingWidget = nav.querySelector('.mobile-credits-widget');
+  if (existingWidget) {
+    existingWidget.remove();
+  }
+
+  // Obtener créditos del usuario
+  let credits = 0;
+  try {
+    const { data: profile } = await window.supabase
+      .from('user_profiles')
+      .select('credits')
+      .eq('user_id', user.id)
+      .single();
+    
+    credits = profile?.credits || 0;
+  } catch (error) {
+    console.error('Error obteniendo créditos:', error);
+  }
+
+  // Crear el widget de créditos
+  const widget = document.createElement('div');
+  widget.className = 'mobile-credits-widget';
+  widget.innerHTML = `
+    <div class="mobile-credits-widget__header">
+      <div class="mobile-credits-widget__icon">
+        <i class="fas fa-coins"></i>
+      </div>
+      <div class="mobile-credits-widget__info">
+        <div class="mobile-credits-widget__label">Mis Créditos</div>
+        <div class="mobile-credits-widget__amount">${credits}</div>
+      </div>
+    </div>
+    <button class="mobile-credits-widget__btn" onclick="window.location.hash='#/subscription'">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Comprar Créditos</span>
+    </button>
+  `;
+
+  // Insertar el widget después del enlace de perfil
+  const profileLink = Array.from(nav.querySelectorAll('a')).find(a => 
+    a.textContent.includes('Perfil') || a.href.includes('#/perfil') || a.href.includes('#/profile')
+  );
+
+  if (profileLink) {
+    profileLink.after(widget);
+  } else {
+    // Si no hay enlace de perfil, agregar al inicio del nav
+    nav.insertBefore(widget, nav.firstChild);
+  }
+}
+
+// Función para el comportamiento del header en scroll (hide on scroll down, show on scroll up)
+function setupHeaderScrollBehavior() {
+  if (window.innerWidth > 768) return; // Solo en móvil
+
+  const header = document.querySelector('.header');
+  if (!header) return;
+
+  let lastScrollTop = 0;
+  let scrollThreshold = 10; // Píxeles mínimos de scroll para activar
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Si estamos muy arriba, siempre mostrar header
+    if (scrollTop < 100) {
+      header.classList.remove('header-hidden');
+      header.classList.add('header-visible');
+      lastScrollTop = scrollTop;
+      return;
+    }
+
+    // Detectar dirección del scroll
+    if (Math.abs(scrollTop - lastScrollTop) < scrollThreshold) {
+      return; // No hacer nada si el scroll es muy pequeño
+    }
+
+    if (scrollTop > lastScrollTop) {
+      // Scrolling DOWN - ocultar header
+      header.classList.add('header-hidden');
+      header.classList.remove('header-visible');
+    } else {
+      // Scrolling UP - mostrar header
+      header.classList.remove('header-hidden');
+      header.classList.add('header-visible');
+    }
+
+    lastScrollTop = scrollTop;
+  }, { passive: true });
 }
 
 async function renderAuthNav() {
