@@ -520,7 +520,7 @@ function parseNumber(value, fallback = 0) {
 
 function resolveImagePath(path) {
 	if (!path) {
-		return `${IMAGE_PREFIX}/images/products/default-box.png`;
+		return `${IMAGE_PREFIX}/images/caja/default-box.png`;
 	}
 	if (/^https?:\/\//i.test(path) || path.startsWith('data:')) {
 		return path;
