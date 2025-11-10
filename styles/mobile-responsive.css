@@ -16,8 +16,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
-  overflow-x: hidden !important;
-  overflow-y: auto !important; /* Auto para permitir scroll natural */
+  overflow: hidden !important; /* HTML sin scroll - solo body */
   width: 100% !important;
   height: 100% !important;
   scroll-behavior: smooth;
@@ -25,14 +24,15 @@ html {
 
 body {
   overflow-x: hidden !important;
-  overflow-y: auto !important; /* Auto en lugar de scroll forzado */
+  overflow-y: auto !important; /* Solo body tiene scroll */
   width: 100% !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
-  min-height: 100vh !important; /* Asegurar altura mínima de viewport */
+  min-height: 100vh !important;
   margin: 0;
   padding: 0;
+  height: 100%; /* Altura completa para permitir scroll */
 }
 
 /* Solo bloquear scroll vertical cuando el menú móvil esté abierto */
