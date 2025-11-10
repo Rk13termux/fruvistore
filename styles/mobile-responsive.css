@@ -116,62 +116,84 @@ body.menu-open {
 @media (max-width: 768px) {
   .header {
     padding: 0.75rem 0 !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important;
     background: rgba(0,0,0,0.85) !important;
     backdrop-filter: saturate(180%) blur(25px);
     -webkit-backdrop-filter: saturate(180%) blur(25px);
     border-bottom: 1px solid rgba(255,155,64,0.2);
     box-shadow: 0 4px 30px rgba(0,0,0,0.7), 
                 0 1px 0 rgba(255,155,64,0.1) inset;
-    /* Header siempre fijo, NO bloquea scroll */
-    pointer-events: auto;
+    /* Header FIJO como app móvil - NO tiene scroll */
+    pointer-events: auto !important;
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible !important; /* Sin scroll en el header */
+    -webkit-overflow-scrolling: auto !important;
+    overscroll-behavior: none !important;
+  }
+  
+  /* Forzar que el header NO tenga scrollbar */
+  .header,
+  .header * {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+  
+  .header::-webkit-scrollbar,
+  .header *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
-  /* Efecto widget flotante al hacer scroll - Header levitando */
+  /* Efecto widget flotante al hacer scroll - Header levitando estilo app móvil */
   .header.scrolled {
-    top: 12px;
-    left: 1rem;
-    right: 1rem;
-    width: calc(100% - 2rem);
-    border-radius: 20px !important;
-    background: rgba(0,0,0,0.92) !important;
-    backdrop-filter: saturate(180%) blur(40px);
-    -webkit-backdrop-filter: saturate(180%) blur(40px);
-    border: 1px solid rgba(255,155,64,0.35);
+    top: 8px !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: calc(100% - 1.5rem) !important;
+    border-radius: 18px !important;
+    background: rgba(0,0,0,0.95) !important;
+    backdrop-filter: saturate(180%) blur(50px);
+    -webkit-backdrop-filter: saturate(180%) blur(50px);
+    border: 1.5px solid rgba(255,155,64,0.4);
     box-shadow: 
-      0 20px 60px rgba(0,0,0,0.8),
-      0 8px 32px rgba(255,155,64,0.25),
-      0 0 80px rgba(255,155,64,0.15),
-      inset 0 1px 0 rgba(255,255,255,0.15),
-      inset 0 -1px 0 rgba(255,155,64,0.3);
-    transform: translateY(0) scale(0.98);
-    animation: floatPulse 4s ease-in-out infinite;
+      0 24px 70px rgba(0,0,0,0.9),
+      0 10px 40px rgba(255,155,64,0.3),
+      0 0 100px rgba(255,155,64,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.2),
+      inset 0 -1px 0 rgba(255,155,64,0.4);
+    transform: translateY(0) scale(0.99);
+    animation: floatPulse 5s ease-in-out infinite;
+    /* Sin scroll en modo flotante */
+    overflow: visible !important;
   }
 
-  /* Animación sutil de pulsación para efecto levitando */
+  /* Animación sutil de pulsación para efecto levitando - Estilo app móvil */
   @keyframes floatPulse {
     0%, 100% {
-      transform: translateY(0) scale(0.98);
+      transform: translateY(0) scale(0.99);
       box-shadow: 
-        0 20px 60px rgba(0,0,0,0.8),
-        0 8px 32px rgba(255,155,64,0.25),
-        0 0 80px rgba(255,155,64,0.15),
-        inset 0 1px 0 rgba(255,255,255,0.15),
-        inset 0 -1px 0 rgba(255,155,64,0.3);
+        0 24px 70px rgba(0,0,0,0.9),
+        0 10px 40px rgba(255,155,64,0.3),
+        0 0 100px rgba(255,155,64,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.2),
+        inset 0 -1px 0 rgba(255,155,64,0.4);
     }
     50% {
-      transform: translateY(-1px) scale(0.98);
+      transform: translateY(-0.5px) scale(0.99);
       box-shadow: 
-        0 22px 65px rgba(0,0,0,0.82),
-        0 10px 36px rgba(255,155,64,0.28),
-        0 0 90px rgba(255,155,64,0.18),
-        inset 0 1px 0 rgba(255,255,255,0.18),
-        inset 0 -1px 0 rgba(255,155,64,0.35);
+        0 26px 75px rgba(0,0,0,0.92),
+        0 12px 44px rgba(255,155,64,0.35),
+        0 0 110px rgba(255,155,64,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.25),
+        inset 0 -1px 0 rgba(255,155,64,0.45);
     }
   }
 
@@ -181,6 +203,26 @@ body.menu-open {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* Navbar FIJO sin scroll */
+    overflow: visible !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+  
+  /* Forzar que navbar NO tenga scrollbar */
+  .navbar,
+  .navbar * {
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+  
+  .navbar::-webkit-scrollbar,
+  .navbar *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .logo {
@@ -278,25 +320,26 @@ body.menu-open {
     color: #fff;
   }
 
-  /* Mobile menu panel - Glass effect profesional con tamaño fijo */
+  /* Mobile menu panel - Glass effect profesional SIN SCROLL */
   .mobile-menu {
     display: flex !important;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     position: fixed;
-    top: 68px; /* Ajustado al nuevo tamaño del header */
+    top: 92px; /* Debajo del header flotante (68px + 12px top + 12px margen) */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 2rem);
     max-width: 420px;
-    max-height: calc(100vh - 86px);
+    height: auto !important; /* Altura automática basada en contenido */
+    max-height: none !important; /* SIN límite de altura */
     background: rgba(0,0,0,0.75) !important;
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
-    padding: 1.25rem;
+    padding: 1rem; /* Reducir padding */
     border-radius: 24px;
-    overflow: hidden; /* Eliminar scroll del menú */
+    overflow: visible !important; /* SIN SCROLL - todo visible y fijo */
     box-shadow: 
       0 20px 60px rgba(0,0,0,0.8),
       0 8px 32px rgba(255,155,64,0.15),
@@ -305,6 +348,36 @@ body.menu-open {
     border: 1px solid rgba(255,155,64,0.25);
     z-index: 9998;
     /* Estado visible por defecto, controlado por clase .hidden */
+    /* Widget FIJO - sin scroll interno */
+  }
+  
+  /* FORZAR eliminación absoluta de scrollbars en el menú */
+  .mobile-menu::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  
+  .mobile-menu {
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
+  }
+  
+  /* Forzar sin scrollbar en todos los elementos internos del menú */
+  .mobile-menu,
+  .mobile-menu *,
+  .mobile-menu nav,
+  .mobile-menu nav * {
+    overflow: visible !important;
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+  }
+  
+  .mobile-menu *::-webkit-scrollbar,
+  .mobile-menu nav::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   /* Overlay oscuro cuando el menú está abierto */
@@ -354,27 +427,8 @@ body.menu-open {
     width: 100%;
     max-width: 100%;
     margin: 0;
-    overflow-y: auto; /* El scroll lo tiene el nav, no el contenedor */
-    max-height: calc(100vh - 150px); /* Espacio para el contenedor */
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Scrollbar personalizado para el nav del menú */
-  .mobile-menu nav::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .mobile-menu nav::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .mobile-menu nav::-webkit-scrollbar-thumb {
-    background: rgba(255,155,64,0.3);
-    border-radius: 10px;
-  }
-
-  .mobile-menu nav::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,155,64,0.5);
+    overflow: visible !important; /* SIN SCROLL - todo visible */
+    height: auto !important; /* Altura automática */
   }
 
   /* Animación de entrada para items del menú */
