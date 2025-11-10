@@ -32,6 +32,7 @@ body {
   position: relative;
   overflow-y: auto !important; /* Permitir scroll vertical por defecto */
   min-height: 100%;
+  padding-top: 0 !important; /* Sin padding en desktop, solo en mobile */
 }
 
 /* FORZAR eliminación de TODO scroll horizontal en TODOS los elementos */
@@ -118,6 +119,23 @@ body.menu-open {
 
 /* ===== MOBILE NAVIGATION FIXES ===== */
 @media (max-width: 768px) {
+  /* Body con padding-top para header fijo */
+  body {
+    padding-top: 70px !important; /* Espacio para el header fijo */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Smooth scroll en iOS */
+  }
+  
+  /* Main content area debajo del header */
+  #app-root,
+  .app-root,
+  main {
+    padding-top: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
   /* Header fijo optimizado para móvil - SIN SCROLLBAR */
   .header {
     position: fixed !important;
