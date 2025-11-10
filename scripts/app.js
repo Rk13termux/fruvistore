@@ -462,6 +462,7 @@ async function loadModules() {
     });
 
     setupMobileNav();
+    setupFloatingHeader(); // Efecto widget flotante al hacer scroll
     initChatWidget();
     renderAuthNav();
     setupAccountDropdown();
@@ -555,7 +556,7 @@ function setupMobileNav() {
       mobileMenuToggle.classList.add('active');
       mobileMenuToggle.setAttribute('aria-expanded', 'true');
       mobileMenuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
-      document.body.style.overflow = 'hidden'; // Prevent scroll when menu is open
+      document.body.classList.add('menu-open'); // Bloquear scroll solo cuando menú está abierto
       
       // Clone nav links to mobile menu
       const nav = mobileMenuPanel.querySelector('nav');
@@ -590,7 +591,7 @@ function setupMobileNav() {
     if (icon.classList.contains('fa-times')) {
       icon.classList.replace('fa-times', 'fa-bars');
     }
-    document.body.style.overflow = ''; // Restore scroll
+    document.body.classList.remove('menu-open'); // Restaurar scroll
   }
 
   // Close menu when clicking overlay
@@ -692,6 +693,44 @@ async function updateMobileCreditsWidget() {
     // Si no hay enlace de perfil, agregar al inicio del nav
     nav.insertBefore(widget, nav.firstChild);
   }
+}
+
+// Efecto de widget flotante para el header al hacer scroll
+function setupFloatingHeader() {
+  if (window.innerWidth > 768) return; // Solo en móvil
+
+  const header = document.querySelector('.header');
+  if (!header) return;
+
+  let lastScrollTop = 0;
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (scrollTop <= 0) {
+      // En el top - header pegado
+      header.classList.remove('scrolled');
+      document.body.classList.remove('header-floating');
+    } else if (scrollTop > lastScrollTop) {
+      // Scrolling DOWN - activar widget flotante
+      header.classList.add('scrolled');
+      document.body.classList.add('header-floating');
+    } else {
+      // Scrolling UP - mantener flotante (solo vuelve cuando scroll = 0)
+      header.classList.add('scrolled');
+      document.body.classList.add('header-floating');
+    }
+
+    lastScrollTop = scrollTop;
+  }, { passive: true });
+
+  // Actualizar en resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      header.classList.remove('scrolled');
+      document.body.classList.remove('header-floating');
+    }
+  }, { passive: true });
 }
 
 // Función para el comportamiento del header en scroll (hide on scroll down, show on scroll up)

@@ -18,6 +18,8 @@ html {
   -ms-text-size-adjust: 100%;
   overflow-x: hidden;
   max-width: 100vw;
+  overflow-y: auto; /* Asegurar scroll vertical */
+  height: 100%;
 }
 
 body {
@@ -26,6 +28,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: relative;
+  overflow-y: auto; /* Permitir scroll vertical por defecto */
+  min-height: 100%;
+  /* overflow-y: auto por defecto - permite scroll vertical */
+}
+
+/* Solo bloquear scroll vertical cuando el menú móvil esté abierto */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 /* ===== BASE MOBILE MENU STYLES ===== */
@@ -47,12 +59,18 @@ body {
 /* ===== MOBILE CONTAINER & SPACING ===== */
 @media (max-width: 768px) {
   body {
-    padding-top: 72px; /* Compensar header fixed más grande */
+    padding-top: 68px; /* Compensar header fixed (reducido) */
+    transition: padding-top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Cuando el header está flotando, mantener mismo espacio (el header ya tiene gap visual) */
+  body.header-floating {
+    padding-top: 68px; /* Mantener mismo padding, el gap viene del top del header */
   }
 
   .app-root,
   #app-root {
-    min-height: calc(100vh - 72px);
+    min-height: calc(100vh - 68px);
     overflow-x: hidden;
     max-width: 100vw;
   }
@@ -97,7 +115,7 @@ body {
 /* ===== MOBILE NAVIGATION FIXES ===== */
 @media (max-width: 768px) {
   .header {
-    padding: 0.875rem 0 !important;
+    padding: 0.75rem 0 !important;
     position: fixed;
     top: 0;
     left: 0;
@@ -109,7 +127,52 @@ body {
     border-bottom: 1px solid rgba(255,155,64,0.2);
     box-shadow: 0 4px 30px rgba(0,0,0,0.7), 
                 0 1px 0 rgba(255,155,64,0.1) inset;
-    /* Header siempre fijo, sin animación de ocultar */
+    /* Header siempre fijo, NO bloquea scroll */
+    pointer-events: auto;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Efecto widget flotante al hacer scroll - Header levitando */
+  .header.scrolled {
+    top: 12px;
+    left: 1rem;
+    right: 1rem;
+    width: calc(100% - 2rem);
+    border-radius: 20px !important;
+    background: rgba(0,0,0,0.92) !important;
+    backdrop-filter: saturate(180%) blur(40px);
+    -webkit-backdrop-filter: saturate(180%) blur(40px);
+    border: 1px solid rgba(255,155,64,0.35);
+    box-shadow: 
+      0 20px 60px rgba(0,0,0,0.8),
+      0 8px 32px rgba(255,155,64,0.25),
+      0 0 80px rgba(255,155,64,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.15),
+      inset 0 -1px 0 rgba(255,155,64,0.3);
+    transform: translateY(0) scale(0.98);
+    animation: floatPulse 4s ease-in-out infinite;
+  }
+
+  /* Animación sutil de pulsación para efecto levitando */
+  @keyframes floatPulse {
+    0%, 100% {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.8),
+        0 8px 32px rgba(255,155,64,0.25),
+        0 0 80px rgba(255,155,64,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.15),
+        inset 0 -1px 0 rgba(255,155,64,0.3);
+    }
+    50% {
+      transform: translateY(-1px) scale(0.98);
+      box-shadow: 
+        0 22px 65px rgba(0,0,0,0.82),
+        0 10px 36px rgba(255,155,64,0.28),
+        0 0 90px rgba(255,155,64,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,155,64,0.35);
+    }
   }
 
   .navbar {
@@ -222,19 +285,18 @@ body {
     justify-content: flex-start;
     align-items: stretch;
     position: fixed;
-    top: 72px;
+    top: 68px; /* Ajustado al nuevo tamaño del header */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 2rem);
     max-width: 420px;
-    max-height: calc(100vh - 90px);
+    max-height: calc(100vh - 86px);
     background: rgba(0,0,0,0.75) !important;
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
     padding: 1.25rem;
     border-radius: 24px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden; /* Eliminar scroll del menú */
     box-shadow: 
       0 20px 60px rgba(0,0,0,0.8),
       0 8px 32px rgba(255,155,64,0.15),
@@ -243,27 +305,6 @@ body {
     border: 1px solid rgba(255,155,64,0.25);
     z-index: 9998;
     /* Estado visible por defecto, controlado por clase .hidden */
-  }
-
-  /* Scrollbar personalizado para el menú */
-  .mobile-menu::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .mobile-menu::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
-    margin: 8px 0;
-  }
-
-  .mobile-menu::-webkit-scrollbar-thumb {
-    background: rgba(255,155,64,0.4);
-    border-radius: 10px;
-    transition: background 0.3s ease;
-  }
-
-  .mobile-menu::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,155,64,0.6);
   }
 
   /* Overlay oscuro cuando el menú está abierto */
@@ -308,11 +349,32 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 0.5rem;
+    gap: 0.4rem; /* Reducir gap entre items */
     padding: 0;
     width: 100%;
     max-width: 100%;
     margin: 0;
+    overflow-y: auto; /* El scroll lo tiene el nav, no el contenedor */
+    max-height: calc(100vh - 150px); /* Espacio para el contenedor */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Scrollbar personalizado para el nav del menú */
+  .mobile-menu nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .mobile-menu nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .mobile-menu nav::-webkit-scrollbar-thumb {
+    background: rgba(255,155,64,0.3);
+    border-radius: 10px;
+  }
+
+  .mobile-menu nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,155,64,0.5);
   }
 
   /* Animación de entrada para items del menú */
@@ -343,25 +405,26 @@ body {
   .mobile-menu a {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.95rem 1.25rem;
-    border-radius: 14px;
+    gap: 0.85rem; /* Reducir gap interno */
+    padding: 0.8rem 1rem; /* Reducir padding */
+    border-radius: 12px; /* Reducir border-radius */
     background: rgba(255,255,255,0.06) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.1);
     color: #ffffff !important;
-    font-size: 0.95rem;
+    font-size: 0.9rem; /* Reducir font-size */
     font-weight: 600;
     text-decoration: none;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     position: relative;
     overflow: hidden;
-    min-height: 52px;
+    min-height: 48px; /* Reducir altura mínima */
     box-shadow: 
       0 2px 8px rgba(0,0,0,0.3),
       inset 0 1px 0 rgba(255,255,255,0.05);
+    flex-shrink: 0; /* No comprimir items */
   }
 
   .mobile-menu a::before {
@@ -393,9 +456,9 @@ body {
   }
 
   .mobile-menu a i {
-    font-size: 1.2rem;
-    width: 36px;
-    height: 36px;
+    font-size: 1.1rem; /* Reducir tamaño del icono */
+    width: 32px; /* Reducir ancho */
+    height: 32px; /* Reducir altura */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -404,7 +467,7 @@ body {
       var(--brand) 0%, 
       #ff8533 100%
     );
-    border-radius: 9px;
+    border-radius: 8px; /* Reducir border-radius */
     color: #000000;
     flex-shrink: 0;
     box-shadow: 
@@ -421,39 +484,40 @@ body {
     z-index: 1;
     letter-spacing: 0.01em;
     color: #ffffff;
-    font-size: 0.95rem;
+    font-size: 0.9rem; /* Reducir font-size del texto */
   }
 
-  /* Widget de créditos en menú móvil - Glass effect mejorado */
+  /* Widget de créditos en menú móvil - Glass effect mejorado y compacto */
   .mobile-credits-widget {
-    margin: 0.75rem 0 0.5rem;
-    padding: 1.125rem 1.25rem;
+    margin: 0.5rem 0 0.4rem; /* Reducir márgenes */
+    padding: 0.95rem 1rem; /* Reducir padding */
     background: rgba(255,155,64,0.08) !important;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255,155,64,0.3);
-    border-radius: 16px;
+    border-radius: 14px; /* Reducir border-radius */
     box-shadow: 
       0 8px 24px rgba(255,155,64,0.2),
       inset 0 1px 0 rgba(255,255,255,0.1);
+    flex-shrink: 0; /* No comprimir widget */
   }
 
   .mobile-credits-widget__header {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
+    gap: 0.65rem; /* Reducir gap */
+    margin-bottom: 0.65rem; /* Reducir margen */
   }
 
   .mobile-credits-widget__icon {
-    width: 40px;
-    height: 40px;
+    width: 36px; /* Reducir tamaño */
+    height: 36px; /* Reducir tamaño */
     background: linear-gradient(135deg, var(--brand), #ff8533);
-    border-radius: 10px;
+    border-radius: 9px; /* Reducir border-radius */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.1rem; /* Reducir font-size */
     color: #000;
     box-shadow: 0 2px 8px rgba(255,155,64,0.4);
   }
@@ -463,7 +527,7 @@ body {
   }
 
   .mobile-credits-widget__label {
-    font-size: 0.8rem;
+    font-size: 0.75rem; /* Reducir font-size */
     color: rgba(255,255,255,0.7);
     font-weight: 500;
     text-transform: uppercase;
@@ -471,7 +535,7 @@ body {
   }
 
   .mobile-credits-widget__amount {
-    font-size: 1.5rem;
+    font-size: 1.35rem; /* Reducir font-size */
     font-weight: 700;
     color: var(--brand);
     line-height: 1.2;
@@ -479,19 +543,19 @@ body {
 
   .mobile-credits-widget__btn {
     width: 100%;
-    padding: 0.95rem 1.125rem;
+    padding: 0.8rem 1rem; /* Reducir padding */
     background: linear-gradient(135deg, var(--brand), #ff7820) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: none;
-    border-radius: 12px;
+    border-radius: 11px; /* Reducir border-radius */
     color: #000;
-    font-size: 0.95rem;
+    font-size: 0.9rem; /* Reducir font-size */
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.625rem;
+    gap: 0.55rem; /* Reducir gap */
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 
@@ -508,7 +572,7 @@ body {
   }
 
   .mobile-credits-widget__btn i {
-    font-size: 1.1rem;
+    font-size: 1rem; /* Reducir font-size */
   }
 
   /* Separador visual elegante */
