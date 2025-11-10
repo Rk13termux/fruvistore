@@ -180,7 +180,7 @@ body {
     overflow-y: auto; /* Permitir scroll si es necesario */
     overflow-x: hidden;
     box-shadow: inset 0 1px 0 rgba(255,155,64,0.1), 0 10px 60px rgba(0,0,0,0.9);
-    z-index: 9998;
+    z-index: 9998; /* Por debajo del header (9999) pero encima de todo lo demás */
     /* Estado visible por defecto, controlado por clase .hidden */
   }
 
