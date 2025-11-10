@@ -116,12 +116,16 @@ window.getStoreProducts = async function getStoreProducts() {
       // If image_url is a full URL (http/https), try to extract filename and use local
       if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
         const filename = imageUrl.split('/').pop(); // Get last part of URL
-        imageUrl = `/images/products/${filename}`;
-      }
-      
-      // If image_url doesn't start with /, add it
-      if (!imageUrl.startsWith('/')) {
-        imageUrl = `/images/products/${imageUrl}`;
+        imageUrl = `/images/products/${filename.toLowerCase()}`;
+      } else {
+        // If image_url doesn't start with /, add it
+        if (!imageUrl.startsWith('/')) {
+          imageUrl = `/images/products/${imageUrl}`;
+        }
+        // Normalize to lowercase for consistency
+        const parts = imageUrl.split('/');
+        const filename = parts.pop();
+        imageUrl = parts.join('/') + '/' + filename.toLowerCase();
       }
       
       return {
@@ -177,12 +181,16 @@ window.getProductById = async function getProductById(productId) {
     // If image_url is a full URL (http/https), try to extract filename and use local
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       const filename = imageUrl.split('/').pop(); // Get last part of URL
-      imageUrl = `/images/products/${filename}`;
-    }
-    
-    // If image_url doesn't start with /, add it
-    if (!imageUrl.startsWith('/')) {
-      imageUrl = `/images/products/${imageUrl}`;
+      imageUrl = `/images/products/${filename.toLowerCase()}`;
+    } else {
+      // If image_url doesn't start with /, add it
+      if (!imageUrl.startsWith('/')) {
+        imageUrl = `/images/products/${imageUrl}`;
+      }
+      // Normalize to lowercase for consistency
+      const parts = imageUrl.split('/');
+      const filename = parts.pop();
+      imageUrl = parts.join('/') + '/' + filename.toLowerCase();
     }
 
     // Transform data to match store format
