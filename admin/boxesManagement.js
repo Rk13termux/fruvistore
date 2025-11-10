@@ -465,41 +465,67 @@ class BoxesManagement {
     }
 
     async saveBox() {
+        console.log('🔵 saveBox() llamado');
+        console.log('🔵 dbService existe:', !!this.dbService);
+        console.log('🔵 editingBoxId:', this.editingBoxId);
+        
         // Validate required fields
         const name = document.getElementById('newBoxName')?.value?.trim();
-        const category = document.getElementById('newBoxCategory')?.value;
+        let category = document.getElementById('newBoxCategory')?.value;
         const image = document.getElementById('newBoxImage')?.value?.trim();
         const description = document.getElementById('newBoxDescription')?.value?.trim();
         const contents = document.getElementById('newBoxContents')?.value?.trim();
         const weight = parseFloat(document.getElementById('newBoxWeight')?.value);
         const priceKg = parseFloat(document.getElementById('newBoxPriceKg')?.value);
+        
+        // Si categoría está vacía, usar valor por defecto
+        if (!category) {
+            category = 'Caja Premium';
+            console.log('⚠️ Categoría vacía, usando: Caja Premium');
+        }
+        
+        console.log('🔵 Valores del formulario:', { name, category, image, description, contents, weight, priceKg });
 
-        if (!name || !category || !image || !description || !contents || !weight || weight <= 0 || !priceKg || priceKg <= 0) {
+        if (!name || !image || !description || !contents || !weight || weight <= 0 || !priceKg || priceKg <= 0) {
+            console.log('🔴 Validación fallida');
             this.showAlert('Por favor completa todos los campos obligatorios (*)', 'warning');
             return;
         }
+        
+        console.log('✅ Validación pasada');
 
         const totalPrice = parseFloat(document.getElementById('newBoxTotalPrice')?.value) || (weight * priceKg);
         const contentsArray = contents.split(',').map(item => item.trim()).filter(Boolean);
 
+        // Mapear a la estructura de current_boxes
         const boxData = {
             name,
             category,
             description,
             image_url: `/images/caja/${image}`,
-            weight,
-            price_per_kg: priceKg,
-            total_price: totalPrice,
+            // Precio COP es el total_price calculado
+            price_cop: totalPrice,
+            price_usd: (totalPrice / 4200).toFixed(2), // Conversión aproximada
+            discount_percentage: 0,
+            // Peso total
+            estimated_weight_kg: weight,
+            total_items: contentsArray.length,
+            // Disponibilidad
+            available: true,
+            in_stock: parseInt(document.getElementById('newBoxStock')?.value) > 0,
             stock_quantity: parseInt(document.getElementById('newBoxStock')?.value) || 0,
-            rating: parseFloat(document.getElementById('newBoxRating')?.value) || 4.5,
-            is_organic: document.getElementById('newBoxOrganic')?.checked || false,
-            is_featured: document.getElementById('newBoxFeatured')?.checked || false,
-            contents: contentsArray,
-            available: true
+            min_stock: 2,
+            // Marketing
+            featured: document.getElementById('newBoxFeatured')?.checked || false,
+            tags: contentsArray // Los contenidos como tags
         };
+        
+        console.log('🔵 boxData preparado:', boxData);
 
         try {
             this.showLoading(this.editingBoxId ? 'Actualizando caja...' : 'Creando caja...');
+            
+            console.log('🔵 Llamando a', this.editingBoxId ? 'updateBox' : 'createBox');
 
             let result;
             if (this.editingBoxId) {
@@ -509,16 +535,19 @@ class BoxesManagement {
                 // Create new box
                 result = await this.dbService.createBox(boxData);
             }
+            
+            console.log('✅ Resultado:', result);
 
             if (result) {
                 this.showAlert(this.editingBoxId ? 'Caja actualizada correctamente' : 'Caja creada correctamente', 'success');
                 this.cancelBoxForm();
                 await this.loadBoxes();
             } else {
+                console.log('🔴 No hay resultado');
                 this.showAlert('Error guardando caja', 'danger');
             }
         } catch (error) {
-            console.error('Error saving box:', error);
+            console.error('🔴 Error saving box:', error);
             this.showAlert(`Error: ${error.message}`, 'danger');
         } finally {
             this.hideLoading();
@@ -1042,26 +1071,29 @@ class BoxesManagement {
             btn.innerHTML = '<i class="fas fa-minus"></i> Ocultar Formulario';
         }
 
-        // Fill form fields
+        // Fill form fields mapping from current_boxes structure
         document.getElementById('newBoxName').value = box.name || '';
         document.getElementById('newBoxCategory').value = box.category || '';
-        document.getElementById('newBoxDescription').value = box.description || box.desc || '';
+        document.getElementById('newBoxDescription').value = box.description || '';
         
         // Extract image filename from URL
-        const imageName = (box.image_url || box.img || '').split('/').pop();
+        const imageName = (box.image_url || '').split('/').pop();
         document.getElementById('newBoxImage').value = imageName;
         this.updateBoxImagePreview(imageName);
         
-        document.getElementById('newBoxWeight').value = box.weight || 0;
-        document.getElementById('newBoxPriceKg').value = box.price_per_kg || box.priceKg || 0;
-        document.getElementById('newBoxTotalPrice').value = box.total_price || box.totalPrice || 0;
-        document.getElementById('newBoxStock').value = box.stock_quantity || box.stockQuantity || 0;
-        document.getElementById('newBoxRating').value = box.rating || 4.5;
-        document.getElementById('newBoxOrganic').checked = box.is_organic || box.organic || false;
-        document.getElementById('newBoxFeatured').checked = box.is_featured || box.featured || false;
+        // Map from current_boxes columns
+        document.getElementById('newBoxWeight').value = box.estimated_weight_kg || 0;
+        // Calcular price_per_kg desde price_cop y estimated_weight_kg
+        const priceKg = box.estimated_weight_kg > 0 ? Math.round(box.price_cop / box.estimated_weight_kg) : 0;
+        document.getElementById('newBoxPriceKg').value = priceKg;
+        document.getElementById('newBoxTotalPrice').value = box.price_cop || 0;
+        document.getElementById('newBoxStock').value = box.stock_quantity || 0;
+        document.getElementById('newBoxRating').value = 4.5; // No existe en current_boxes
+        document.getElementById('newBoxOrganic').checked = false; // No existe en current_boxes
+        document.getElementById('newBoxFeatured').checked = box.featured || false;
         
-        // Handle contents array
-        const contents = Array.isArray(box.contents) ? box.contents.join(', ') : (box.contents || '');
+        // Handle tags as contents
+        const contents = Array.isArray(box.tags) ? box.tags.join(', ') : '';
         document.getElementById('newBoxContents').value = contents;
 
         // Set edit mode

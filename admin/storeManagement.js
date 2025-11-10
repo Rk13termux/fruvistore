@@ -435,16 +435,31 @@ class StoreManagement {
     }
 
     async saveProduct() {
+        console.log('🔵 saveProduct() llamado');
+        console.log('🔵 dbService existe:', !!this.dbService);
+        console.log('🔵 editingProductId:', this.editingProductId);
+        
         // Validate required fields
         const name = document.getElementById('newProductName')?.value?.trim();
-        const category = document.getElementById('newProductCategory')?.value;
+        let category = document.getElementById('newProductCategory')?.value;
         const image = document.getElementById('newProductImage')?.value?.trim();
         const price = parseFloat(document.getElementById('newProductPrice')?.value);
+        
+        // Si categoría está vacía, usar valor por defecto
+        if (!category) {
+            category = 'Frutas Exóticas';
+            console.log('⚠️ Categoría vacía, usando: Frutas Exóticas');
+        }
+        
+        console.log('🔵 Valores del formulario:', { name, category, image, price });
 
-        if (!name || !category || !image || !price || price <= 0) {
+        if (!name || !image || !price || price <= 0) {
+            console.log('🔴 Validación fallida');
             this.showAlert('Por favor completa todos los campos obligatorios (*)', 'warning');
             return;
         }
+        
+        console.log('✅ Validación pasada');
 
         const productData = {
             name,
@@ -459,9 +474,13 @@ class StoreManagement {
             is_organic: document.getElementById('newProductOrganic')?.checked || false,
             is_active: true
         };
+        
+        console.log('🔵 productData preparado:', productData);
 
         try {
             this.showLoading(this.editingProductId ? 'Actualizando producto...' : 'Creando producto...');
+            
+            console.log('🔵 Llamando a', this.editingProductId ? 'updateCompleteProduct' : 'createProduct');
 
             let result;
             if (this.editingProductId) {
@@ -471,16 +490,19 @@ class StoreManagement {
                 // Create new product
                 result = await this.dbService.createProduct(productData);
             }
+            
+            console.log('✅ Resultado:', result);
 
             if (result) {
                 this.showAlert(this.editingProductId ? 'Producto actualizado correctamente' : 'Producto creado correctamente', 'success');
                 this.cancelProductForm();
                 await this.loadProducts();
             } else {
+                console.log('🔴 No hay resultado');
                 this.showAlert('Error guardando producto', 'danger');
             }
         } catch (error) {
-            console.error('Error saving product:', error);
+            console.error('🔴 Error saving product:', error);
             this.showAlert(`Error: ${error.message}`, 'danger');
         } finally {
             this.hideLoading();
