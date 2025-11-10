@@ -462,11 +462,11 @@ async function loadModules() {
     });
 
     setupMobileNav();
-    setupFloatingHeader(); // Efecto widget flotante al hacer scroll
+    // setupFloatingHeader(); // DESACTIVADO - header permanece fijo sin efectos
     initChatWidget();
     renderAuthNav();
     setupAccountDropdown();
-    // Header ahora es estático fijo, no necesita comportamiento de scroll
+    // Header fijo normal sin comportamiento de scroll
 
     // Initialize checkout modals after DOM is ready
     window.checkoutModalStore = new CheckoutModalStore();
@@ -695,42 +695,10 @@ async function updateMobileCreditsWidget() {
   }
 }
 
-// Efecto de widget flotante para el header al hacer scroll
+// Efecto de widget flotante para el header al hacer scroll - DESACTIVADO
 function setupFloatingHeader() {
-  if (window.innerWidth > 768) return; // Solo en móvil
-
-  const header = document.querySelector('.header');
-  if (!header) return;
-
-  let lastScrollTop = 0;
-
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (scrollTop <= 0) {
-      // En el top - header pegado
-      header.classList.remove('scrolled');
-      document.body.classList.remove('header-floating');
-    } else if (scrollTop > lastScrollTop) {
-      // Scrolling DOWN - activar widget flotante
-      header.classList.add('scrolled');
-      document.body.classList.add('header-floating');
-    } else {
-      // Scrolling UP - mantener flotante (solo vuelve cuando scroll = 0)
-      header.classList.add('scrolled');
-      document.body.classList.add('header-floating');
-    }
-
-    lastScrollTop = scrollTop;
-  }, { passive: true });
-
-  // Actualizar en resize
-  window.addEventListener('resize', () => {
-    if (window.innerWidth > 768) {
-      header.classList.remove('scrolled');
-      document.body.classList.remove('header-floating');
-    }
-  }, { passive: true });
+  // Función desactivada - header permanece fijo sin cambios
+  return;
 }
 
 // Función para el comportamiento del header en scroll (hide on scroll down, show on scroll up)
