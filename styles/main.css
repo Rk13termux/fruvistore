@@ -20,6 +20,81 @@
   --font-menu: 'Montserrat', 'Inter', 'Segoe UI', sans-serif;
 }
 
+/* ===== CUSTOM SCROLLBAR - TEMA NARANJA Y VERDE ===== */
+/* Scrollbar para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand) rgba(0,0,0,0.3);
+}
+
+/* Scrollbar para Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--brand), var(--brand-2));
+  border-radius: 10px;
+  border: 2px solid rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(255,155,64,0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ffaa55, #9ee612);
+  box-shadow: 0 2px 12px rgba(255,155,64,0.6);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #ff8833, #7ac301);
+}
+
+/* Scrollbar para body específicamente */
+body::-webkit-scrollbar {
+  width: 14px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+  border-radius: 10px;
+  border: 3px solid rgba(0,0,0,0.4);
+  box-shadow: 
+    0 0 10px rgba(255,155,64,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ffaa55 0%, #9ee612 100%);
+  box-shadow: 
+    0 0 15px rgba(255,155,64,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+/* Scrollbar móvil (webkit touch) */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  body::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border: 1px solid rgba(0,0,0,0.3);
+  }
+  
+  body::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(0,0,0,0.4);
+  }
+}
+
 /* Prevenir scroll horizontal global */
 html {
   overflow: hidden !important; /* HTML sin scroll - evita doble scroll */

@@ -13,6 +13,53 @@
   box-sizing: border-box;
 }
 
+/* ===== CUSTOM SCROLLBAR MOBILE ===== */
+/* Scrollbar Firefox móvil */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ff9b40 rgba(0,0,0,0.3);
+}
+
+/* Scrollbar Webkit móvil */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #ff9b40 0%, #8bda01 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(255,155,64,0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ffaa55 0%, #9ee612 100%);
+  box-shadow: 0 2px 12px rgba(255,155,64,0.6);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(135deg, #ff8833 0%, #7ac301 100%);
+}
+
+/* Scrollbar body móvil - más visible */
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #ff9b40 0%, #8bda01 100%);
+  border: 2px solid rgba(0,0,0,0.4);
+  box-shadow: 
+    0 0 8px rgba(255,155,64,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
