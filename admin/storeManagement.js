@@ -32,6 +32,7 @@ class StoreManagement {
     constructor() {
         this.products = [];
         this.selectedProductId = null;
+        this.editingProductId = null;
         this.dbService = null;
     }
 
@@ -177,9 +178,110 @@ class StoreManagement {
                 </div>
             </div>
 
+            <!-- Create/Edit Product Form Section -->
+            <div class="management-section">
+                <h3>
+                    <i class="fas fa-plus-circle"></i> 
+                    <span id="formTitle">Crear Nuevo Producto</span>
+                </h3>
+                <button class="btn btn-primary" onclick="storeManagement.toggleProductForm()" id="toggleFormBtn">
+                    <i class="fas fa-plus"></i> Mostrar Formulario
+                </button>
+                
+                <div id="productFormContainer" style="display: none; margin-top: 20px;">
+                    <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="form-group">
+                            <label for="newProductName">Nombre del Producto *</label>
+                            <input type="text" id="newProductName" class="form-control" placeholder="Ej: Mango Ataulfo" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newProductCategory">Categoría *</label>
+                            <select id="newProductCategory" class="form-control" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Bayas">Bayas</option>
+                                <option value="Bananos">Bananos</option>
+                                <option value="Cítricos">Cítricos</option>
+                                <option value="Frutas de Clima Frío">Frutas de Clima Frío</option>
+                                <option value="Frutas Tropicales">Frutas Tropicales</option>
+                                <option value="Frutas Exóticas">Frutas Exóticas</option>
+                                <option value="Melones y Sandías">Melones y Sandías</option>
+                                <option value="Uvas">Uvas</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newProductImage">Nombre de Imagen *</label>
+                            <input type="text" id="newProductImage" class="form-control" placeholder="Ej: mango-ataulfo.png" required>
+                            <small style="color: #666;">Solo el nombre del archivo en /public/images/products/</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="grid-template-columns: 1fr 2fr;">
+                        <div>
+                            <div class="form-group">
+                                <label for="newProductPrice">Precio/kg (COP) *</label>
+                                <input type="number" id="newProductPrice" class="form-control" step="100" min="0" placeholder="5000" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newProductCost">Costo/kg (COP)</label>
+                                <input type="number" id="newProductCost" class="form-control" step="100" min="0" placeholder="3000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newProductStock">Stock (kg)</label>
+                                <input type="number" id="newProductStock" class="form-control" step="0.1" min="0" placeholder="0" value="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newProductOrigin">Origen</label>
+                                <input type="text" id="newProductOrigin" class="form-control" placeholder="Colombia" value="Colombia">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newProductSeason">Temporada</label>
+                                <input type="text" id="newProductSeason" class="form-control" placeholder="Ej: Junio-Agosto">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="newProductOrganic">
+                                    Producto Orgánico
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="newProductDescription">Descripción</label>
+                                <textarea id="newProductDescription" class="form-control" rows="6" placeholder="Descripción del producto..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Vista Previa de Imagen</label>
+                                <div id="imagePreview" style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; min-height: 200px; background: #f8f9fa;">
+                                    <i class="fas fa-image" style="font-size: 48px; color: #ddd;"></i>
+                                    <p style="color: #999; margin-top: 10px;">La imagen aparecerá aquí</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button class="btn btn-success" onclick="storeManagement.saveProduct()" id="saveProductBtn">
+                            <i class="fas fa-save"></i> <span id="saveBtnText">Crear Producto</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="storeManagement.cancelProductForm()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Product Management Section -->
             <div class="management-section">
-                <h3><i class="fas fa-cogs"></i> Gestión de Productos</h3>
+                <h3><i class="fas fa-cogs"></i> Gestión de Productos Existentes</h3>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="manageProductSelect">Producto</label>
@@ -293,6 +395,118 @@ class StoreManagement {
     setupEventListeners() {
         // Event listeners are now handled by onclick attributes in the rendered HTML
         // This method can be used for any additional dynamic event binding if needed
+        
+        // Add image preview listener
+        const imageInput = document.getElementById('newProductImage');
+        if (imageInput) {
+            imageInput.addEventListener('input', (e) => {
+                this.updateImagePreview(e.target.value);
+            });
+        }
+    }
+
+    // ===== PRODUCT CRUD METHODS =====
+
+    toggleProductForm() {
+        const container = document.getElementById('productFormContainer');
+        const btn = document.getElementById('toggleFormBtn');
+        
+        if (container.style.display === 'none') {
+            container.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-minus"></i> Ocultar Formulario';
+        } else {
+            container.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-plus"></i> Mostrar Formulario';
+            this.cancelProductForm();
+        }
+    }
+
+    updateImagePreview(filename) {
+        const preview = document.getElementById('imagePreview');
+        if (!preview) return;
+        
+        if (!filename || filename.trim() === '') {
+            preview.innerHTML = '<i class="fas fa-image" style="font-size: 48px; color: #ddd;"></i><p style="color: #999; margin-top: 10px;">La imagen aparecerá aquí</p>';
+            return;
+        }
+        
+        const imagePath = `/images/products/${filename.trim()}`;
+        preview.innerHTML = `<img src="${imagePath}" alt="Preview" style="max-width: 100%; max-height: 200px; object-fit: contain;" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-exclamation-triangle\\' style=\\'font-size:48px;color:#dc3545;\\'></i><p style=\\'color:#dc3545;margin-top:10px;\\'>Imagen no encontrada</p>'">`;
+    }
+
+    async saveProduct() {
+        // Validate required fields
+        const name = document.getElementById('newProductName')?.value?.trim();
+        const category = document.getElementById('newProductCategory')?.value;
+        const image = document.getElementById('newProductImage')?.value?.trim();
+        const price = parseFloat(document.getElementById('newProductPrice')?.value);
+
+        if (!name || !category || !image || !price || price <= 0) {
+            this.showAlert('Por favor completa todos los campos obligatorios (*)', 'warning');
+            return;
+        }
+
+        const productData = {
+            name,
+            category,
+            description: document.getElementById('newProductDescription')?.value?.trim() || '',
+            image_url: `/images/products/${image}`,
+            price_per_kg: price,
+            cost_per_kg: parseFloat(document.getElementById('newProductCost')?.value) || 0,
+            stock_kg: parseFloat(document.getElementById('newProductStock')?.value) || 0,
+            origin: document.getElementById('newProductOrigin')?.value?.trim() || 'Colombia',
+            season: document.getElementById('newProductSeason')?.value?.trim() || null,
+            is_organic: document.getElementById('newProductOrganic')?.checked || false,
+            is_active: true
+        };
+
+        try {
+            this.showLoading(this.editingProductId ? 'Actualizando producto...' : 'Creando producto...');
+
+            let result;
+            if (this.editingProductId) {
+                // Update existing product
+                result = await this.dbService.updateCompleteProduct(this.editingProductId, productData);
+            } else {
+                // Create new product
+                result = await this.dbService.createProduct(productData);
+            }
+
+            if (result) {
+                this.showAlert(this.editingProductId ? 'Producto actualizado correctamente' : 'Producto creado correctamente', 'success');
+                this.cancelProductForm();
+                await this.loadProducts();
+            } else {
+                this.showAlert('Error guardando producto', 'danger');
+            }
+        } catch (error) {
+            console.error('Error saving product:', error);
+            this.showAlert(`Error: ${error.message}`, 'danger');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    cancelProductForm() {
+        // Clear all form fields
+        document.getElementById('newProductName').value = '';
+        document.getElementById('newProductCategory').value = '';
+        document.getElementById('newProductDescription').value = '';
+        document.getElementById('newProductImage').value = '';
+        document.getElementById('newProductPrice').value = '';
+        document.getElementById('newProductCost').value = '';
+        document.getElementById('newProductStock').value = '0';
+        document.getElementById('newProductOrigin').value = 'Colombia';
+        document.getElementById('newProductSeason').value = '';
+        document.getElementById('newProductOrganic').checked = false;
+        
+        // Reset preview
+        this.updateImagePreview('');
+        
+        // Reset to create mode
+        this.editingProductId = null;
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Crear Nuevo Producto';
+        document.getElementById('saveBtnText').textContent = 'Crear Producto';
     }
 
     // ===== PRICE MANAGEMENT =====
@@ -769,9 +983,38 @@ class StoreManagement {
     }
 
     populateProductForm(product) {
-        // This would populate a form for editing product details
-        // Implementation depends on the specific form structure
-        console.log('Populating form for product:', product);
+        // Show the form
+        const container = document.getElementById('productFormContainer');
+        const btn = document.getElementById('toggleFormBtn');
+        if (container && container.style.display === 'none') {
+            container.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-minus"></i> Ocultar Formulario';
+        }
+
+        // Fill form fields
+        document.getElementById('newProductName').value = product.name || '';
+        document.getElementById('newProductCategory').value = product.category || '';
+        document.getElementById('newProductDescription').value = product.description || '';
+        
+        // Extract image filename from URL
+        const imageName = (product.image_url || '').split('/').pop();
+        document.getElementById('newProductImage').value = imageName;
+        this.updateImagePreview(imageName);
+        
+        document.getElementById('newProductPrice').value = product.price_per_kg || 0;
+        document.getElementById('newProductCost').value = product.cost_per_kg || 0;
+        document.getElementById('newProductStock').value = product.stock_kg || 0;
+        document.getElementById('newProductOrigin').value = product.origin || 'Colombia';
+        document.getElementById('newProductSeason').value = product.season || '';
+        document.getElementById('newProductOrganic').checked = product.is_organic || false;
+
+        // Set edit mode
+        this.editingProductId = product.id;
+        document.getElementById('formTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Producto';
+        document.getElementById('saveBtnText').textContent = 'Actualizar Producto';
+
+        // Scroll to form
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // ===== MODAL RENDERING =====

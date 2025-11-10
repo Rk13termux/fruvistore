@@ -32,6 +32,7 @@ class BoxesManagement {
     constructor() {
         this.boxes = [];
         this.selectedBoxId = null;
+        this.editingBoxId = null;
         this.dbService = null;
     }
 
@@ -154,9 +155,122 @@ class BoxesManagement {
                 <div id="currentBoxStock" class="info-display"></div>
             </div>
 
+            <!-- Create/Edit Box Form Section -->
+            <div class="management-section">
+                <h3>
+                    <i class="fas fa-plus-circle"></i> 
+                    <span id="boxFormTitle">Crear Nueva Caja</span>
+                </h3>
+                <button class="btn btn-primary" onclick="boxesManagement.toggleBoxForm()" id="toggleBoxFormBtn">
+                    <i class="fas fa-plus"></i> Mostrar Formulario
+                </button>
+                
+                <div id="boxFormContainer" style="display: none; margin-top: 20px;">
+                    <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="form-group">
+                            <label for="newBoxName">Nombre de la Caja *</label>
+                            <input type="text" id="newBoxName" class="form-control" placeholder="Ej: Caja Tropical 7kg" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newBoxCategory">Categoría *</label>
+                            <select id="newBoxCategory" class="form-control" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Frutas Mixtas">Frutas Mixtas</option>
+                                <option value="Cítricas">Cítricas</option>
+                                <option value="Tropicales">Tropicales</option>
+                                <option value="Desayuno">Desayuno</option>
+                                <option value="Premium">Premium</option>
+                                <option value="Orgánica">Orgánica</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newBoxImage">Nombre de Imagen *</label>
+                            <input type="text" id="newBoxImage" class="form-control" placeholder="Ej: caja-tropical.jpg" required>
+                            <small style="color: #666;">Solo el nombre del archivo en /public/images/caja/</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid" style="grid-template-columns: 1fr 2fr;">
+                        <div>
+                            <div class="form-group">
+                                <label for="newBoxWeight">Peso (kg) *</label>
+                                <input type="number" id="newBoxWeight" class="form-control" step="0.1" min="0" placeholder="7.0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newBoxPriceKg">Precio por kg (COP) *</label>
+                                <input type="number" id="newBoxPriceKg" class="form-control" step="100" min="0" placeholder="9200" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newBoxTotalPrice">Precio Total (COP)</label>
+                                <input type="number" id="newBoxTotalPrice" class="form-control" step="100" min="0" placeholder="64400" readonly>
+                                <small style="color: #666;">Se calcula automáticamente</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newBoxStock">Stock (unidades)</label>
+                                <input type="number" id="newBoxStock" class="form-control" step="1" min="0" placeholder="0" value="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newBoxRating">Rating (1-5)</label>
+                                <input type="number" id="newBoxRating" class="form-control" step="0.1" min="1" max="5" placeholder="4.5" value="4.5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="newBoxOrganic">
+                                    Caja Orgánica
+                                </label>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="newBoxFeatured">
+                                    Destacada
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="form-group">
+                                <label for="newBoxDescription">Descripción *</label>
+                                <textarea id="newBoxDescription" class="form-control" rows="4" placeholder="Descripción de la caja..." required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newBoxContents">Contenido (separado por comas) *</label>
+                                <textarea id="newBoxContents" class="form-control" rows="3" placeholder="Piña, Mango, Papaya, Maracuyá" required></textarea>
+                                <small style="color: #666;">Ingresa las frutas separadas por comas</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Vista Previa de Imagen</label>
+                                <div id="boxImagePreview" style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; min-height: 150px; background: #f8f9fa;">
+                                    <i class="fas fa-box" style="font-size: 48px; color: #ddd;"></i>
+                                    <p style="color: #999; margin-top: 10px;">La imagen aparecerá aquí</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button class="btn btn-success" onclick="boxesManagement.saveBox()" id="saveBoxBtn">
+                            <i class="fas fa-save"></i> <span id="saveBoxBtnText">Crear Caja</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="boxesManagement.cancelBoxForm()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Box Management Section -->
             <div class="management-section">
-                <h3><i class="fas fa-cogs"></i> Gestión de Cajas</h3>
+                <h3><i class="fas fa-cogs"></i> Gestión de Cajas Existentes</h3>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="boxManageSelect">Caja</label>
@@ -294,7 +408,145 @@ class BoxesManagement {
                     }
                 });
             }
+            
+            // Image preview for box form
+            const imageInput = document.getElementById('newBoxImage');
+            if (imageInput) {
+                imageInput.addEventListener('input', (e) => {
+                    this.updateBoxImagePreview(e.target.value);
+                });
+            }
+            
+            // Auto-calculate total price
+            const weightInput = document.getElementById('newBoxWeight');
+            const priceKgInput = document.getElementById('newBoxPriceKg');
+            const totalPriceInput = document.getElementById('newBoxTotalPrice');
+            
+            const calculateTotal = () => {
+                if (weightInput && priceKgInput && totalPriceInput) {
+                    const weight = parseFloat(weightInput.value) || 0;
+                    const priceKg = parseFloat(priceKgInput.value) || 0;
+                    totalPriceInput.value = Math.round(weight * priceKg);
+                }
+            };
+            
+            if (weightInput) weightInput.addEventListener('input', calculateTotal);
+            if (priceKgInput) priceKgInput.addEventListener('input', calculateTotal);
         }, 500);
+    }
+
+    // ===== BOX CRUD METHODS =====
+
+    toggleBoxForm() {
+        const container = document.getElementById('boxFormContainer');
+        const btn = document.getElementById('toggleBoxFormBtn');
+        
+        if (container.style.display === 'none') {
+            container.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-minus"></i> Ocultar Formulario';
+        } else {
+            container.style.display = 'none';
+            btn.innerHTML = '<i class="fas fa-plus"></i> Mostrar Formulario';
+            this.cancelBoxForm();
+        }
+    }
+
+    updateBoxImagePreview(filename) {
+        const preview = document.getElementById('boxImagePreview');
+        if (!preview) return;
+        
+        if (!filename || filename.trim() === '') {
+            preview.innerHTML = '<i class="fas fa-box" style="font-size: 48px; color: #ddd;"></i><p style="color: #999; margin-top: 10px;">La imagen aparecerá aquí</p>';
+            return;
+        }
+        
+        const imagePath = `/images/caja/${filename.trim()}`;
+        preview.innerHTML = `<img src="${imagePath}" alt="Preview" style="max-width: 100%; max-height: 150px; object-fit: contain;" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-exclamation-triangle\\' style=\\'font-size:48px;color:#dc3545;\\'></i><p style=\\'color:#dc3545;margin-top:10px;\\'>Imagen no encontrada</p>'">`;
+    }
+
+    async saveBox() {
+        // Validate required fields
+        const name = document.getElementById('newBoxName')?.value?.trim();
+        const category = document.getElementById('newBoxCategory')?.value;
+        const image = document.getElementById('newBoxImage')?.value?.trim();
+        const description = document.getElementById('newBoxDescription')?.value?.trim();
+        const contents = document.getElementById('newBoxContents')?.value?.trim();
+        const weight = parseFloat(document.getElementById('newBoxWeight')?.value);
+        const priceKg = parseFloat(document.getElementById('newBoxPriceKg')?.value);
+
+        if (!name || !category || !image || !description || !contents || !weight || weight <= 0 || !priceKg || priceKg <= 0) {
+            this.showAlert('Por favor completa todos los campos obligatorios (*)', 'warning');
+            return;
+        }
+
+        const totalPrice = parseFloat(document.getElementById('newBoxTotalPrice')?.value) || (weight * priceKg);
+        const contentsArray = contents.split(',').map(item => item.trim()).filter(Boolean);
+
+        const boxData = {
+            name,
+            category,
+            description,
+            image_url: `/images/caja/${image}`,
+            weight,
+            price_per_kg: priceKg,
+            total_price: totalPrice,
+            stock_quantity: parseInt(document.getElementById('newBoxStock')?.value) || 0,
+            rating: parseFloat(document.getElementById('newBoxRating')?.value) || 4.5,
+            is_organic: document.getElementById('newBoxOrganic')?.checked || false,
+            is_featured: document.getElementById('newBoxFeatured')?.checked || false,
+            contents: contentsArray,
+            available: true
+        };
+
+        try {
+            this.showLoading(this.editingBoxId ? 'Actualizando caja...' : 'Creando caja...');
+
+            let result;
+            if (this.editingBoxId) {
+                // Update existing box
+                result = await this.dbService.updateBox(this.editingBoxId, boxData);
+            } else {
+                // Create new box
+                result = await this.dbService.createBox(boxData);
+            }
+
+            if (result) {
+                this.showAlert(this.editingBoxId ? 'Caja actualizada correctamente' : 'Caja creada correctamente', 'success');
+                this.cancelBoxForm();
+                await this.loadBoxes();
+            } else {
+                this.showAlert('Error guardando caja', 'danger');
+            }
+        } catch (error) {
+            console.error('Error saving box:', error);
+            this.showAlert(`Error: ${error.message}`, 'danger');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    cancelBoxForm() {
+        // Clear all form fields
+        document.getElementById('newBoxName').value = '';
+        document.getElementById('newBoxCategory').value = '';
+        document.getElementById('newBoxDescription').value = '';
+        document.getElementById('newBoxImage').value = '';
+        document.getElementById('newBoxContents').value = '';
+        document.getElementById('newBoxWeight').value = '';
+        document.getElementById('newBoxPriceKg').value = '';
+        document.getElementById('newBoxTotalPrice').value = '';
+        document.getElementById('newBoxStock').value = '0';
+        document.getElementById('newBoxRating').value = '4.5';
+        document.getElementById('newBoxOrganic').checked = false;
+        document.getElementById('newBoxFeatured').checked = false;
+        
+        // Reset preview
+        this.updateBoxImagePreview('');
+        
+        // Reset to create mode
+        this.editingBoxId = null;
+        document.getElementById('boxFormTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Crear Nueva Caja';
+        document.getElementById('saveBoxBtnText').textContent = 'Crear Caja';
     }
 
     // ===== EVENT HANDLERS FOR ONCLICK ATTRIBUTES =====
@@ -782,9 +1034,43 @@ class BoxesManagement {
     }
 
     populateBoxForm(box) {
-        // This would populate a form for editing box details
-        // Implementation depends on the specific form structure
-        console.log('Populating form for box:', box);
+        // Show the form
+        const container = document.getElementById('boxFormContainer');
+        const btn = document.getElementById('toggleBoxFormBtn');
+        if (container && container.style.display === 'none') {
+            container.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-minus"></i> Ocultar Formulario';
+        }
+
+        // Fill form fields
+        document.getElementById('newBoxName').value = box.name || '';
+        document.getElementById('newBoxCategory').value = box.category || '';
+        document.getElementById('newBoxDescription').value = box.description || box.desc || '';
+        
+        // Extract image filename from URL
+        const imageName = (box.image_url || box.img || '').split('/').pop();
+        document.getElementById('newBoxImage').value = imageName;
+        this.updateBoxImagePreview(imageName);
+        
+        document.getElementById('newBoxWeight').value = box.weight || 0;
+        document.getElementById('newBoxPriceKg').value = box.price_per_kg || box.priceKg || 0;
+        document.getElementById('newBoxTotalPrice').value = box.total_price || box.totalPrice || 0;
+        document.getElementById('newBoxStock').value = box.stock_quantity || box.stockQuantity || 0;
+        document.getElementById('newBoxRating').value = box.rating || 4.5;
+        document.getElementById('newBoxOrganic').checked = box.is_organic || box.organic || false;
+        document.getElementById('newBoxFeatured').checked = box.is_featured || box.featured || false;
+        
+        // Handle contents array
+        const contents = Array.isArray(box.contents) ? box.contents.join(', ') : (box.contents || '');
+        document.getElementById('newBoxContents').value = contents;
+
+        // Set edit mode
+        this.editingBoxId = box.id;
+        document.getElementById('boxFormTitle').innerHTML = '<i class="fas fa-edit"></i> Editar Caja';
+        document.getElementById('saveBoxBtnText').textContent = 'Actualizar Caja';
+
+        // Scroll to form
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // ===== MODAL RENDERING =====
