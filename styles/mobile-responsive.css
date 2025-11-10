@@ -167,8 +167,8 @@ body {
   .mobile-menu {
     display: flex !important; /* Usar flex para centrar contenido */
     flex-direction: column;
-    justify-content: center; /* Centrar verticalmente */
-    align-items: center;
+    justify-content: flex-start; /* Alinear desde arriba */
+    align-items: stretch;
     position: fixed;
     top: 72px;
     left: 0;
@@ -176,8 +176,9 @@ body {
     bottom: 0;
     background: linear-gradient(180deg, rgba(0,0,0,0.99), rgba(0,0,0,0.97)) !important;
     backdrop-filter: blur(30px) saturate(180%);
-    padding: 2rem 0;
-    overflow: hidden; /* Sin scroll */
+    padding: 1.5rem 0;
+    overflow-y: auto; /* Permitir scroll si es necesario */
+    overflow-x: hidden;
     box-shadow: inset 0 1px 0 rgba(255,155,64,0.1), 0 10px 60px rgba(0,0,0,0.9);
     z-index: 9998;
     /* Estado visible por defecto, controlado por clase .hidden */
@@ -202,12 +203,12 @@ body {
   .mobile-menu nav {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 0.65rem;
-    padding: 0 1.25rem;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    padding: 0 1rem;
     width: 100%;
-    max-width: 420px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
   }
 
   /* Animación de entrada para items del menú */
@@ -239,8 +240,8 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.95rem 1.25rem;
-    border-radius: 13px;
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
     background: linear-gradient(135deg, 
       rgba(255,255,255,0.1) 0%, 
       rgba(255,255,255,0.05) 50%,
@@ -255,7 +256,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     position: relative;
     overflow: hidden;
-    min-height: 54px;
+    min-height: 50px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
 
@@ -285,9 +286,9 @@ body {
   }
 
   .mobile-menu a i {
-    font-size: 1.25rem;
-    width: 38px;
-    height: 38px;
+    font-size: 1.2rem;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -296,7 +297,7 @@ body {
       var(--brand) 0%, 
       #ff8533 100%
     );
-    border-radius: 10px;
+    border-radius: 9px;
     color: #000000;
     flex-shrink: 0;
     box-shadow: 
@@ -770,26 +771,26 @@ body {
   }
 
   .mobile-menu {
-    padding: 1rem 0 !important;
+    padding: 0.75rem 0 !important;
   }
 
   .mobile-menu nav {
-    gap: 0.4rem !important;
+    gap: 0.35rem !important;
   }
 
   .mobile-menu a {
-    padding: 0.75rem 1rem !important;
-    min-height: 46px !important;
+    padding: 0.65rem 1rem !important;
+    min-height: 42px !important;
   }
 
   .mobile-menu a i {
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 1.1rem !important;
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 1rem !important;
   }
 
   .mobile-menu a span {
-    font-size: 0.9rem !important;
+    font-size: 0.85rem !important;
   }
 }
 
