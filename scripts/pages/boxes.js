@@ -537,7 +537,7 @@ function getFallbackBoxes() {
 		{
 			id: 101,
 			category: 'Frutas Mixtas',
-			img: resolveImagePath('/images/products/mango-ataulfo.png'),
+			img: resolveImagePath('/images/caja/caja-mixta.jpg'),
 			name: 'Caja Mixta 5kg',
 			desc: 'Selección variada de frutas frescas perfectas para compartir en familia.',
 			weight: 5,
@@ -554,7 +554,7 @@ function getFallbackBoxes() {
 		{
 			id: 102,
 			category: 'Cítricas',
-			img: resolveImagePath('/images/products/naranja_valecia.png'),
+			img: resolveImagePath('/images/caja/caja-citrica.jpg'),
 			name: 'Caja Cítrica 8kg',
 			desc: 'Todo el poder de la vitamina C en una combinación refrescante y aromática.',
 			weight: 8,
@@ -571,7 +571,7 @@ function getFallbackBoxes() {
 		{
 			id: 103,
 			category: 'Tropicales',
-			img: resolveImagePath('/images/products/pina-golden.jpg'),
+			img: resolveImagePath('/images/caja/caja-tropical.jpg'),
 			name: 'Caja Tropical 7kg',
 			desc: 'Sabores tropicales intensos ideales para jugos, snacks y recetas creativas.',
 			weight: 7,
@@ -588,7 +588,7 @@ function getFallbackBoxes() {
 		{
 			id: 104,
 			category: 'Desayuno',
-			img: resolveImagePath('/images/products/fresa-premium.jpg'),
+			img: resolveImagePath('/images/caja/caja-mixta.jpg'),
 			name: 'Caja Desayuno 4kg',
 			desc: 'Frutas dulces y balanceadas para iniciar el día con energía y frescura.',
 			weight: 4,
