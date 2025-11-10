@@ -465,7 +465,7 @@ async function loadModules() {
     initChatWidget();
     renderAuthNav();
     setupAccountDropdown();
-    setupHeaderScrollBehavior(); // Comportamiento de ocultar/mostrar header en scroll
+    // Header ahora es estático fijo, no necesita comportamiento de scroll
 
     // Initialize checkout modals after DOM is ready
     window.checkoutModalStore = new CheckoutModalStore();
@@ -537,6 +537,7 @@ function setupAccountDropdown() {
 function setupMobileNav() {
   const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
   const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+  const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
   const navLinks = document.querySelector('.nav-links');
   
   if (!mobileMenuToggle || !mobileMenuPanel) return;
@@ -550,6 +551,7 @@ function setupMobileNav() {
     
     if (isMenuOpen) {
       mobileMenuPanel.classList.remove('hidden');
+      if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
       mobileMenuToggle.classList.add('active');
       mobileMenuToggle.setAttribute('aria-expanded', 'true');
       mobileMenuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
@@ -581,6 +583,7 @@ function setupMobileNav() {
   function closeMobileMenu() {
     isMenuOpen = false;
     mobileMenuPanel.classList.add('hidden');
+    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
     mobileMenuToggle.classList.remove('active');
     mobileMenuToggle.setAttribute('aria-expanded', 'false');
     const icon = mobileMenuToggle.querySelector('i');
@@ -590,7 +593,12 @@ function setupMobileNav() {
     document.body.style.overflow = ''; // Restore scroll
   }
 
-  // Close menu when clicking outside
+  // Close menu when clicking overlay
+  if (mobileMenuOverlay) {
+    mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+  }
+
+  // Close menu when clicking outside (in addition to overlay)
   document.addEventListener('click', (e) => {
     if (isMenuOpen && !mobileMenuPanel.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
       closeMobileMenu();
