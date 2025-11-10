@@ -171,38 +171,45 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.98) !important;
+    background: linear-gradient(180deg, rgba(0,0,0,0.99), rgba(0,0,0,0.97)) !important;
     backdrop-filter: blur(30px) saturate(180%);
-    padding: 1.5rem 0;
+    padding: 1.5rem 0 3rem 0;
     overflow-y: auto;
-    box-shadow: 0 10px 60px rgba(0,0,0,0.8);
+    overflow-x: hidden;
+    box-shadow: inset 0 1px 0 rgba(255,155,64,0.1), 0 10px 60px rgba(0,0,0,0.9);
     z-index: 9998;
     -webkit-overflow-scrolling: touch;
-    /* Transiciones */
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Estado visible por defecto, controlado por clase .hidden */
   }
 
   .mobile-menu.hidden {
     opacity: 0 !important;
-    transform: translateX(-100%) !important;
+    visibility: hidden !important;
+    transform: translateY(-20px) !important;
     pointer-events: none !important;
-    /* NO usar display: none para mantener las transiciones */
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s 0.25s;
+  }
+  
+  .mobile-menu:not(.hidden) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .mobile-menu nav {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    padding: 0 1.25rem;
-    max-width: 500px;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    max-width: 480px;
     margin: 0 auto;
   }
 
   /* Animación de entrada para items del menú */
   .mobile-menu:not(.hidden) a {
-    animation: slideInLeft 0.4s ease-out backwards;
+    animation: slideInMenu 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   }
 
   .mobile-menu:not(.hidden) a:nth-child(1) { animation-delay: 0.05s; }
@@ -214,34 +221,39 @@ body {
   .mobile-menu:not(.hidden) a:nth-child(7) { animation-delay: 0.35s; }
   .mobile-menu:not(.hidden) a:nth-child(8) { animation-delay: 0.4s; }
 
-  @keyframes slideInLeft {
+  @keyframes slideInMenu {
     from {
       opacity: 0;
-      transform: translateX(-30px);
+      transform: translateY(-15px) scale(0.95);
     }
     to {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateY(0) scale(1);
     }
   }
 
   .mobile-menu a {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1.25rem 1.5rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
-    border: 1.5px solid rgba(255,255,255,0.12);
-    color: var(--txt) !important;
-    font-size: 1.05rem;
+    gap: 1.25rem;
+    padding: 1.125rem 1.5rem;
+    border-radius: 14px;
+    background: linear-gradient(135deg, 
+      rgba(255,255,255,0.1) 0%, 
+      rgba(255,255,255,0.05) 50%,
+      rgba(255,255,255,0.08) 100%
+    );
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #ffffff !important;
+    font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     position: relative;
     overflow: hidden;
-    min-height: 60px;
+    min-height: 58px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
 
   .mobile-menu a::before {
@@ -251,9 +263,12 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255,155,64,0.15), rgba(139,218,1,0.1));
+    background: linear-gradient(135deg, 
+      rgba(255,155,64,0.2), 
+      rgba(139,218,1,0.15)
+    );
     opacity: 0;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.2s ease;
   }
 
   .mobile-menu a:active::before {
@@ -261,42 +276,48 @@ body {
   }
 
   .mobile-menu a:active {
-    transform: scale(0.97);
-    border-color: var(--brand);
-    box-shadow: 0 4px 20px rgba(255,155,64,0.25);
+    transform: scale(0.98);
+    border-color: rgba(255,155,64,0.5);
+    box-shadow: 0 4px 16px rgba(255,155,64,0.2);
   }
 
   .mobile-menu a i {
-    font-size: 1.5rem;
-    width: 32px;
-    height: 32px;
+    font-size: 1.35rem;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, var(--brand), #ff7820);
-    border-radius: 10px;
-    color: #000;
+    background: linear-gradient(135deg, 
+      var(--brand) 0%, 
+      #ff8533 100%
+    );
+    border-radius: 11px;
+    color: #000000;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(255,155,64,0.3);
+    box-shadow: 
+      0 2px 8px rgba(255,155,64,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.3);
     position: relative;
     z-index: 1;
+    font-weight: 700;
   }
 
   .mobile-menu a span {
     flex: 1;
     position: relative;
     z-index: 1;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
+    color: #ffffff;
   }
 
-  /* Separador visual entre grupos */
+  /* Separador visual elegante */
   .mobile-menu nav::after {
     content: '';
     display: block;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    margin: 0.5rem 0;
+    height: 0;
+    margin: 0;
   }
 
   /* Account button mobile */

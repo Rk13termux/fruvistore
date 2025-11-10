@@ -72,7 +72,7 @@ h1, h2, h3, h4, h5, h6,
 .navbar,
 .nav-links,
 .nav-links a,
-.mobile-menu,
+.mobile-menu-toggle,
 .account-btn,
 .account-menu,
 .account-link {
@@ -135,6 +135,8 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 2px;
   box-shadow: 0 0 8px rgba(255,155,64,0.4);
 }
+
+/* DEPRECATED: Mobile menu button - Now using .mobile-menu-toggle in mobile-responsive.css
 .mobile-menu {
   display: none;
   background: none;
@@ -149,6 +151,7 @@ h1, h2, h3, h4, h5, h6,
 .mobile-menu:hover {
   background: var(--surface);
 }
+*/
 
 /* Footer - black glass */
 .footer {
@@ -4671,6 +4674,7 @@ h1, h2, h3, h4, h5, h6,
     border: 1px solid rgba(255,155,64,0.3);
   }
 
+  /* DEPRECATED: Old mobile menu styles - Now in mobile-responsive.css
   .mobile-menu {
     display: flex;
     align-items: center;
@@ -4708,6 +4712,7 @@ h1, h2, h3, h4, h5, h6,
   .mobile-menu.active i {
     transform: rotate(90deg);
   }
+  */
 
   .premium-tab.hidden {
     display: none !important;
