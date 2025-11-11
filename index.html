@@ -23,7 +23,7 @@
     <header class="header">
         <nav class="navbar">
       <div class="logo">
-        <img src="./public/logo.png" alt="Fruvi" class="logo-mark">
+        <img src="/logo.png" alt="Fruvi" class="logo-mark">
         <span>Fruvi</span>
       </div>
             <ul class="nav-links" role="navigation" aria-label="Menú principal">
@@ -61,28 +61,84 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
+        <div class="footer-container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Fruvi</h3>
-                    <p>La mejor selección de frutas frescas y premium para ti y tu familia.</p>
+                <div class="footer-section footer-brand">
+                    <h3>🍊 Fruvi</h3>
+                    <p>La mejor selección de frutas frescas y premium directamente a tu puerta. Calidad garantizada, frescura incomparable.</p>
+                    <div class="footer-certifications">
+                        <span class="cert-badge">✓ Orgánico</span>
+                        <span class="cert-badge">✓ Certificado</span>
+                        <span class="cert-badge">✓ 100% Natural</span>
+                    </div>
                 </div>
+                
+                <div class="footer-section">
+                    <h3>Navegación</h3>
+                    <ul class="footer-links">
+                        <li><a href="#/tienda"><i class="fas fa-store"></i> Tienda</a></li>
+                        <li><a href="#/cajas"><i class="fas fa-box"></i> Cajas Premium</a></li>
+                        <li><a href="#/nutricion"><i class="fas fa-apple-alt"></i> Nutrición</a></li>
+                        <li><a href="#/recetas"><i class="fas fa-utensils"></i> Recetas</a></li>
+                        <li><a href="#/asistente"><i class="fas fa-robot"></i> Asistente IA</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Información</h3>
+                    <ul class="footer-links">
+                        <li><a href="#/about"><i class="fas fa-info-circle"></i> Sobre Nosotros</a></li>
+                        <li><a href="#/privacy"><i class="fas fa-shield-alt"></i> Privacidad</a></li>
+                        <li><a href="#/terms"><i class="fas fa-file-contract"></i> Términos</a></li>
+                        <li><a href="#/shipping"><i class="fas fa-shipping-fast"></i> Envíos</a></li>
+                        <li><a href="#/returns"><i class="fas fa-undo"></i> Devoluciones</a></li>
+                    </ul>
+                </div>
+                
                 <div class="footer-section">
                     <h3>Contacto</h3>
-                    <p><i class="fas fa-phone"></i> +1 234 567 890</p>
-                    <p><i class="fas fa-envelope"></i> info@freshfruits.com</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Síguenos</h3>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-phone"></i> <a href="tel:+573001234567">+57 300 123 4567</a></li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:info@fruvi.co">info@fruvi.co</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> Bogotá, Colombia</li>
+                        <li><i class="fas fa-clock"></i> Lun - Sáb: 7AM - 8PM</li>
+                    </ul>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section footer-newsletter">
+                    <h3>Newsletter</h3>
+                    <p>Recibe ofertas exclusivas y consejos de nutrición</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Tu email" aria-label="Email para newsletter">
+                        <button type="button"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                    <div class="payment-methods">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-cc-amex"></i>
+                        <i class="fab fa-cc-paypal"></i>
                     </div>
                 </div>
             </div>
+            
             <div class="footer-bottom">
-                <p>&copy; 2024 FreshFruits. Todos los derechos reservados.</p>
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 Fruvi - Todos los derechos reservados</p>
+                    <div class="footer-legal">
+                        <a href="#/privacy">Privacidad</a>
+                        <span>•</span>
+                        <a href="#/terms">Términos</a>
+                        <span>•</span>
+                        <a href="#/cookies">Cookies</a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

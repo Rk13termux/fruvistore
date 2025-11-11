@@ -36,27 +36,80 @@ export async function renderStorePage(root) {
     <section class="store">
       <!-- Hero Section -->
       <div class="store-hero">
-        <div class="container">
+        <div class="hero-background">
+          <div class="hero-particles"></div>
+          <div class="hero-gradient"></div>
+        </div>
+        
+        <div class="hero-container">
           <div class="hero-content">
-            <h1 class="hero-title">
-              <i class="fas fa-shopping-basket"></i>
-              Tienda de Frutas Premium
-            </h1>
-            <p class="hero-subtitle">
-              Descubre nuestra selección exclusiva de frutas frescas y orgánicas, cultivadas con pasión y entregadas con cuidado
-            </p>
-            <div class="hero-stats">
-              <div class="stat-item">
-                <span class="stat-number">${products.length}</span>
-                <span class="stat-label">Productos</span>
+            <!-- Single row layout -->
+            <div class="hero-single-row">
+              <!-- Badge + Logo -->
+              <div class="hero-left">
+                <div class="hero-badge">
+                  <i class="fas fa-crown"></i>
+                  <span>Calidad Premium</span>
+                </div>
+                <div class="hero-logo-wrapper">
+                  <img src="/logo.png" alt="Fruvi Logo" class="hero-logo">
+                </div>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">${categories.length - 1}</span>
-                <span class="stat-label">Categorías</span>
+              
+              <!-- Title + Subtitle -->
+              <div class="hero-center">
+                <h1 class="hero-title-inline">
+                  <span class="title-part">Frutas Frescas</span>
+                  <span class="title-highlight-inline">Directo a tu Puerta</span>
+                </h1>
+                <p class="hero-subtitle-inline">
+                  <i class="fas fa-check-circle"></i> 100% Orgánico
+                  <span class="separator">•</span>
+                  <i class="fas fa-truck"></i> Entrega Hoy
+                  <span class="separator">•</span>
+                  <i class="fas fa-shield-alt"></i> Frescura Garantizada
+                </p>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">100%</span>
-                <span class="stat-label">Fresco</span>
+              
+              <!-- Stats inline -->
+              <div class="hero-stats-inline">
+                <div class="stat-inline">
+                  <span class="stat-number">${products.length}+</span>
+                  <span class="stat-text">Productos</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-inline stat-featured">
+                  <span class="stat-number">100%</span>
+                  <span class="stat-text">Satisfacción</span>
+                  <span class="stat-badge-mini">⭐</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-inline">
+                  <span class="stat-number">${categories.length - 1}</span>
+                  <span class="stat-text">Categorías</span>
+                </div>
+              </div>
+              
+              <!-- Trust badges inline -->
+              <div class="hero-trust-inline">
+                <div class="trust-mini">
+                  <i class="fas fa-shipping-fast"></i>
+                  <span>Express</span>
+                </div>
+                <div class="trust-mini">
+                  <i class="fas fa-leaf"></i>
+                  <span>Orgánico</span>
+                </div>
+                <div class="trust-mini">
+                  <i class="fas fa-lock"></i>
+                  <span>Seguro</span>
+                </div>
+              </div>
+              
+              <!-- Urgency banner -->
+              <div class="hero-urgency-inline">
+                <i class="fas fa-fire"></i>
+                <span>Envío GRATIS +$50k</span>
               </div>
             </div>
           </div>
@@ -64,25 +117,37 @@ export async function renderStorePage(root) {
 
         <!-- Best Sellers Gallery -->
         <div class="best-sellers-gallery">
-          <h2 class="gallery-title">Frutas Más Vendidas</h2>
+          <h2 class="gallery-title">
+            <i class="fas fa-fire"></i>
+            Los Más Vendidos de la Semana
+            <span class="trending-badge">TRENDING</span>
+          </h2>
           <div class="gallery-scroll infinite-scroll">
             <div class="gallery-track">
               ${bestSellers.map(product => `
                 <div class="gallery-item">
+                  <div class="hot-badge">🔥 HOT</div>
                   <img src="${product.img}" alt="${product.name}" loading="lazy">
-                  <div class="gallery-item-info">
-                    <h4>${product.name}</h4>
-                    <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
+                  <div class="gallery-item-overlay">
+                    <div class="gallery-item-info">
+                      <h4>${product.name}</h4>
+                      <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
+                      <span class="gallery-cta">¡Agregar al Carrito!</span>
+                    </div>
                   </div>
                 </div>
               `).join('')}
               <!-- Duplicate for infinite scroll -->
               ${bestSellers.map(product => `
                 <div class="gallery-item">
+                  <div class="hot-badge">🔥 HOT</div>
                   <img src="${product.img}" alt="${product.name}" loading="lazy">
-                  <div class="gallery-item-info">
-                    <h4>${product.name}</h4>
-                    <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
+                  <div class="gallery-item-overlay">
+                    <div class="gallery-item-info">
+                      <h4>${product.name}</h4>
+                      <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
+                      <span class="gallery-cta">¡Agregar al Carrito!</span>
+                    </div>
                   </div>
                 </div>
               `).join('')}
