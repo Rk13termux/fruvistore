@@ -62,13 +62,20 @@ export async function renderStorePage(root) {
                   <span class="title-part">Frutas Frescas</span>
                   <span class="title-highlight-inline">Directo a tu Puerta</span>
                 </h1>
-                <p class="hero-subtitle-inline">
-                  <i class="fas fa-check-circle"></i> 100% Orgánico
-                  <span class="separator">•</span>
-                  <i class="fas fa-truck"></i> Entrega Hoy
-                  <span class="separator">•</span>
-                  <i class="fas fa-shield-alt"></i> Frescura Garantizada
-                </p>
+                <div class="hero-subtitle-inline">
+                  <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>100% Orgánico</span>
+                  </div>
+                  <div class="feature-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Entrega Hoy</span>
+                  </div>
+                  <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Frescura Garantizada</span>
+                  </div>
+                </div>
               </div>
               
               <!-- Stats inline -->
@@ -132,7 +139,6 @@ export async function renderStorePage(root) {
                     <div class="gallery-item-info">
                       <h4>${product.name}</h4>
                       <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
-                      <span class="gallery-cta">¡Agregar al Carrito!</span>
                     </div>
                   </div>
                 </div>
@@ -146,7 +152,6 @@ export async function renderStorePage(root) {
                     <div class="gallery-item-info">
                       <h4>${product.name}</h4>
                       <span class="gallery-price">$${product.priceKg.toFixed(2)}/kg</span>
-                      <span class="gallery-cta">¡Agregar al Carrito!</span>
                     </div>
                   </div>
                 </div>

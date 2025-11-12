@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Mobile - Fruvi</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/mobile-responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.9);
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 9999;
+            max-width: 300px;
+        }
+        .debug-info div {
+            margin: 5px 0;
+        }
+        .ok { color: #0f0; }
+        .error { color: #f00; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <img src="/logo.png" alt="Fruvi" class="logo-mark">
+                <span>Fruvi</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#/"><i class="fas fa-home"></i> Inicio</a></li>
+                <li><a href="#/tienda"><i class="fas fa-store"></i> Tienda</a></li>
+            </ul>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main style="padding: 100px 20px; text-align: center;">
+        <h1>🔍 Debug Mobile View</h1>
+        <p>Viewport: <span id="viewport"></span></p>
+    </main>
+
+    <div class="debug-info">
+        <h3>📱 Mobile Debug Info</h3>
+        <div>Viewport: <span id="vw"></span></div>
+        <div>Body Width: <span id="bw"></span></div>
+        <div>Scroll Horizontal: <span id="sh"></span></div>
+        <div>Menu Button: <span id="mb"></span></div>
+        <div>Display: <span id="disp"></span></div>
+        <div>Visibility: <span id="vis"></span></div>
+        <div>Opacity: <span id="op"></span></div>
+    </div>
+
+    <script>
+        function updateDebugInfo() {
+            const btn = document.querySelector('.mobile-menu-toggle');
+            const body = document.body;
+            
+            document.getElementById('vw').textContent = window.innerWidth + 'px';
+            document.getElementById('bw').textContent = body.offsetWidth + 'px';
+            document.getElementById('viewport').textContent = window.innerWidth + 'px';
+            
+            const hasHScroll = body.scrollWidth > body.clientWidth;
+            const shEl = document.getElementById('sh');
+            shEl.textContent = hasHScroll ? 'YES ❌' : 'NO ✅';
+            shEl.className = hasHScroll ? 'error' : 'ok';
+            
+            if (btn) {
+                const computedStyle = window.getComputedStyle(btn);
+                const mbEl = document.getElementById('mb');
+                const dispEl = document.getElementById('disp');
+                const visEl = document.getElementById('vis');
+                const opEl = document.getElementById('op');
+                
+                mbEl.textContent = 'Found ✅';
+                mbEl.className = 'ok';
+                
+                dispEl.textContent = computedStyle.display;
+                dispEl.className = computedStyle.display === 'flex' ? 'ok' : 'error';
+                
+                visEl.textContent = computedStyle.visibility;
+                visEl.className = computedStyle.visibility === 'visible' ? 'ok' : 'error';
+                
+                opEl.textContent = computedStyle.opacity;
+                opEl.className = computedStyle.opacity === '1' ? 'ok' : 'error';
+            } else {
+                document.getElementById('mb').textContent = 'NOT FOUND ❌';
+                document.getElementById('mb').className = 'error';
+            }
+        }
+        
+        updateDebugInfo();
+        window.addEventListener('resize', updateDebugInfo);
+        setInterval(updateDebugInfo, 1000);
+    </script>
+</body>
+</html>
