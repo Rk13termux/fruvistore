@@ -544,45 +544,12 @@ function setupMobileNav() {
   if (!mobileMenuToggle || !mobileMenuPanel) return;
 
   let isMenuOpen = false;
+  let scrollLocked = false;
 
-  // Toggle menu on button click
-  mobileMenuToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    isMenuOpen = !isMenuOpen;
-    
-    if (isMenuOpen) {
-      mobileMenuPanel.classList.remove('hidden');
-      if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
-      mobileMenuToggle.classList.add('active');
-      mobileMenuToggle.setAttribute('aria-expanded', 'true');
-      mobileMenuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
-      document.body.classList.add('menu-open'); // Bloquear scroll solo cuando menú está abierto
-      
-      // Clone nav links to mobile menu
-      const nav = mobileMenuPanel.querySelector('nav');
-      if (nav && navLinks) {
-        nav.innerHTML = '';
-        navLinks.querySelectorAll('li').forEach(li => {
-          if (!li.classList.contains('hidden') && li.style.display !== 'none') {
-            const link = li.querySelector('a');
-            if (link) {
-              const mobileLink = link.cloneNode(true);
-              mobileLink.addEventListener('click', closeMobileMenu);
-              nav.appendChild(mobileLink);
-            }
-          }
-        });
-        
-        // Agregar widget de créditos después de clonar los links
-        updateMobileCreditsWidget();
-      }
-    } else {
-      closeMobileMenu();
-    }
-  });
-
+  // Define closeMobileMenu first so it can be used in event listeners
   function closeMobileMenu() {
     isMenuOpen = false;
+    scrollLocked = false;
     mobileMenuPanel.classList.add('hidden');
     if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
     mobileMenuToggle.classList.remove('active');
@@ -591,8 +558,155 @@ function setupMobileNav() {
     if (icon.classList.contains('fa-times')) {
       icon.classList.replace('fa-times', 'fa-bars');
     }
-    document.body.classList.remove('menu-open'); // Restaurar scroll
+    document.body.classList.remove('menu-open');
+    
+    // Remover el listener de prevención de scroll
+    document.removeEventListener('wheel', preventScroll, { passive: false });
+    document.removeEventListener('touchmove', preventScroll, { passive: false });
+
+    // Si activamos modo floating antes, revertir estilos inline al cerrar
+    if (mobileMenuPanel && mobileMenuPanel.dataset && mobileMenuPanel.dataset.floating === 'true') {
+      mobileMenuPanel.style.position = '';
+      mobileMenuPanel.style.top = '';
+      mobileMenuPanel.style.left = '';
+      mobileMenuPanel.style.right = '';
+      mobileMenuPanel.style.transform = '';
+      mobileMenuPanel.style.maxWidth = '';
+      mobileMenuPanel.style.margin = '';
+      mobileMenuPanel.style.zIndex = '';
+      delete mobileMenuPanel.dataset.floating;
+      if (mobileMenuOverlay) mobileMenuOverlay.style.zIndex = '';
+    }
   }
+
+  // Función para prevenir scroll
+  function preventScroll(e) {
+    if (scrollLocked) {
+      e.preventDefault();
+    }
+  }
+
+  // Toggle menu on button click
+  mobileMenuToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    isMenuOpen = !isMenuOpen;
+    console.log('Toggle clickeado. isMenuOpen:', isMenuOpen);
+    
+    if (isMenuOpen) {
+      // Bloquear scroll mientras el menú está abierto (para que position:fixed funcione correctamente)
+      scrollLocked = true;
+      document.addEventListener('wheel', preventScroll, { passive: false });
+      document.addEventListener('touchmove', preventScroll, { passive: false });
+      
+      mobileMenuPanel.classList.remove('hidden');
+      console.log('Removida clase hidden. Panel clases:', mobileMenuPanel.className);
+      
+      if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+      mobileMenuToggle.classList.add('active');
+      mobileMenuToggle.setAttribute('aria-expanded', 'true');
+      mobileMenuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
+      document.body.classList.add('menu-open');
+      
+      // Clone nav links to mobile menu con iconos mejorados
+      const nav = mobileMenuPanel.querySelector('nav');
+      
+      if (nav && navLinks) {
+        // NO borrar el contenido si ya hay items de prueba
+        const hasTestItems = nav.querySelector('.test-item');
+        
+        if (!hasTestItems) {
+          nav.innerHTML = '';
+          
+          // Mapeo de iconos para cada sección
+          const iconMap = {
+            'inicio': 'fa-home',
+            'login': 'fa-sign-in-alt',
+            'registro': 'fa-user-plus',
+            'tienda': 'fa-store',
+            'cajas': 'fa-box',
+            'recetas': 'fa-utensils',
+            'nutricion': 'fa-apple-alt',
+            'asistente': 'fa-robot',
+            'dr. ia': 'fa-robot',
+            'perfil': 'fa-user-circle',
+            'carrito': 'fa-shopping-cart',
+            'dashboard': 'fa-chart-line',
+            'suscripcion': 'fa-crown'
+          };
+          
+          let itemsAdded = 0;
+          navLinks.querySelectorAll('li').forEach(li => {
+            if (!li.classList.contains('hidden') && li.style.display !== 'none') {
+              const link = li.querySelector('a');
+              if (link) {
+                const mobileLink = document.createElement('a');
+                mobileLink.href = link.href;
+                mobileLink.className = link.className;
+                
+                // Obtener texto del enlace
+                const textContent = link.textContent.trim().toLowerCase();
+                
+                // Buscar icono existente o asignar uno del mapa
+                let iconClass = 'fa-circle';
+                const existingIcon = link.querySelector('i');
+                if (existingIcon) {
+                  iconClass = Array.from(existingIcon.classList).find(c => c.startsWith('fa-')) || 'fa-circle';
+                } else {
+                  // Buscar en el mapa de iconos
+                  for (const [key, icon] of Object.entries(iconMap)) {
+                    if (textContent.includes(key)) {
+                      iconClass = icon;
+                      break;
+                    }
+                  }
+                }
+                
+                // Crear estructura del link con icono
+                const icon = document.createElement('i');
+                icon.className = `fas ${iconClass}`;
+                
+                const span = document.createElement('span');
+                span.textContent = link.textContent.trim();
+                
+                mobileLink.appendChild(icon);
+                mobileLink.appendChild(span);
+                mobileLink.addEventListener('click', closeMobileMenu);
+                
+                nav.appendChild(mobileLink);
+                itemsAdded++;
+              }
+            }
+          });
+          
+          // Agregar botón DR. IA prominente al final del menú
+          const drIaBtn = document.createElement('a');
+          drIaBtn.href = '#/asistente';
+          drIaBtn.className = 'mobile-menu-dr-ia-btn';
+          drIaBtn.innerHTML = '<i class="fas fa-robot"></i> <span>DR. IA</span>';
+          drIaBtn.addEventListener('click', closeMobileMenu);
+          nav.appendChild(drIaBtn);
+          
+        } else {
+          // Agregar event listeners a los items estáticos
+          nav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+          });
+          
+          // Agregar botón DR. IA si no existe
+          if (!nav.querySelector('.mobile-menu-dr-ia-btn')) {
+            const drIaBtn = document.createElement('a');
+            drIaBtn.href = '#/asistente';
+            drIaBtn.className = 'mobile-menu-dr-ia-btn';
+            drIaBtn.innerHTML = '<i class="fas fa-robot"></i> <span>DR. IA</span>';
+            drIaBtn.addEventListener('click', closeMobileMenu);
+            nav.appendChild(drIaBtn);
+          }
+        }
+      }
+    } else {
+      closeMobileMenu();
+    }
+  });
 
   // Close menu when clicking overlay
   if (mobileMenuOverlay) {
@@ -619,80 +733,6 @@ function setupMobileNav() {
       closeMobileMenu();
     }
   });
-
-  // Agregar widget de créditos al menú móvil
-  updateMobileCreditsWidget();
-}
-
-// Función para actualizar el widget de créditos en el menú móvil
-async function updateMobileCreditsWidget() {
-  const mobileMenuPanel = document.getElementById('mobileMenuPanel');
-  if (!mobileMenuPanel) return;
-
-  const nav = mobileMenuPanel.querySelector('nav');
-  if (!nav) return;
-
-  // Verificar si el usuario está logueado
-  let user = null;
-  try {
-    user = await window.getUser();
-  } catch (error) {
-    console.log('Usuario no logueado, no se muestra widget de créditos');
-    return;
-  }
-
-  if (!user) return;
-
-  // Eliminar widget existente si lo hay
-  const existingWidget = nav.querySelector('.mobile-credits-widget');
-  if (existingWidget) {
-    existingWidget.remove();
-  }
-
-  // Obtener créditos del usuario
-  let credits = 0;
-  try {
-    const { data: profile } = await window.supabase
-      .from('user_profiles')
-      .select('credits')
-      .eq('user_id', user.id)
-      .single();
-    
-    credits = profile?.credits || 0;
-  } catch (error) {
-    console.error('Error obteniendo créditos:', error);
-  }
-
-  // Crear el widget de créditos
-  const widget = document.createElement('div');
-  widget.className = 'mobile-credits-widget';
-  widget.innerHTML = `
-    <div class="mobile-credits-widget__header">
-      <div class="mobile-credits-widget__icon">
-        <i class="fas fa-coins"></i>
-      </div>
-      <div class="mobile-credits-widget__info">
-        <div class="mobile-credits-widget__label">Mis Créditos</div>
-        <div class="mobile-credits-widget__amount">${credits}</div>
-      </div>
-    </div>
-    <button class="mobile-credits-widget__btn" onclick="window.location.hash='#/subscription'">
-      <i class="fas fa-shopping-cart"></i>
-      <span>Comprar Créditos</span>
-    </button>
-  `;
-
-  // Insertar el widget después del enlace de perfil
-  const profileLink = Array.from(nav.querySelectorAll('a')).find(a => 
-    a.textContent.includes('Perfil') || a.href.includes('#/perfil') || a.href.includes('#/profile')
-  );
-
-  if (profileLink) {
-    profileLink.after(widget);
-  } else {
-    // Si no hay enlace de perfil, agregar al inicio del nav
-    nav.insertBefore(widget, nav.firstChild);
-  }
 }
 
 // Efecto de widget flotante para el header al hacer scroll - DESACTIVADO
@@ -712,6 +752,14 @@ function setupHeaderScrollBehavior() {
   let scrollThreshold = 10; // Píxeles mínimos de scroll para activar
 
   window.addEventListener('scroll', () => {
+    // Si el menú está abierto, NO ocultar el header
+    const mobileMenuPanel = document.getElementById('mobileMenuPanel');
+    if (mobileMenuPanel && !mobileMenuPanel.classList.contains('hidden')) {
+      header.classList.remove('header-hidden');
+      header.classList.add('header-visible');
+      return;
+    }
+
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     // Si estamos muy arriba, siempre mostrar header

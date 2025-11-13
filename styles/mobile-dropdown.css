@@ -1,0 +1,82 @@
+/* ===============================================
+   NUEVO MENÚ DROPDOWN PROFESIONAL PARA MÓVILES
+   =============================================== */
+
+@media (max-width: 768px) {
+    /* Header necesita position:relative para que el menú se ancle correctamente */
+    .header {
+        position: fixed !important; /* Header fijo para una experiencia profesional */
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: linear-gradient(180deg, rgba(11, 15, 20, 0.98), rgba(11, 15, 20, 0.9)) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+    
+    .navbar {
+      position: relative; /* Contexto de anclaje para el dropdown */
+    }
+
+    /* Contenedor del Dropdown */
+    .mobile-menu-dropdown {
+        display: none; /* Oculto por defecto */
+        position: absolute;
+        top: 100%; /* Se despliega justo debajo del navbar */
+        left: 0;
+        width: 100%;
+        background: rgba(11, 15, 20, 0.95);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-radius: 0 0 1rem 1rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 155, 64, 0.2);
+        border-top: none;
+        z-index: 999;
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Estado Activo del Dropdown */
+    .mobile-menu-dropdown.active {
+        display: flex; /* Se muestra con Flexbox */
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Ítems del Menú */
+    .mobile-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 1rem;
+        color: #fff;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        transition: background-color 0.2s ease;
+    }
+
+    .mobile-menu-item:hover,
+    .mobile-menu-item:active {
+        background-color: rgba(255, 155, 64, 0.15);
+    }
+
+    .mobile-menu-item i {
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+        color: var(--brand);
+    }
+
+    /* Body necesita padding-top para no quedar detrás del header fijo */
+    body {
+        padding-top: 70px;
+    }
+}
