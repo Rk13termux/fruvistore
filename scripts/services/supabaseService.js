@@ -50,6 +50,17 @@ async function initializeDatabases() {
   try {
     console.log('🔄 Inicializando clientes de base de datos...');
 
+    // Wait for Supabase to be available
+    if (typeof supabase === 'undefined' || typeof supabase.createClient === 'undefined') {
+      // Check if window.supabase.createClient is available (from HTML CDN load)
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        console.log('✅ Using Supabase createClient from window object');
+        supabase = window.supabase; // Use the CDN's supabase object
+      } else {
+        throw new Error('Supabase library not loaded. Make sure to include the Supabase CDN script.');
+      }
+    }
+
     // Initialize users database client
     if (!usersClient) {
       usersClient = supabase.createClient(SUPABASE_USERS_URL, SUPABASE_USERS_ANON_KEY, {

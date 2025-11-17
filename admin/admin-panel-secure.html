@@ -14,9 +14,17 @@
     <meta http-equiv="Expires" content="0">
     
     <title>Panel Admin - Fruvi</title>
-    <link rel="stylesheet" href="../styles/admin.css?v=2.0.0">
+    <link rel="stylesheet" href="../styles/admin.css?v=2.1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- Config -->
+    <script src="../public/config.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -125,6 +133,22 @@
     </main>
 
     <!-- Scripts -->
+    <script>
+        // Wait for Supabase library and config to load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Make supabase.createClient available globally for supabaseService.js
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                // Expose the createClient function globally for the service to use
+                window.supabase = {
+                    createClient: supabase.createClient
+                };
+                console.log('✅ Supabase CDN library loaded and exposed globally');
+            } else {
+                console.error('❌ Supabase library not loaded');
+            }
+        });
+    </script>
+    
     <script type="module">
         // Authentication check
         function checkAdminAuth() {
