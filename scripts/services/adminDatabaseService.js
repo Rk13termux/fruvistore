@@ -889,6 +889,136 @@ class AdminDatabaseService {
         }
     }
 
+    async getDashboardSummary({ startDate = null, endDate = null, period = 'month' } = {}) {
+        await this.ensureInitialized();
+        const summary = {
+            products: 0,
+            productsActive: 0,
+            productsInactive: 0,
+            boxes: 0,
+            boxesActive: 0,
+            boxesFeatured: 0,
+            inventoryValue: 0,
+            totalStockKg: 0,
+            lowStockProducts: 0,
+            customers: 0,
+            customersWithCredits: 0,
+            creditsTotal: 0,
+            creditsPurchased: 0,
+            ordersCount: 0,
+            revenue: 0,
+            salesByDay: [],
+            avgOrderValue: 0,
+            categoriesCount: 0
+        };
+
+        try {
+            // Products count and details
+            try {
+                const { data: productsData } = await this.productsClient
+                    .from('current_products')
+                    .select('id, category, is_active');
+                
+                summary.products = (productsData || []).length;
+                summary.productsActive = (productsData || []).filter(p => p.is_active !== false).length;
+                summary.productsInactive = summary.products - summary.productsActive;
+                
+                // Count unique categories
+                const categories = new Set((productsData || []).map(p => p.category).filter(Boolean));
+                summary.categoriesCount = categories.size;
+            } catch (err) {
+                console.error('Error fetching products:', err);
+            }
+
+            // Boxes count and details
+            try {
+                const { data: boxesData } = await this.productsClient
+                    .from('current_boxes')
+                    .select('id, available, featured');
+                
+                summary.boxes = (boxesData || []).length;
+                summary.boxesActive = (boxesData || []).filter(b => b.available !== false).length;
+                summary.boxesFeatured = (boxesData || []).filter(b => b.featured === true).length;
+            } catch (err) {
+                console.error('Error fetching boxes:', err);
+            }
+
+            // Inventory value and stock details
+            try {
+                const { data: priceRows } = await this.productsClient
+                    .from('management_product_prices')
+                    .select('stock_kg, cost_per_kg, min_stock_kg')
+                    .eq('is_current', true);
+
+                summary.inventoryValue = (priceRows || []).reduce((sum, r) => {
+                    return sum + ((r.stock_kg || 0) * (r.cost_per_kg || 0));
+                }, 0);
+                
+                summary.totalStockKg = (priceRows || []).reduce((sum, r) => sum + (r.stock_kg || 0), 0);
+                summary.lowStockProducts = (priceRows || []).filter(r => 
+                    (r.stock_kg || 0) <= (r.min_stock_kg || 10)
+                ).length;
+            } catch (err) {
+                console.error('Error fetching inventory:', err);
+            }
+
+            // Customers count
+            try {
+                const { count } = await this.usersClient
+                    .from('customers')
+                    .select('id', { count: 'exact', head: true });
+                summary.customers = count || 0;
+            } catch (err) {
+                const { data: customersData } = await this.usersClient.from('customers').select('id');
+                summary.customers = (customersData || []).length;
+            }
+
+            // Credits details
+            try {
+                const { data: creditsData } = await this.usersClient
+                    .from('user_ai_credits')
+                    .select('credits_balance, total_credits_earned, total_credits_spent');
+                
+                summary.creditsTotal = (creditsData || []).reduce((s, r) => s + (r.credits_balance || 0), 0);
+                summary.customersWithCredits = (creditsData || []).filter(r => (r.credits_balance || 0) > 0).length;
+                
+                // Credits purchased = total earned
+                summary.creditsPurchased = (creditsData || []).reduce((s, r) => s + (r.total_credits_earned || 0), 0);
+            } catch (err) {
+                console.error('Error fetching credits:', err);
+            }
+
+            // Orders & revenue
+            try {
+                let query = this.usersClient.from('orders').select('total, created_at');
+                if (startDate) query = query.gte('created_at', startDate);
+                if (endDate) query = query.lte('created_at', endDate);
+                const { data: ordersData, error: ordersError } = await query;
+                
+                if (!ordersError && ordersData) {
+                    summary.ordersCount = ordersData.length;
+                    summary.revenue = (ordersData || []).reduce((s, o) => s + (Number(o.total) || 0), 0);
+                    summary.avgOrderValue = summary.ordersCount > 0 ? summary.revenue / summary.ordersCount : 0;
+
+                    // Aggregate sales by day
+                    const map = new Map();
+                    (ordersData || []).forEach(o => {
+                        const d = new Date(o.created_at).toISOString().slice(0,10);
+                        map.set(d, (map.get(d) || 0) + (Number(o.total) || 0));
+                    });
+                    summary.salesByDay = Array.from(map.entries()).map(([date, val]) => ({ date, value: val }));
+                }
+            } catch (err) {
+                console.error('Error fetching orders:', err);
+            }
+
+        } catch (error) {
+            console.error('Error building dashboard summary:', error);
+        }
+
+        return summary;
+    }
+
     async getBoxAnalytics() {
         await this.ensureInitialized();
         try {

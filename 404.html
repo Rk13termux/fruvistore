@@ -148,13 +148,24 @@
     </div>
     
     <script>
-        // Registrar intentos de acceso no autorizado
+        // Detectar y redirigir URLs de admin
         const attemptedPath = window.location.pathname;
-        const suspiciousPaths = ['admin', 'panel', 'dashboard', 'management'];
+        const attemptedUrl = window.location.href;
         
-        if (suspiciousPaths.some(path => attemptedPath.toLowerCase().includes(path))) {
-            console.warn('Acceso no autorizado detectado:', attemptedPath);
-            // Redirigir después de 3 segundos
+        console.log('404 - Attempted path:', attemptedPath);
+        
+        // Redirecciones específicas para admin
+        if (attemptedPath.includes('secure-access')) {
+            console.log('Redirecting to admin login...');
+            window.location.replace('/admin/secure-access.html');
+        } else if (attemptedPath.includes('admin-panel')) {
+            console.log('Redirecting to admin panel...');
+            window.location.replace('/admin/admin-panel-secure.html');
+        } else if (attemptedPath.match(/\/(admin|panel|dashboard|login)$/i)) {
+            console.log('Redirecting to admin login from generic path...');
+            window.location.replace('/admin/secure-access.html');
+        } else {
+            // Para otras páginas no encontradas, redirigir al home después de 3 segundos
             setTimeout(() => {
                 window.location.href = '/';
             }, 3000);
