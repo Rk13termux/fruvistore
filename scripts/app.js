@@ -897,6 +897,14 @@ async function renderAuthNav() {
   // Inicializar controlador global del dropdown (una sola vez)
   setupAccountDropdown();
   
+  // Sincronizar menú móvil después de actualizar navegación
+  if (window.MenuNavigation && typeof window.MenuNavigation.syncMenu === 'function') {
+    setTimeout(() => {
+      window.MenuNavigation.syncMenu();
+      console.log('📱 Menú móvil sincronizado con estado de autenticación');
+    }, 100);
+  }
+  
   console.log('✅ Auth navigation rendered');
 }
 

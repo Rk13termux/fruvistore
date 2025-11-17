@@ -8,51 +8,118 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Fruvi - Centro Médico Nutricional IA</title>
+    <!-- Estilos principales -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive-system.css">
     <link rel="stylesheet" href="styles/checkout.css">
     <link rel="stylesheet" href="styles/nutrition-v2.css">
     <link rel="stylesheet" href="styles/profile.css">
-    <link rel="stylesheet" href="styles/mobile-responsive.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Production Configuration -->
     <script src="config.js"></script>
   </head>
 <body>
-    <!-- Header -->
+    <!-- Header Profesional Responsive -->
     <header class="header">
         <nav class="navbar">
-      <div class="logo">
-        <img src="/logo.png" alt="Fruvi" class="logo-mark">
-        <span>Fruvi</span>
-      </div>
+            <!-- Logo -->
+            <a href="#/" class="logo">
+                <div class="logo-container">
+                    <img src="/logo.png" alt="Fruvi" class="logo-mark">
+                    <div class="logo-text">
+                        <span class="logo-title">Fruvi</span>
+                        <span class="logo-subtitle">Nutrición IA</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Menu Desktop/Tablet -->
             <ul class="nav-links" role="navigation" aria-label="Menú principal">
-                <!-- Pestañas básicas para invitados -->
-                <li class="basic-tab"><a href="#/"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
-                <li class="basic-tab"><a href="#/login"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a></li>
-                <li class="basic-tab"><a href="#/registro"><i class="fas fa-user-plus"></i> <span>Registro</span></a></li>
-                <!-- Pestañas premium (solo para usuarios registrados) -->
-                <li class="premium-tab hidden" data-tab="tienda"><a href="#/tienda"><i class="fas fa-store"></i> <span>Tienda</span></a></li>
-                <li class="premium-tab hidden" data-tab="cajas"><a href="#/cajas"><i class="fas fa-box"></i> <span>Cajas</span></a></li>
-                <li class="premium-tab hidden" data-tab="recetas"><a href="#/recetas"><i class="fas fa-utensils"></i> <span>Recetas</span></a></li>
-                <li class="premium-tab hidden" data-tab="nutricion"><a href="#/nutricion"><i class="fas fa-apple-alt"></i> <span>Nutrición</span></a></li>
-                <li class="premium-tab hidden" data-tab="asistente"><a href="#/asistente"><i class="fas fa-robot"></i> <span>Dr. IA</span></a></li>
+                <!-- Items básicos (invitados) -->
+                <li class="nav-item basic-tab">
+                    <a href="#/" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="nav-item basic-tab">
+                    <a href="#/login" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li class="nav-item basic-tab">
+                    <a href="#/registro" class="nav-link">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Registro</span>
+                    </a>
+                </li>
+                
+                <!-- Items premium (usuarios registrados) -->
+                <li class="nav-item premium-tab hidden" data-tab="tienda">
+                    <a href="#/tienda" class="nav-link">
+                        <i class="fas fa-store"></i>
+                        <span>Tienda</span>
+                    </a>
+                </li>
+                <li class="nav-item premium-tab hidden" data-tab="cajas">
+                    <a href="#/cajas" class="nav-link">
+                        <i class="fas fa-box"></i>
+                        <span>Cajas</span>
+                    </a>
+                </li>
+                <li class="nav-item premium-tab hidden" data-tab="recetas">
+                    <a href="#/recetas" class="nav-link">
+                        <i class="fas fa-utensils"></i>
+                        <span>Recetas</span>
+                    </a>
+                </li>
+                <li class="nav-item premium-tab hidden" data-tab="nutricion">
+                    <a href="#/nutricion" class="nav-link">
+                        <i class="fas fa-apple-alt"></i>
+                        <span>Nutrición</span>
+                    </a>
+                </li>
+                <li class="nav-item premium-tab hidden" data-tab="asistente">
+                    <a href="#/asistente" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        <span>Dr. IA</span>
+                    </a>
+                </li>
             </ul>
-            <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
-                <i class="fas fa-bars"></i>
+
+            <!-- Botón Hamburger Mobile -->
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menú" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
             </button>
         </nav>
     </header>
 
-    <!-- Mobile Menu Panel - FUERA del header con position:fixed -->
-    <div class="mobile-menu hidden" id="mobileMenuPanel">
-        <nav aria-label="Menú móvil">
-            <!-- Items se generan dinámicamente con JavaScript -->
+    <!-- Menu Mobile Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Menu Mobile Panel -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <div class="mobile-logo">
+                <img src="/logo.png" alt="Fruvi">
+                <div>
+                    <h3>Fruvi</h3>
+                    <p>Nutrición IA</p>
+                </div>
+            </div>
+            <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="mobile-menu-nav" role="navigation" aria-label="Menú móvil">
+            <!-- Items se generan dinámicamente desde JavaScript -->
         </nav>
     </div>
-
-    <!-- Mobile Menu Overlay - FUERA del header con position:fixed -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 
     <!-- SPA mount point -->
     <main id="app-root" class="app-root"></main>
@@ -146,6 +213,8 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Navigation Menu Professional -->
+    <script src="scripts/navigation-menu.js"></script>
     <!-- Mobile Debug Script -->
     <script src="scripts/mobile-debug.js"></script>
     <!-- Users Service - Login, Registration, Profiles -->
