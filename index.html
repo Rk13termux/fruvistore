@@ -218,52 +218,9 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- Navigation Menu Professional -->
-    <script src="scripts/navigation-menu.js?v=1.2.0"></script>
-    <script>
-      // Force cache clear and verify menu loading
-      (function() {
-        // Verificar que el menú de navegación se inicializó
-        setTimeout(() => {
-          if (!window.MenuNavigation) {
-            console.error('❌ MenuNavigation no se cargó. Recargando...');
-            // Intentar cargar manualmente con timestamp
-            const script = document.createElement('script');
-            script.src = 'scripts/navigation-menu.js?v=' + Date.now();
-            script.onerror = () => {
-              console.error('❌ Error crítico al cargar navigation-menu.js');
-              // Última tentativa: recargar toda la página una vez
-              if (!sessionStorage.getItem('menuReloaded')) {
-                sessionStorage.setItem('menuReloaded', 'true');
-                console.log('🔄 Recargando página para limpiar caché...');
-                location.reload(true);
-              }
-            };
-            document.head.appendChild(script);
-          } else {
-            console.log('✅ MenuNavigation cargado correctamente');
-            sessionStorage.removeItem('menuReloaded');
-          }
-        }, 500);
-
-        // Verificar elementos del DOM después de cargar
-        setTimeout(() => {
-          const hamburger = document.getElementById('hamburgerBtn');
-          const mobileMenu = document.getElementById('mobileMenu');
-          
-          if (hamburger && mobileMenu) {
-            console.log('✅ Elementos del menú encontrados en DOM');
-          } else {
-            console.error('❌ Elementos del menú NO encontrados:', {
-              hamburger: !!hamburger,
-              mobileMenu: !!mobileMenu
-            });
-          }
-        }, 1000);
-      })();
-    </script>
-    <!-- Mobile Debug Script -->
-    <script src="scripts/mobile-debug.js"></script>
+    
+    <!-- Production Configuration -->
+    <script src="config.js"></script>
     <!-- Users Service - Login, Registration, Profiles -->
     <script type="module" src="scripts/services/supabaseService.js"></script>
     <!-- Store Service - Products, Inventory, Catalog -->

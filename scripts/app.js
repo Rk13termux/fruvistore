@@ -1,6 +1,9 @@
 // App bootstrap
 console.log('🚀 Starting app bootstrap...');
 
+// Import navigation menu
+import './navigation-menu.js';
+
 // Dynamic imports with error handling
 let startRouter, registerRoute, getCurrentPath;
 let renderHomePage, renderStorePage, renderBoxesPage;
