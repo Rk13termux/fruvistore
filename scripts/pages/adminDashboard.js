@@ -113,6 +113,22 @@ class AdminDashboard {
     };
     this.editingProductId = null;
     this.connectionChecked = false;
+    this.loadAdminStyles();
+  }
+
+  loadAdminStyles() {
+    // Check if admin.css is already loaded
+    const existingLink = document.querySelector('link[href*="admin.css"]');
+    if (existingLink) return;
+
+    // Create and inject admin.css
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/styles/admin.css?v=1.3.0';
+    link.id = 'admin-styles';
+    document.head.appendChild(link);
+    
+    console.log('✅ Admin styles loaded');
   }
 
   async init() {
