@@ -210,30 +210,83 @@ function renderDashboard(root, user, data) {
       <div class="quick-actions">
         <h3 class="section-title"><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
         <div class="actions-grid">
-          <button class="action-btn" onclick="window.location.hash='#/tienda'">
-            <i class="fas fa-store"></i>
-            <span>Explorar Tienda</span>
-          </button>
-          <button class="action-btn" onclick="window.location.hash='#/cajas'">
-            <i class="fas fa-box"></i>
-            <span>Cajas Premium</span>
-          </button>
-          <button class="action-btn" onclick="window.location.hash='#/nutricion'">
-            <i class="fas fa-apple-alt"></i>
-            <span>Nutrición IA</span>
-          </button>
-          <button class="action-btn" onclick="window.location.hash='#/recetas'">
-            <i class="fas fa-utensils"></i>
-            <span>Recetas</span>
-          </button>
-          <button class="action-btn" onclick="window.location.hash='#/asistente'">
-            <i class="fas fa-robot"></i>
-            <span>Asistente</span>
-          </button>
-          <button class="action-btn" onclick="window.location.hash='#/perfil'">
-            <i class="fas fa-user-cog"></i>
-            <span>Mi Perfil</span>
-          </button>
+          <div class="action-card" onclick="window.location.hash='#/tienda'">
+            <div class="action-icon-wrapper" style="background: linear-gradient(135deg, rgba(255, 155, 64, 0.2), rgba(255, 155, 64, 0.1));">
+              <i class="fas fa-store"></i>
+            </div>
+            <div class="action-content">
+              <h4>Explorar Tienda</h4>
+              <p>Descubre productos frescos y orgánicos</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="window.location.hash='#/cajas'">
+            <div class="action-icon-wrapper" style="background: linear-gradient(135deg, rgba(139, 218, 1, 0.2), rgba(139, 218, 1, 0.1));">
+              <i class="fas fa-box"></i>
+            </div>
+            <div class="action-content">
+              <h4>Cajas Premium</h4>
+              <p>Suscripciones personalizadas de frutas</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="window.location.hash='#/nutricion'">
+            <div class="action-icon-wrapper" style="background: linear-gradient(135deg, rgba(255, 139, 211, 0.2), rgba(255, 139, 211, 0.1));">
+              <i class="fas fa-apple-alt"></i>
+            </div>
+            <div class="action-content">
+              <h4>Consulta Nutricional</h4>
+              <p>Análisis IA personalizado de nutrición</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="window.location.hash='#/recetas'">
+            <div class="action-icon-wrapper" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1));">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="action-content">
+              <h4>Recetas Saludables</h4>
+              <p>Crea platos deliciosos con IA</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="window.location.hash='#/asistente'">
+            <div class="action-icon-wrapper" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="action-content">
+              <h4>Asistente Virtual</h4>
+              <p>Chatbot inteligente 24/7</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+
+          <div class="action-card" onclick="window.location.hash='#/perfil'">
+            <div class="action-icon-wrapper" style="background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(138, 43, 226, 0.1));">
+              <i class="fas fa-user-cog"></i>
+            </div>
+            <div class="action-content">
+              <h4>Mi Perfil</h4>
+              <p>Gestiona tu cuenta y preferencias</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
         </div>
       </div>
 
