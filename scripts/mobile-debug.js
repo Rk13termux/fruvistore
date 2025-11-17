@@ -10,11 +10,11 @@
     
     console.log(`📱 Viewport: ${width}px ${isMobile ? '(MÓVIL)' : '(DESKTOP)'}`);
     
-    // Verificar botón del menú
-    const btn = document.querySelector('.mobile-menu-toggle');
+    // Verificar botón del menú hamburguesa (nuevo selector)
+    const btn = document.getElementById('hamburgerBtn') || document.querySelector('.hamburger');
     if (btn) {
       const styles = window.getComputedStyle(btn);
-      console.log('%c✅ Botón encontrado:', 'color: #0f0', {
+      console.log('%c✅ Botón hamburguesa encontrado:', 'color: #0f0', {
         display: styles.display,
         visibility: styles.visibility,
         opacity: styles.opacity,
@@ -32,7 +32,7 @@
         console.log('🔧 Aplicado fix de emergencia al botón');
       }
     } else {
-      console.error('❌ ERROR: Botón .mobile-menu-toggle NO ENCONTRADO en el DOM');
+      console.warn('⚠️ Botón hamburguesa no encontrado (probablemente estás en desktop)');
     }
     
     // Verificar scroll horizontal
