@@ -7,14 +7,18 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Fruvi - Centro Médico Nutricional IA</title>
     <!-- Estilos principales -->
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/responsive-system.css">
-    <link rel="stylesheet" href="styles/checkout.css">
-    <link rel="stylesheet" href="styles/nutrition-v2.css">
-    <link rel="stylesheet" href="styles/profile.css">
-    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/main.css?v=1.2.0">
+    <link rel="stylesheet" href="styles/responsive-system.css?v=1.2.0">
+    <link rel="stylesheet" href="styles/checkout.css?v=1.2.0">
+    <link rel="stylesheet" href="styles/nutrition-v2.css?v=1.2.0">
+    <link rel="stylesheet" href="styles/profile.css?v=1.2.0">
+    <link rel="stylesheet" href="styles/dashboard.css?v=1.2.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Production Configuration -->
@@ -215,21 +219,48 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <!-- Navigation Menu Professional -->
-    <script src="scripts/navigation-menu.js?v=1.1.0"></script>
+    <script src="scripts/navigation-menu.js?v=1.2.0"></script>
     <script>
-      // Verificar que el menú de navegación se inicializó
-      setTimeout(() => {
-        if (!window.MenuNavigation) {
-          console.error('❌ MenuNavigation no se cargó. Recargando...');
-          // Intentar cargar manualmente
-          const script = document.createElement('script');
-          script.src = 'scripts/navigation-menu.js?v=' + Date.now();
-          script.onerror = () => console.error('❌ Error crítico al cargar navigation-menu.js');
-          document.head.appendChild(script);
-        } else {
-          console.log('✅ MenuNavigation cargado correctamente');
-        }
-      }, 500);
+      // Force cache clear and verify menu loading
+      (function() {
+        // Verificar que el menú de navegación se inicializó
+        setTimeout(() => {
+          if (!window.MenuNavigation) {
+            console.error('❌ MenuNavigation no se cargó. Recargando...');
+            // Intentar cargar manualmente con timestamp
+            const script = document.createElement('script');
+            script.src = 'scripts/navigation-menu.js?v=' + Date.now();
+            script.onerror = () => {
+              console.error('❌ Error crítico al cargar navigation-menu.js');
+              // Última tentativa: recargar toda la página una vez
+              if (!sessionStorage.getItem('menuReloaded')) {
+                sessionStorage.setItem('menuReloaded', 'true');
+                console.log('🔄 Recargando página para limpiar caché...');
+                location.reload(true);
+              }
+            };
+            document.head.appendChild(script);
+          } else {
+            console.log('✅ MenuNavigation cargado correctamente');
+            sessionStorage.removeItem('menuReloaded');
+          }
+        }, 500);
+
+        // Verificar elementos del DOM después de cargar
+        setTimeout(() => {
+          const hamburger = document.getElementById('hamburgerBtn');
+          const mobileMenu = document.getElementById('mobileMenu');
+          
+          if (hamburger && mobileMenu) {
+            console.log('✅ Elementos del menú encontrados en DOM');
+          } else {
+            console.error('❌ Elementos del menú NO encontrados:', {
+              hamburger: !!hamburger,
+              mobileMenu: !!mobileMenu
+            });
+          }
+        }, 1000);
+      })();
     </script>
     <!-- Mobile Debug Script -->
     <script src="scripts/mobile-debug.js"></script>
