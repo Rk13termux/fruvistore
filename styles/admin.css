@@ -42,6 +42,51 @@ body {
     overflow-x: hidden;
 }
 
+/* ===== SCROLLBARS PERSONALIZADOS ===== */
+/* Webkit (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--brand), var(--brand-2));
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ffb366, #a0e829);
+    box-shadow: 0 0 12px rgba(255, 155, 64, 0.6);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand) rgba(0, 0, 0, 0.4);
+}
+
+/* Scrollbar para áreas específicas */
+.scrollable-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(255, 155, 64, 0.6), rgba(139, 218, 1, 0.6));
+}
+
 /* ===== HEADER ===== */
 .admin-header {
     position: sticky;
@@ -155,27 +200,115 @@ body {
 }
 
 .btn {
-    padding: 0.65rem 1.25rem;
+    padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.6rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:active {
+    transform: scale(0.96);
+}
+
+.btn i {
+    font-size: 1.1rem;
+    z-index: 1;
+}
+
+.btn span {
+    z-index: 1;
+}
+
+/* Botón primario */
+.btn-primary {
+    background: linear-gradient(135deg, var(--brand), #ffb366);
+    color: #000000;
+    border: 1px solid rgba(255, 155, 64, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 155, 64, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #ffb366, var(--brand));
+    box-shadow: 0 6px 20px rgba(255, 155, 64, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Botón secundario */
+.btn-secondary {
+    background: linear-gradient(135deg, var(--brand-2), #a0e829);
+    color: #000000;
+    border: 1px solid rgba(139, 218, 1, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 218, 1, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #a0e829, var(--brand-2));
+    box-shadow: 0 6px 20px rgba(139, 218, 1, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .btn-outline {
     background: transparent;
-    border: 1px solid rgba(255, 107, 107, 0.3);
+    border: 1px solid rgba(255, 107, 107, 0.4);
     color: var(--error);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
 }
 
 .btn-outline:hover {
-    background: rgba(255, 107, 107, 0.1);
+    background: rgba(255, 107, 107, 0.15);
     border-color: var(--error);
+    box-shadow: 0 4px 16px rgba(255, 107, 107, 0.25);
+}
+
+/* Botón de acción */
+.btn-action {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--txt);
+    backdrop-filter: blur(10px);
+}
+
+.btn-action:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+    border-color: var(--brand);
+    color: var(--brand);
+}
+
+/* Botón deshabilitado */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn:disabled:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== MOBILE SIDEBAR ===== */
@@ -1252,30 +1385,137 @@ body {
 }
 
 .form-control {
-    padding: 0.85rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     color: var(--txt);
     font-size: 0.95rem;
     font-family: var(--font-body);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.form-control:hover {
+    border-color: rgba(255, 155, 64, 0.3);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
 }
 
 .form-control:focus {
     outline: none;
     border-color: var(--brand);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(255, 155, 64, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
+    box-shadow: 0 0 0 3px rgba(255, 155, 64, 0.15), 0 4px 16px rgba(255, 155, 64, 0.2);
 }
 
 .form-control::placeholder {
     color: var(--txt-muted);
     opacity: 0.6;
+    font-style: italic;
+}
+
+/* Inputs con íconos */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--txt-muted);
+    font-size: 1rem;
+}
+
+.input-with-icon .form-control {
+    padding-left: 2.75rem;
+}
+
+.input-with-icon .form-control:focus ~ i {
+    color: var(--brand);
 }
 
 select.form-control {
     cursor: pointer;
+    background-color: #0a0a0a;
+    color: #ffffff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23ff9b40' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 14px;
+    padding-right: 3rem;
+    border: 1px solid rgba(255, 155, 64, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+select.form-control:hover {
+    background-color: #141414;
+    border-color: var(--brand);
+    box-shadow: 0 4px 12px rgba(255, 155, 64, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+select.form-control:focus {
+    background-color: #0a0a0a;
+    border-color: var(--brand);
+    color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 155, 64, 0.15), 0 4px 16px rgba(255, 155, 64, 0.2);
+    outline: none;
+}
+
+/* Estilos para las opciones del select */
+select.form-control option {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    padding: 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+select.form-control option:hover {
+    background: linear-gradient(135deg, rgba(255, 155, 64, 0.15), rgba(139, 218, 1, 0.1));
+    color: var(--brand);
+}
+
+select.form-control option:checked {
+    background: linear-gradient(135deg, var(--brand), rgba(139, 218, 1, 0.8));
+    color: #000000;
+    font-weight: 600;
+}
+
+select.form-control option:disabled {
+    color: #666666;
+    background-color: #1a1a1a;
+    opacity: 0.5;
+}
+
+/* Scrollbar personalizado para select */
+select.form-control::-webkit-scrollbar {
+    width: 8px;
+}
+
+select.form-control::-webkit-scrollbar-track {
+    background: #0a0a0a;
+    border-radius: 4px;
+}
+
+select.form-control::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--brand), var(--brand-2));
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+select.form-control::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ffb366, #a0e829);
+    box-shadow: 0 0 8px rgba(255, 155, 64, 0.5);
+}
+
+/* Scrollbar para Firefox */
+select.form-control {
+    scrollbar-width: thin;
+    scrollbar-color: var(--brand) #0a0a0a;
 }
 
 /* Button Group */
@@ -1519,31 +1759,189 @@ select.form-control {
     to { transform: rotate(360deg); }
 }
 
-/* Info Box */
-.info-box {
-    background: rgba(139, 218, 1, 0.1);
-    border: 1px solid rgba(139, 218, 1, 0.3);
-    border-left: 4px solid var(--success);
-    border-radius: 10px;
-    padding: 1rem 1.25rem;
+/* ===== MENSAJES INFORMATIVOS Y ALERTAS ===== */
+.info-box,
+.alert,
+.message-box {
+    position: relative;
+    padding: 1.25rem 1.5rem;
+    border-radius: 14px;
     margin-bottom: 1.5rem;
-    color: var(--txt);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: slideInMessage 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
-.info-box i {
+@keyframes slideInMessage {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.info-box::before,
+.alert::before,
+.message-box::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 14px 0 0 14px;
+}
+
+.info-box i,
+.alert i,
+.message-box i {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    filter: drop-shadow(0 2px 4px currentColor);
+}
+
+/* Variante Success (verde) */
+.info-box,
+.alert-success,
+.message-success {
+    background: linear-gradient(135deg, rgba(139, 218, 1, 0.15), rgba(139, 218, 1, 0.05));
+    border: 1px solid rgba(139, 218, 1, 0.3);
+    color: #e9eef5;
+}
+
+.info-box::before,
+.alert-success::before,
+.message-success::before {
+    background: linear-gradient(180deg, var(--success), #6fa001);
+    box-shadow: 0 0 20px rgba(139, 218, 1, 0.5);
+}
+
+.info-box i,
+.alert-success i,
+.message-success i {
     color: var(--success);
-    margin-right: 0.75rem;
 }
 
-.warning-box {
-    background: rgba(255, 155, 64, 0.1);
+/* Variante Warning (naranja) */
+.warning-box,
+.alert-warning,
+.message-warning {
+    background: linear-gradient(135deg, rgba(255, 155, 64, 0.15), rgba(255, 155, 64, 0.05));
     border: 1px solid rgba(255, 155, 64, 0.3);
-    border-left: 4px solid var(--warning);
-    color: var(--txt);
+    color: #e9eef5;
 }
 
-.warning-box i {
+.warning-box::before,
+.alert-warning::before,
+.message-warning::before {
+    background: linear-gradient(180deg, var(--warning), #e88a30);
+    box-shadow: 0 0 20px rgba(255, 155, 64, 0.5);
+}
+
+.warning-box i,
+.alert-warning i,
+.message-warning i {
     color: var(--warning);
+}
+
+/* Variante Error (rojo) */
+.error-box,
+.alert-error,
+.message-error {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.05));
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    color: #e9eef5;
+}
+
+.error-box::before,
+.alert-error::before,
+.message-error::before {
+    background: linear-gradient(180deg, var(--error), #e84545);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+.error-box i,
+.alert-error i,
+.message-error i {
+    color: var(--error);
+}
+
+/* Variante Info (azul/rosa) */
+.alert-info,
+.message-info {
+    background: linear-gradient(135deg, rgba(255, 139, 211, 0.15), rgba(255, 139, 211, 0.05));
+    border: 1px solid rgba(255, 139, 211, 0.3);
+    color: #e9eef5;
+}
+
+.alert-info::before,
+.message-info::before {
+    background: linear-gradient(180deg, var(--accent), #e66bc0);
+    box-shadow: 0 0 20px rgba(255, 139, 211, 0.5);
+}
+
+.alert-info i,
+.message-info i {
+    color: var(--accent);
+}
+
+/* Contenido del mensaje */
+.info-box .message-content,
+.alert .message-content,
+.message-box .message-content {
+    flex: 1;
+}
+
+.info-box .message-title,
+.alert .message-title,
+.message-box .message-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+    font-family: var(--font-heading);
+}
+
+.info-box .message-text,
+.alert .message-text,
+.message-box .message-text {
+    color: var(--txt-muted);
+    font-size: 0.9rem;
+}
+
+/* Botón de cerrar mensaje */
+.message-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--txt-muted);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.message-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--txt);
+    opacity: 1;
+    transform: rotate(90deg);
 }
 
 /* Management Responsive */
