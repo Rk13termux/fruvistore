@@ -447,13 +447,25 @@ class StoreManagement {
 
     async loadProducts() {
         try {
+            console.log('📥 Cargando productos desde la base de datos...');
             this.showLoading('Cargando productos...');
             this.products = await this.dbService.getAllProducts();
+            
+            console.log('✅ Productos cargados:', {
+                total: this.products.length,
+                primeros_3: this.products.slice(0, 3).map(p => ({
+                    id: p.id,
+                    nombre: p.name,
+                    is_active: p.is_active,
+                    available: p.available
+                }))
+            });
+            
             this.renderProductsTable();
             this.populateSelectors();
             this.hideLoading();
         } catch (error) {
-            console.error('Error loading products:', error);
+            console.error('❌ Error loading products:', error);
             this.hideLoading();
             this.showAlert('Error cargando productos: ' + error.message, 'danger');
         }

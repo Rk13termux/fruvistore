@@ -180,6 +180,74 @@ class AdminDatabaseService {
         }
     }
 
+    async updateProduct(productId, updates) {
+        await this.ensureInitialized();
+        try {
+            console.log('🔧 Updating product:', productId, updates);
+            
+            // Separar actualizaciones entre producto y precio
+            const productUpdates = {};
+            const priceUpdates = {};
+
+            // Campos de management_products
+            const productFields = ['name', 'category', 'description', 'image_url', 'season', 'is_active', 'available', 'inactive_reason'];
+            // Campos de management_product_prices
+            const priceFields = ['price_per_kg', 'cost_per_kg', 'stock_kg', 'min_stock_kg', 'is_organic', 'rating', 'origin', 'supplier'];
+
+            Object.keys(updates).forEach(key => {
+                if (productFields.includes(key)) {
+                    productUpdates[key] = updates[key];
+                } else if (priceFields.includes(key)) {
+                    priceUpdates[key] = updates[key];
+                }
+            });
+
+            // Actualizar tabla de productos si hay cambios
+            if (Object.keys(productUpdates).length > 0) {
+                productUpdates.updated_at = new Date().toISOString();
+                console.log('📝 Updating management_products:', productUpdates);
+                
+                const { data, error } = await this.productsClient
+                    .from('management_products')
+                    .update(productUpdates)
+                    .eq('id', productId)
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('❌ Error updating product:', error);
+                    throw error;
+                }
+                console.log('✅ Product updated:', data);
+            }
+
+            // Actualizar tabla de precios si hay cambios
+            if (Object.keys(priceUpdates).length > 0) {
+                priceUpdates.updated_at = new Date().toISOString();
+                console.log('📝 Updating management_product_prices:', priceUpdates);
+                
+                const { data, error } = await this.productsClient
+                    .from('management_product_prices')
+                    .update(priceUpdates)
+                    .eq('product_id', productId)
+                    .eq('is_current', true)
+                    .select()
+                    .single();
+
+                if (error) {
+                    console.error('❌ Error updating price:', error);
+                    throw error;
+                }
+                console.log('✅ Price updated:', data);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('❌ Error in updateProduct:', error);
+            throw error;
+        }
+    }
+
     async updateCompleteProduct(productId, updates) {
         await this.ensureInitialized();
         try {
