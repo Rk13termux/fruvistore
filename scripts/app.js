@@ -550,6 +550,8 @@ function setupMobileNav() {
   function closeMobileMenu() {
     isMenuOpen = false;
     scrollLocked = false;
+    unlockBodyScroll();
+    
     mobileMenuPanel.classList.add('hidden');
     if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
     mobileMenuToggle.classList.remove('active');
@@ -563,20 +565,6 @@ function setupMobileNav() {
     // Remover el listener de prevención de scroll
     document.removeEventListener('wheel', preventScroll, { passive: false });
     document.removeEventListener('touchmove', preventScroll, { passive: false });
-
-    // Si activamos modo floating antes, revertir estilos inline al cerrar
-    if (mobileMenuPanel && mobileMenuPanel.dataset && mobileMenuPanel.dataset.floating === 'true') {
-      mobileMenuPanel.style.position = '';
-      mobileMenuPanel.style.top = '';
-      mobileMenuPanel.style.left = '';
-      mobileMenuPanel.style.right = '';
-      mobileMenuPanel.style.transform = '';
-      mobileMenuPanel.style.maxWidth = '';
-      mobileMenuPanel.style.margin = '';
-      mobileMenuPanel.style.zIndex = '';
-      delete mobileMenuPanel.dataset.floating;
-      if (mobileMenuOverlay) mobileMenuOverlay.style.zIndex = '';
-    }
   }
 
   // Función para prevenir scroll
@@ -586,6 +574,21 @@ function setupMobileNav() {
     }
   }
 
+  // Función adicional para bloquear scroll en el body
+  function lockBodyScroll() {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = scrollbarWidth + 'px';
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  // Función para desbloquear scroll en el body
+  function unlockBodyScroll() {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    document.documentElement.style.overflow = '';
+  }
+
   // Toggle menu on button click
   mobileMenuToggle.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -593,13 +596,13 @@ function setupMobileNav() {
     console.log('Toggle clickeado. isMenuOpen:', isMenuOpen);
     
     if (isMenuOpen) {
-      // Bloquear scroll mientras el menú está abierto (para que position:fixed funcione correctamente)
+      // Menú fijo simple - solo se muestra/oculta
       scrollLocked = true;
+      lockBodyScroll();
       document.addEventListener('wheel', preventScroll, { passive: false });
       document.addEventListener('touchmove', preventScroll, { passive: false });
       
       mobileMenuPanel.classList.remove('hidden');
-      console.log('Removida clase hidden. Panel clases:', mobileMenuPanel.className);
       
       if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
       mobileMenuToggle.classList.add('active');

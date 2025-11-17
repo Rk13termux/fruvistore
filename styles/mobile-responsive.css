@@ -150,7 +150,7 @@
     -webkit-backdrop-filter: saturate(180%) blur(25px) !important;
     border-bottom: 1px solid rgba(255,155,64,0.3) !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
-    overflow: visible !important; /* Visible en ambas direcciones */
+    overflow: visible !important; /* CRUCIAL: permite que el menú se vea fuera del header */
     box-sizing: border-box !important;
   }
 
@@ -286,7 +286,7 @@
   .mobile-menu {
     display: block !important;
     position: fixed !important;
-    top: 65px !important;
+    top: 65px !important; /* Se ajustará dinámicamente con JavaScript */
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
@@ -294,6 +294,7 @@
     max-height: calc(100vh - 65px) !important;
     background: linear-gradient(180deg, rgba(10,10,10,0.99) 0%, rgba(15,15,15,0.98) 100%) !important;
     padding: 0 !important;
+    margin: 0 !important;
     border-radius: 0 !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
     border: none !important;
@@ -302,8 +303,8 @@
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
-    transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease !important;
-    will-change: opacity !important;
+    transition: opacity 0.15s ease, visibility 0.15s ease !important;
+    will-change: opacity, transform !important;
     scrollbar-width: none !important;
   }
 
@@ -332,7 +333,7 @@
   /* Overlay del menú - Pantalla completa oscura - DETRÁS DEL MENÚ */
   .mobile-menu-overlay {
     position: fixed !important;
-    top: 65px !important;
+    top: 65px !important; /* Mismo top que el menú */
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
@@ -341,7 +342,7 @@
     background: rgba(0,0,0,0.3) !important;
     backdrop-filter: blur(2px) !important;
     -webkit-backdrop-filter: blur(2px) !important;
-    z-index: 10005 !important;
+    z-index: 9999 !important;
     opacity: 0 !important;
     visibility: hidden !important;
     transition: opacity 0.15s ease, visibility 0.15s ease !important;
@@ -2958,6 +2959,178 @@ body {
   html body .mobile-menu a i,
   html body .mobile-menu a span {
     color: inherit !important;
+  }
+}
+
+/* ============================================================
+   ESTILOS UNIFICADOS MOBILE - Armonía con versión Desktop
+   Botones, colores naranja (#ff9b40) y verde (#8bda01)
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* ===== SISTEMA DE BOTONES UNIFICADO ===== */
+  .btn-primary,
+  .btn-primary-mobile,
+  .add-to-cart,
+  .cta-button,
+  .submit-btn,
+  .next-step,
+  .mobile-menu-dr-ia-btn {
+    background: linear-gradient(135deg, #8bda01, #ff9b40) !important;
+    color: #0b0f14 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 20px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 12px rgba(255,155,64,0.25), 0 2px 4px rgba(0,0,0,0.1) !important;
+    overflow: hidden !important;
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .btn-primary:hover,
+  .btn-primary-mobile:hover,
+  .add-to-cart:hover,
+  .cta-button:hover,
+  .submit-btn:hover,
+  .next-step:hover,
+  .mobile-menu-dr-ia-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(255,155,64,0.35), 0 4px 8px rgba(0,0,0,0.15) !important;
+    filter: brightness(1.05) saturate(1.1) !important;
+  }
+
+  .btn-primary:active,
+  .btn-primary-mobile:active,
+  .add-to-cart:active,
+  .cta-button:active,
+  .submit-btn:active,
+  .next-step:active,
+  .mobile-menu-dr-ia-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 8px rgba(255,155,64,0.25) !important;
+  }
+
+  .btn-primary:disabled,
+  .btn-primary-mobile:disabled,
+  .add-to-cart:disabled,
+  .cta-button:disabled,
+  .submit-btn:disabled,
+  .next-step:disabled,
+  .mobile-menu-dr-ia-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+  }
+
+  /* ===== BADGE DE CARRITO (Wings) ===== */
+  .cart-badge,
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #ff9b40, #8bda01) !important;
+    color: #0b0f14 !important;
+    padding: 4px 8px !important;
+    border-radius: 999px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    min-width: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 8px rgba(255,155,64,0.3) !important;
+    animation: cartBadgePulse 2s ease-in-out infinite !important;
+  }
+
+  /* Badge en icono de tienda */
+  .store-tab {
+    position: relative !important;
+  }
+
+  .store-tab .cart-badge,
+  .cajas-tab .cart-badge {
+    top: -6px !important;
+    right: -6px !important;
+  }
+
+  /* ===== BADGES DE PRODUCTOS ===== */
+  .product-badge {
+    position: absolute !important;
+    top: 12px !important;
+    left: 12px !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    z-index: 2 !important;
+  }
+
+  .product-badge.organic {
+    background: linear-gradient(135deg, #8bda01, #ff9b40) !important;
+    color: #0b0f14 !important;
+  }
+
+  .hot-badge {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    background: linear-gradient(135deg, #ff9b40, #ff6b6b) !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    border-radius: 6px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    z-index: 2 !important;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3) !important;
+  }
+
+  /* ===== ANIMACIONES ===== */
+  @keyframes cartBadgePulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.9;
+    }
+  }
+
+  /* ===== OUTLINE BUTTON VARIANT ===== */
+  .btn-outline {
+    background: transparent !important;
+    color: #ff9b40 !important;
+    border: 2px solid #ff9b40 !important;
+    border-radius: 12px !important;
+    padding: 10px 18px !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+  }
+
+  .btn-outline:hover {
+    background: rgba(255,155,64,0.1) !important;
+  }
+
+  /* ===== TEXTO LINK ESTILO ===== */
+  .link-brand {
+    color: #ff9b40 !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: color 0.2s ease !important;
+  }
+
+  .link-brand:hover {
+    color: #8bda01 !important;
   }
 }
 
