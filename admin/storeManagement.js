@@ -336,29 +336,84 @@ class StoreManagement {
                 </div>
             </div>
 
-            <!-- Products Table -->
+            <!-- Products Table with Tabs -->
             <div class="management-section">
-                <h3><i class="fas fa-table"></i> Productos Recientes</h3>
-                <div class="table-container">
-                    <table id="productsTableContainer" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Categoría</th>
-                                <th>Precio / kg</th>
-                                <th>Stock</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: #666;">
-                                    <i class="fas fa-spinner fa-spin"></i> Cargando productos...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="products-tabs-header">
+                    <h3><i class="fas fa-table"></i> Catálogo de Productos</h3>
+                    <div class="tabs-navigation">
+                        <button class="tab-btn active" data-tab="active" onclick="storeManagement.switchTab('active')">
+                            <i class="fas fa-check-circle"></i> 
+                            Productos Activos
+                            <span class="tab-badge" id="activeCount">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="inactive" onclick="storeManagement.switchTab('inactive')">
+                            <i class="fas fa-pause-circle"></i> 
+                            Productos Inactivos
+                            <span class="tab-badge inactive" id="inactiveCount">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Products Tab -->
+                <div id="activeProductsTab" class="tab-content active">
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="message-content">
+                            <strong>Productos Activos</strong>
+                            <p>Estos productos están visibles en la tienda y disponibles para venta.</p>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="activeProductsTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Precio / kg</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #666;">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando productos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inactive Products Tab -->
+                <div id="inactiveProductsTab" class="tab-content">
+                    <div class="warning-box">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div class="message-content">
+                            <strong>Productos Inactivos</strong>
+                            <p>Estos productos están ocultos de la tienda. Útil cuando están fuera de temporada o escasos en el mercado.</p>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="inactiveProductsTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Precio / kg</th>
+                                    <th>Motivo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #666;">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando productos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -1308,56 +1363,209 @@ class StoreManagement {
     }
 
     renderProductsTable() {
-        const container = document.getElementById('productsTableContainer');
-        if (!container) return;
+        // Separar productos activos e inactivos
+        const activeProducts = this.products.filter(p => p.available !== false && p.is_active !== false);
+        const inactiveProducts = this.products.filter(p => p.available === false || p.is_active === false);
+
+        // Actualizar contadores
+        const activeCount = document.getElementById('activeCount');
+        const inactiveCount = document.getElementById('inactiveCount');
+        if (activeCount) activeCount.textContent = activeProducts.length;
+        if (inactiveCount) inactiveCount.textContent = inactiveProducts.length;
+
+        // Renderizar tabla de activos
+        this.renderActiveProductsTable(activeProducts);
+        
+        // Renderizar tabla de inactivos
+        this.renderInactiveProductsTable(inactiveProducts);
+    }
+
+    renderActiveProductsTable(products) {
+        const tbody = document.querySelector('#activeProductsTable tbody');
+        if (!tbody) return;
+
+        if (products.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #666; padding: 2rem;">
+                        <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        No hay productos activos
+                    </td>
+                </tr>
+            `;
+            return;
+        }
 
         let rows = '';
-        this.products.slice(0, 50).forEach(product => {
+        products.forEach(product => {
             const stock = Number(product.stock_kg || product.stock || 0);
             const minStock = Number(product.min_stock_kg || product.min_stock || 0);
             const price = Number(product.price_per_kg || product.price || 0);
             const isLow = stock <= minStock;
-            const isActive = product.available !== false && product.is_active !== false;
 
             const statusClass = isLow ? 'stock-low' : 'stock-good';
             const statusIcon = isLow ? 'fa-exclamation-triangle' : 'fa-check-circle';
 
             rows += `
                 <tr>
-                    <td>${this.escapeHtml(product.name)}</td>
-                    <td>${this.escapeHtml(product.category || 'Sin categoría')}</td>
-                    <td>${this.formatPrice(price)}</td>
+                    <td>
+                        <div class="product-cell">
+                            <img src="/public/images/products/${product.image_url || 'default.png'}" 
+                                 alt="${this.escapeHtml(product.name)}" 
+                                 style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; margin-right: 10px;">
+                            <strong>${this.escapeHtml(product.name)}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="category-badge">${this.escapeHtml(product.category || 'Sin categoría')}</span>
+                    </td>
+                    <td><strong>${this.formatPrice(price)}</strong></td>
                     <td>
                         <span class="${statusClass}">
                             <i class="fas ${statusIcon}"></i>
                             ${this.formatNumber(stock)} kg
                         </span>
                     </td>
-                    <td>${isActive ? 'Activo' : 'Inactivo'}</td>
                     <td>
-                        <button class="btn-sm btn-info" onclick="storeManagement.editSelectedProductFromModal(${product.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
+                        <div class="action-buttons-inline">
+                            <button class="btn-sm btn-action" onclick="storeManagement.editProductQuick(${product.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-sm btn-outline" onclick="storeManagement.deactivateProduct(${product.id})" title="Desactivar">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
         });
 
-        container.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th>Precio / kg</th>
-                        <th>Stock</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
+        tbody.innerHTML = rows;
+    }
+
+    renderInactiveProductsTable(products) {
+        const tbody = document.querySelector('#inactiveProductsTable tbody');
+        if (!tbody) return;
+
+        if (products.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #666; padding: 2rem;">
+                        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: var(--success);"></i>
+                        ¡Todos los productos están activos!
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let rows = '';
+        products.forEach(product => {
+            const price = Number(product.price_per_kg || product.price || 0);
+            const reason = product.inactive_reason || 'Fuera de temporada';
+
+            rows += `
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <img src="/public/images/products/${product.image_url || 'default.png'}" 
+                                 alt="${this.escapeHtml(product.name)}" 
+                                 style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; margin-right: 10px; opacity: 0.6;">
+                            <strong style="opacity: 0.7;">${this.escapeHtml(product.name)}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="category-badge inactive">${this.escapeHtml(product.category || 'Sin categoría')}</span>
+                    </td>
+                    <td>${this.formatPrice(price)}</td>
+                    <td>
+                        <span class="reason-badge">
+                            <i class="fas fa-info-circle"></i>
+                            ${this.escapeHtml(reason)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons-inline">
+                            <button class="btn-sm btn-secondary" onclick="storeManagement.reactivateProduct(${product.id})" title="Reactivar">
+                                <i class="fas fa-play"></i> Reactivar
+                            </button>
+                            <button class="btn-sm btn-action" onclick="storeManagement.editProductQuick(${product.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = rows;
+    }
+
+    switchTab(tab) {
+        // Actualizar botones de pestañas
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tab) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Actualizar contenido de pestañas
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        if (tab === 'active') {
+            document.getElementById('activeProductsTab').classList.add('active');
+        } else {
+            document.getElementById('inactiveProductsTab').classList.add('active');
+        }
+    }
+
+    async deactivateProduct(productId) {
+        const reason = prompt('¿Por qué desactivas este producto? (Ej: Fuera de temporada, Escaso en mercado)');
+        if (!reason) return;
+
+        try {
+            const product = this.products.find(p => p.id === productId);
+            if (!product) return;
+
+            await this.dbService.updateProduct(productId, { 
+                is_active: false,
+                available: false,
+                inactive_reason: reason
+            });
+
+            this.showAlert(`✅ ${product.name} desactivado correctamente`, 'success');
+            await this.loadProducts();
+        } catch (error) {
+            console.error('Error deactivating product:', error);
+            this.showAlert('Error al desactivar producto: ' + error.message, 'danger');
+        }
+    }
+
+    async reactivateProduct(productId) {
+        try {
+            const product = this.products.find(p => p.id === productId);
+            if (!product) return;
+
+            await this.dbService.updateProduct(productId, { 
+                is_active: true,
+                available: true,
+                inactive_reason: null
+            });
+
+            this.showAlert(`✅ ${product.name} reactivado correctamente`, 'success');
+            await this.loadProducts();
+        } catch (error) {
+            console.error('Error reactivating product:', error);
+            this.showAlert('Error al reactivar producto: ' + error.message, 'danger');
+        }
+    }
+
+    editProductQuick(productId) {
+        // Utilizar el método existente
+        this.editSelectedProductFromModal(productId);
     }
 
     // ===== UTILITY METHODS =====

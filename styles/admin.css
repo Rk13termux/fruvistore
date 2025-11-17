@@ -1438,13 +1438,13 @@ body {
 
 select.form-control {
     cursor: pointer;
-    background-color: #0a0a0a;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
     color: #ffffff;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23ff9b40' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 14px;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23ff9b40' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat, no-repeat;
+    background-position: left top, right 1rem center;
+    background-size: 100%, 14px;
     padding-right: 3rem;
     border: 1px solid rgba(255, 155, 64, 0.2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1452,13 +1452,21 @@ select.form-control {
 }
 
 select.form-control:hover {
-    background-color: #141414;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23ff9b40' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat, no-repeat;
+    background-position: left top, right 1rem center;
+    background-size: 100%, 14px;
     border-color: var(--brand);
     box-shadow: 0 4px 12px rgba(255, 155, 64, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 select.form-control:focus {
-    background-color: #0a0a0a;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05));
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.05)), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%23ff9b40' d='M7 10L2 5h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat, no-repeat;
+    background-position: left top, right 1rem center;
+    background-size: 100%, 14px;
     border-color: var(--brand);
     color: #ffffff;
     box-shadow: 0 0 0 3px rgba(255, 155, 64, 0.15), 0 4px 16px rgba(255, 155, 64, 0.2);
@@ -1467,7 +1475,7 @@ select.form-control:focus {
 
 /* Estilos para las opciones del select */
 select.form-control option {
-    background-color: #0a0a0a;
+    background-color: rgba(20, 20, 20, 0.98);
     color: #ffffff;
     padding: 1rem;
     font-weight: 500;
@@ -1475,7 +1483,7 @@ select.form-control option {
 }
 
 select.form-control option:hover {
-    background: linear-gradient(135deg, rgba(255, 155, 64, 0.15), rgba(139, 218, 1, 0.1));
+    background: linear-gradient(135deg, rgba(255, 155, 64, 0.2), rgba(139, 218, 1, 0.15));
     color: var(--brand);
 }
 
@@ -1487,7 +1495,7 @@ select.form-control option:checked {
 
 select.form-control option:disabled {
     color: #666666;
-    background-color: #1a1a1a;
+    background-color: rgba(30, 30, 30, 0.98);
     opacity: 0.5;
 }
 
@@ -1497,7 +1505,7 @@ select.form-control::-webkit-scrollbar {
 }
 
 select.form-control::-webkit-scrollbar-track {
-    background: #0a0a0a;
+    background: rgba(20, 20, 20, 0.98);
     border-radius: 4px;
 }
 
@@ -1515,7 +1523,7 @@ select.form-control::-webkit-scrollbar-thumb:hover {
 /* Scrollbar para Firefox */
 select.form-control {
     scrollbar-width: thin;
-    scrollbar-color: var(--brand) #0a0a0a;
+    scrollbar-color: var(--brand) rgba(20, 20, 20, 0.98);
 }
 
 /* Button Group */
@@ -1942,6 +1950,301 @@ select.form-control {
     color: var(--txt);
     opacity: 1;
     transform: rotate(90deg);
+}
+
+/* ===== PESTAÑAS DE PRODUCTOS (ACTIVOS/INACTIVOS) ===== */
+.products-tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.products-tabs-header h3 {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--txt);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.tabs-navigation {
+    display: flex;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--txt-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--txt);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, var(--brand), rgba(255, 155, 64, 0.8));
+    color: #000000;
+    box-shadow: 0 4px 12px rgba(255, 155, 64, 0.3);
+}
+
+.tab-btn.active[data-tab="inactive"] {
+    background: linear-gradient(135deg, rgba(255, 155, 64, 0.6), rgba(255, 107, 107, 0.5));
+}
+
+.tab-badge {
+    background: rgba(0, 0, 0, 0.4);
+    color: #ffffff;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+}
+
+.tab-btn.active .tab-badge {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.tab-badge.inactive {
+    background: rgba(255, 107, 107, 0.3);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== BOTONES PEQUEÑOS CON COLORES POR FUNCIÓN ===== */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.3s ease;
+}
+
+.btn-sm i {
+    font-size: 0.9rem;
+}
+
+/* Botón de acción (editar) - Gris/Blanco */
+.btn-sm.btn-action {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.08));
+    color: var(--txt);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-sm.btn-action:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.12));
+    border-color: var(--brand);
+    color: var(--brand);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 155, 64, 0.2);
+}
+
+/* Botón de éxito (guardar, activar) - Verde */
+.btn-sm.btn-success {
+    background: linear-gradient(135deg, var(--success), #a0e829);
+    color: #000000;
+    border: 1px solid rgba(139, 218, 1, 0.3);
+}
+
+.btn-sm.btn-success:hover {
+    background: linear-gradient(135deg, #a0e829, var(--success));
+    box-shadow: 0 4px 12px rgba(139, 218, 1, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Botón secundario (reactivar) - Verde claro */
+.btn-sm.btn-secondary {
+    background: linear-gradient(135deg, var(--brand-2), rgba(139, 218, 1, 0.8));
+    color: #000000;
+    border: 1px solid rgba(139, 218, 1, 0.4);
+}
+
+.btn-sm.btn-secondary:hover {
+    background: linear-gradient(135deg, #a0e829, var(--brand-2));
+    box-shadow: 0 4px 12px rgba(139, 218, 1, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Botón outline (desactivar, pausar) - Rojo */
+.btn-sm.btn-outline {
+    background: transparent;
+    color: var(--error);
+    border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+.btn-sm.btn-outline:hover {
+    background: rgba(255, 107, 107, 0.15);
+    border-color: var(--error);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Botón de información - Azul/Rosa */
+.btn-sm.btn-info {
+    background: linear-gradient(135deg, var(--accent), rgba(255, 139, 211, 0.8));
+    color: #000000;
+    border: 1px solid rgba(255, 139, 211, 0.3);
+}
+
+.btn-sm.btn-info:hover {
+    background: linear-gradient(135deg, rgba(255, 139, 211, 0.9), var(--accent));
+    box-shadow: 0 4px 12px rgba(255, 139, 211, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Botón de advertencia - Naranja */
+.btn-sm.btn-warning {
+    background: linear-gradient(135deg, var(--warning), #ffb366);
+    color: #000000;
+    border: 1px solid rgba(255, 155, 64, 0.3);
+}
+
+.btn-sm.btn-warning:hover {
+    background: linear-gradient(135deg, #ffb366, var(--warning));
+    box-shadow: 0 4px 12px rgba(255, 155, 64, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Botón de peligro - Rojo sólido */
+.btn-sm.btn-danger {
+    background: linear-gradient(135deg, var(--error), #ff5555);
+    color: #ffffff;
+    border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+.btn-sm.btn-danger:hover {
+    background: linear-gradient(135deg, #ff5555, var(--error));
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Grupo de botones inline */
+.action-buttons-inline {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ===== BADGES Y ETIQUETAS ===== */
+.category-badge {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    background: linear-gradient(135deg, rgba(255, 155, 64, 0.15), rgba(139, 218, 1, 0.1));
+    border: 1px solid rgba(255, 155, 64, 0.3);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--brand);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-badge.inactive {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--txt-muted);
+}
+
+.reason-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.9rem;
+    background: rgba(255, 155, 64, 0.1);
+    border: 1px solid rgba(255, 155, 64, 0.2);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--warning);
+    font-style: italic;
+}
+
+.reason-badge i {
+    font-size: 0.9rem;
+}
+
+/* Celda de producto con imagen */
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.product-cell img {
+    flex-shrink: 0;
+}
+
+.product-cell strong {
+    font-weight: 600;
+    color: var(--txt);
+}
+
+/* ===== BOTONES GRANDES MEJORADOS ===== */
+/* Actualizar botones regulares con colores según función */
+.btn.btn-success {
+    background: linear-gradient(135deg, var(--success), #a0e829);
+    color: #000000;
+}
+
+.btn.btn-danger {
+    background: linear-gradient(135deg, var(--error), #ff5555);
+    color: #ffffff;
+}
+
+.btn.btn-warning {
+    background: linear-gradient(135deg, var(--warning), #ffb366);
+    color: #000000;
+}
+
+.btn.btn-info {
+    background: linear-gradient(135deg, var(--accent), rgba(255, 139, 211, 0.9));
+    color: #000000;
 }
 
 /* Management Responsive */
