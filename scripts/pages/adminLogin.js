@@ -19,7 +19,7 @@ class AdminLogin {
   render(container) {
     // Check if already logged in
     if (this.checkExistingSession()) {
-      window.location.hash = '#/admin/dashboard';
+      window.location.hash = '#/admin-panel';
       return;
     }
 
@@ -192,7 +192,7 @@ class AdminLogin {
       localStorage.setItem('adminUser', username);
 
       // Redirect to admin dashboard
-      window.location.hash = '#/admin/dashboard';
+      window.location.hash = '#/admin-panel';
     } else {
       // Failed login
       this.setLoading(false);

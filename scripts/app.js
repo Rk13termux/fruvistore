@@ -444,7 +444,7 @@ async function loadModules() {
   });
 
   // Admin routes
-  registerRoute('/admin/login', async (rootEl, params) => {
+  registerRoute('/admin', async (rootEl, params) => {
     try {
       const adminLoginModule = await import('./pages/adminLogin.js');
       adminLoginModule.default.render(rootEl);
@@ -457,13 +457,13 @@ async function loadModules() {
     }
   });
 
-  registerRoute('/admin/dashboard', async (rootEl, params) => {
+  registerRoute('/admin-panel', async (rootEl, params) => {
     // Check auth
     const isLoggedIn = localStorage.getItem('adminLoggedIn');
     const loginTime = parseInt(localStorage.getItem('adminLoginTime') || '0', 10);
     
     if (!isLoggedIn || !loginTime || (Date.now() - loginTime > 3600000)) {
-      window.location.hash = '#/admin/login';
+      window.location.hash = '#/admin';
       return;
     }
 
