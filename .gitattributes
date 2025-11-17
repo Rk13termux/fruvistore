@@ -1,0 +1,9 @@
+# Ensure HTML files are not cached
+*.html -delta
+*.html diff=html
+
+# Set line endings
+* text=auto
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf

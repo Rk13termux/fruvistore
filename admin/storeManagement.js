@@ -394,6 +394,18 @@ class StoreManagement {
                             <p>Estos productos están ocultos de la tienda. Útil cuando están fuera de temporada o escasos en el mercado.</p>
                         </div>
                     </div>
+                    
+                    <!-- Buscador de productos inactivos -->
+                    <div class="search-box" style="margin-bottom: 1rem;">
+                        <input 
+                            type="text" 
+                            id="inactiveSearchInput" 
+                            placeholder="🔍 Buscar en productos inactivos (nombre, categoría)..." 
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                            oninput="storeManagement.searchInactiveProducts(this.value)"
+                        />
+                    </div>
+
                     <div class="table-container">
                         <table id="inactiveProductsTable" class="data-table">
                             <thead>
@@ -1367,6 +1379,24 @@ class StoreManagement {
         const activeProducts = this.products.filter(p => p.available !== false && p.is_active !== false);
         const inactiveProducts = this.products.filter(p => p.available === false || p.is_active === false);
 
+        console.log('🔍 DEBUG - Productos cargados:', {
+            total: this.products.length,
+            activos: activeProducts.length,
+            inactivos: inactiveProducts.length
+        });
+
+        // Log primeros 3 productos inactivos para debugging
+        if (inactiveProducts.length > 0) {
+            console.log('📋 Productos inactivos encontrados:', 
+                inactiveProducts.slice(0, 3).map(p => ({
+                    nombre: p.name,
+                    is_active: p.is_active,
+                    available: p.available,
+                    inactive_reason: p.inactive_reason
+                }))
+            );
+        }
+
         // Actualizar contadores
         const activeCount = document.getElementById('activeCount');
         const inactiveCount = document.getElementById('inactiveCount');
@@ -1378,6 +1408,9 @@ class StoreManagement {
         
         // Renderizar tabla de inactivos
         this.renderInactiveProductsTable(inactiveProducts);
+        
+        // Guardar para búsqueda
+        this.allInactiveProducts = inactiveProducts;
     }
 
     renderActiveProductsTable(products) {
@@ -1447,12 +1480,20 @@ class StoreManagement {
         const tbody = document.querySelector('#inactiveProductsTable tbody');
         if (!tbody) return;
 
+        // Verificar si es resultado de búsqueda
+        const isSearching = document.getElementById('inactiveSearchInput')?.value.trim().length > 0;
+
         if (products.length === 0) {
+            const emptyMessage = isSearching 
+                ? `<i class="fas fa-search" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: #999;"></i>
+                   No se encontraron productos inactivos con ese término`
+                : `<i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: var(--success);"></i>
+                   ¡Todos los productos están activos!`;
+
             tbody.innerHTML = `
                 <tr>
                     <td colspan="5" style="text-align: center; color: #666; padding: 2rem;">
-                        <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: var(--success);"></i>
-                        ¡Todos los productos están activos!
+                        ${emptyMessage}
                     </td>
                 </tr>
             `;
@@ -1566,6 +1607,36 @@ class StoreManagement {
     editProductQuick(productId) {
         // Utilizar el método existente
         this.editSelectedProductFromModal(productId);
+    }
+
+    searchInactiveProducts(query) {
+        if (!this.allInactiveProducts) {
+            console.warn('No hay productos inactivos cargados');
+            return;
+        }
+
+        const searchTerm = query.toLowerCase().trim();
+        
+        if (!searchTerm) {
+            // Si no hay búsqueda, mostrar todos
+            this.renderInactiveProductsTable(this.allInactiveProducts);
+            return;
+        }
+
+        // Filtrar productos
+        const filtered = this.allInactiveProducts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            const category = (p.category || '').toLowerCase();
+            const reason = (p.inactive_reason || '').toLowerCase();
+            
+            return name.includes(searchTerm) || 
+                   category.includes(searchTerm) || 
+                   reason.includes(searchTerm);
+        });
+
+        console.log(`🔍 Búsqueda "${query}": ${filtered.length} resultados de ${this.allInactiveProducts.length} productos inactivos`);
+        
+        this.renderInactiveProductsTable(filtered);
     }
 
     // ===== UTILITY METHODS =====
