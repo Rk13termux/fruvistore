@@ -214,7 +214,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <!-- Navigation Menu Professional -->
-    <script src="scripts/navigation-menu.js"></script>
+    <script src="scripts/navigation-menu.js?v=1.1.0"></script>
+    <script>
+      // Verificar que el menú de navegación se inicializó
+      setTimeout(() => {
+        if (!window.MenuNavigation) {
+          console.error('❌ MenuNavigation no se cargó. Recargando...');
+          // Intentar cargar manualmente
+          const script = document.createElement('script');
+          script.src = 'scripts/navigation-menu.js?v=' + Date.now();
+          script.onerror = () => console.error('❌ Error crítico al cargar navigation-menu.js');
+          document.head.appendChild(script);
+        } else {
+          console.log('✅ MenuNavigation cargado correctamente');
+        }
+      }, 500);
+    </script>
     <!-- Mobile Debug Script -->
     <script src="scripts/mobile-debug.js"></script>
     <!-- Users Service - Login, Registration, Profiles -->
