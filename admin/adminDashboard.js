@@ -231,14 +231,21 @@ class AdminDashboard {
         const inactiveProducts = (products?.length || 0) - activeProducts;
 
         const ctx = canvas.getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (this.charts.productsStatus) {
+            this.charts.productsStatus.destroy();
+        }
+
         this.charts.productsStatus = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Activos', 'Inactivos'],
                 datasets: [{
                     data: [activeProducts, inactiveProducts],
-                    backgroundColor: ['#28a745', '#dc3545'],
-                    borderWidth: 0
+                    backgroundColor: ['#8bda01', '#ff8bd3'],
+                    borderWidth: 2,
+                    borderColor: 'rgba(0, 0, 0, 0.1)'
                 }]
             },
             options: {
@@ -246,7 +253,29 @@ class AdminDashboard {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12,
+                                family: "'Poppins', sans-serif"
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            family: "'Poppins', sans-serif"
+                        },
+                        bodyFont: {
+                            size: 13,
+                            family: "'Poppins', sans-serif"
+                        },
+                        cornerRadius: 8
                     }
                 }
             }
@@ -276,6 +305,12 @@ class AdminDashboard {
         });
 
         const ctx = canvas.getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (this.charts.creditsDistribution) {
+            this.charts.creditsDistribution.destroy();
+        }
+
         this.charts.creditsDistribution = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -283,8 +318,10 @@ class AdminDashboard {
                 datasets: [{
                     label: 'Usuarios',
                     data: Object.values(ranges),
-                    backgroundColor: '#2a5298',
-                    borderWidth: 0
+                    backgroundColor: '#ff9b40',
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    borderSkipped: false
                 }]
             },
             options: {
@@ -294,14 +331,53 @@ class AdminDashboard {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1
+                            stepSize: 1,
+                            font: {
+                                size: 11,
+                                family: "'Poppins', sans-serif"
+                            },
+                            color: '#666'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 11,
+                                family: "'Poppins', sans-serif"
+                            },
+                            color: '#666'
+                        },
+                        grid: {
+                            display: false
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            family: "'Poppins', sans-serif"
+                        },
+                        bodyFont: {
+                            size: 13,
+                            family: "'Poppins', sans-serif"
+                        },
+                        cornerRadius: 8,
+                        displayColors: false
                     }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
                 }
             }
         });
