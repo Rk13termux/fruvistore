@@ -39,15 +39,34 @@ class AdminDatabaseService {
     async getAllProducts() {
         await this.ensureInitialized();
         try {
+            console.log('🔎 Consultando current_products en Supabase...');
             const { data, error } = await this.productsClient
                 .from('current_products')
                 .select('*')
                 .order('name');
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ Error en query de productos:', error);
+                throw error;
+            }
+            
+            console.log('✅ Productos recibidos de Supabase:', {
+                total: data?.length || 0,
+                primeros_3: data?.slice(0, 3).map(p => ({
+                    id: p.id,
+                    nombre: p.name,
+                    is_active: p.is_active,
+                    available: p.available
+                }))
+            });
+            
+            // Contar inactivos en los datos recibidos
+            const inactivosEnDB = data?.filter(p => p.is_active === false || p.available === false).length || 0;
+            console.log(`📊 Productos inactivos en la base de datos: ${inactivosEnDB}`);
+            
             return data || [];
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('❌ Error fetching products:', error);
             throw error;
         }
     }

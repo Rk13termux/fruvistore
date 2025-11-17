@@ -387,8 +387,8 @@ class StoreManagement {
 
                 <!-- Inactive Products Tab -->
                 <div id="inactiveProductsTab" class="tab-content">
-                    <div class="warning-box">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div class="info-box">
+                        <i class="fas fa-pause-circle"></i>
                         <div class="message-content">
                             <strong>Productos Inactivos</strong>
                             <p>Estos productos están ocultos de la tienda. Útil cuando están fuera de temporada o escasos en el mercado.</p>
@@ -1397,6 +1397,16 @@ class StoreManagement {
             inactivos: inactiveProducts.length
         });
 
+        // Log TODOS los productos para ver sus valores
+        console.log('📊 ANÁLISIS COMPLETO DE PRODUCTOS:');
+        console.table(this.products.map(p => ({
+            id: p.id,
+            nombre: p.name,
+            is_active: p.is_active,
+            available: p.available,
+            estado: (p.available === false || p.is_active === false) ? '🔴 INACTIVO' : '✅ ACTIVO'
+        })));
+
         // Log primeros 3 productos inactivos para debugging
         if (inactiveProducts.length > 0) {
             console.log('📋 Productos inactivos encontrados:', 
@@ -1407,6 +1417,17 @@ class StoreManagement {
                     inactive_reason: p.inactive_reason
                 }))
             );
+        } else {
+            console.log('⚠️ NO SE ENCONTRARON PRODUCTOS INACTIVOS');
+            console.log('Revisando cada producto individualmente:');
+            this.products.forEach(p => {
+                if (p.is_active === false || p.available === false) {
+                    console.log(`🔴 ENCONTRADO: ${p.name}`, {
+                        is_active: p.is_active,
+                        available: p.available
+                    });
+                }
+            });
         }
 
         // Actualizar contadores
