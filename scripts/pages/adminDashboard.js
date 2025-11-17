@@ -127,7 +127,7 @@ class AdminDashboard {
     // Create and inject admin.css
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '../styles/admin.css?v=3.2.0';
+    link.href = '../styles/admin.css?v=4.0.0';
     link.id = 'admin-styles';
     document.head.appendChild(link);
     
