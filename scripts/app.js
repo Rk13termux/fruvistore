@@ -443,6 +443,80 @@ async function loadModules() {
     }
   });
 
+  // Admin routes
+  registerRoute('/admin/login', async (rootEl, params) => {
+    rootEl.innerHTML = `
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);">
+        <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 40px; width: 100%; max-width: 400px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <i class="fas fa-shield-alt" style="font-size: 48px; color: #ff9b40; margin-bottom: 15px;"></i>
+            <h2 style="color: #fff; margin: 0 0 10px 0; font-family: 'Poppins', sans-serif;">Admin Access</h2>
+            <p style="color: rgba(255, 255, 255, 0.6); margin: 0; font-size: 14px;">Panel de Administración Fruvi</p>
+          </div>
+          <form id="adminLoginForm" style="display: flex; flex-direction: column; gap: 20px;">
+            <div>
+              <label style="color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 8px; font-size: 14px; font-family: 'Poppins', sans-serif;">Usuario</label>
+              <input type="text" id="adminUsername" required style="width: 100%; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 14px; box-sizing: border-box;" placeholder="Ingresa tu usuario">
+            </div>
+            <div>
+              <label style="color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 8px; font-size: 14px; font-family: 'Poppins', sans-serif;">Contraseña</label>
+              <input type="password" id="adminPassword" required style="width: 100%; padding: 12px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 14px; box-sizing: border-box;" placeholder="Ingresa tu contraseña">
+            </div>
+            <div id="adminLoginError" style="display: none; padding: 12px; background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 10px; color: #ff3b30; font-size: 14px;"></div>
+            <button type="submit" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ff9b40 0%, #ff8b20 100%); color: #000; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.3s;">
+              <i class="fas fa-sign-in-alt"></i> Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('adminLoginError');
+
+      // Simple auth (reemplazar con tu lógica real)
+      if (username === 'admin' && password === 'fruvi2024') {
+        localStorage.setItem('adminLoggedIn', 'true');
+        localStorage.setItem('adminLoginTime', Date.now().toString());
+        localStorage.setItem('adminUser', username);
+        window.location.hash = '#/admin/dashboard';
+      } else {
+        errorDiv.textContent = '❌ Usuario o contraseña incorrectos';
+        errorDiv.style.display = 'block';
+      }
+    });
+  });
+
+  registerRoute('/admin/dashboard', async (rootEl, params) => {
+    // Check auth
+    const isLoggedIn = localStorage.getItem('adminLoggedIn');
+    const loginTime = parseInt(localStorage.getItem('adminLoginTime') || '0', 10);
+    
+    if (!isLoggedIn || !loginTime || (Date.now() - loginTime > 3600000)) {
+      window.location.hash = '#/admin/login';
+      return;
+    }
+
+    try {
+      const adminModule = await import('./pages/adminDashboard.js');
+      rootEl.innerHTML = '<div id="admin-dashboard-container"></div>';
+      
+      if (adminModule.default && typeof adminModule.default.init === 'function') {
+        await adminModule.default.init();
+      }
+    } catch (error) {
+      console.error('❌ Error cargando admin dashboard:', error);
+      rootEl.innerHTML = `<div style="padding: 20px; color: red; background: #ffe6e6; border: 1px solid #ff9999; margin: 20px; border-radius: 8px;">
+        <h2>❌ Error cargando dashboard</h2>
+        <p><strong>Error:</strong> ${error.message}</p>
+        <p>Revisa la consola para más detalles.</p>
+      </div>`;
+    }
+  });
+
   // Initialize router when DOM is ready
   function initializeRouter() {
     console.log('🚀 Inicializando router...');
