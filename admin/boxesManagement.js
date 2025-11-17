@@ -335,29 +335,96 @@ class BoxesManagement {
                 </div>
             </div>
 
-            <!-- Boxes Table -->
+            <!-- Boxes Table with Tabs -->
             <div class="management-section">
-                <h3><i class="fas fa-table"></i> Cajas Recientes</h3>
-                <div class="table-container">
-                    <table id="boxesTableContainer" class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Caja</th>
-                                <th>Descripción</th>
-                                <th>Precio</th>
-                                <th>Stock</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: #666;">
-                                    <i class="fas fa-spinner fa-spin"></i> Cargando cajas...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="products-tabs-header">
+                    <h3><i class="fas fa-table"></i> Catálogo de Cajas</h3>
+                    <div class="tabs-navigation">
+                        <button class="tab-btn active" data-tab="active" onclick="boxesManagement.switchTab('active')">
+                            <i class="fas fa-check-circle"></i> 
+                            Cajas Activas
+                            <span class="tab-badge" id="activeBoxesCount">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="inactive" onclick="boxesManagement.switchTab('inactive')">
+                            <i class="fas fa-pause-circle"></i> 
+                            Cajas Inactivas
+                            <span class="tab-badge inactive" id="inactiveBoxesCount">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Boxes Tab -->
+                <div id="activeBoxesTab" class="tab-content active">
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div class="message-content">
+                            <strong>Cajas Activas</strong>
+                            <p>Estas cajas están visibles en la tienda y disponibles para compra.</p>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="activeBoxesTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Caja</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #666;">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando cajas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inactive Boxes Tab -->
+                <div id="inactiveBoxesTab" class="tab-content">
+                    <div class="info-box">
+                        <i class="fas fa-pause-circle"></i>
+                        <div class="message-content">
+                            <strong>Cajas Inactivas</strong>
+                            <p>Estas cajas están ocultas de la tienda. Útil para cajas temporales o de temporada.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Buscador de cajas inactivas -->
+                    <div class="search-box" style="margin-bottom: 1rem;">
+                        <input 
+                            type="text" 
+                            id="inactiveBoxesSearchInput" 
+                            placeholder="🔍 Buscar en cajas inactivas (nombre, descripción)..." 
+                            style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                            oninput="boxesManagement.searchInactiveBoxes(this.value)"
+                        />
+                    </div>
+
+                    <div class="table-container">
+                        <table id="inactiveBoxesTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Caja</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Motivo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #666;">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando cajas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -379,13 +446,25 @@ class BoxesManagement {
 
     async loadBoxes() {
         try {
+            console.log('📥 Cargando cajas desde la base de datos...');
             this.showLoading('Cargando cajas...');
             this.boxes = await this.dbService.getAllBoxes();
+            
+            console.log('✅ Cajas cargadas:', {
+                total: this.boxes.length,
+                primeras_3: this.boxes.slice(0, 3).map(b => ({
+                    id: b.id,
+                    nombre: b.name,
+                    is_active: b.is_active,
+                    available: b.available
+                }))
+            });
+            
             this.renderBoxesTable();
             this.populateSelectors();
             this.hideLoading();
         } catch (error) {
-            console.error('Error loading boxes:', error);
+            console.error('❌ Error loading boxes:', error);
             this.hideLoading();
             this.showAlert('Error cargando cajas: ' + error.message, 'danger');
         }
@@ -1384,56 +1463,271 @@ class BoxesManagement {
     }
 
     renderBoxesTable() {
-        const container = document.getElementById('boxesTableContainer');
-        if (!container) return;
+        // Separar cajas activas e inactivas
+        const activeBoxes = this.boxes.filter(b => b.available !== false && b.is_active !== false);
+        const inactiveBoxes = this.boxes.filter(b => b.available === false || b.is_active === false);
+
+        console.log('🔍 DEBUG - Cajas cargadas:', {
+            total: this.boxes.length,
+            activas: activeBoxes.length,
+            inactivas: inactiveBoxes.length
+        });
+
+        // Log TODAS las cajas para ver sus valores
+        console.log('📊 ANÁLISIS COMPLETO DE CAJAS:');
+        console.table(this.boxes.map(b => ({
+            id: b.id,
+            nombre: b.name,
+            is_active: b.is_active,
+            available: b.available,
+            estado: (b.available === false || b.is_active === false) ? '🔴 INACTIVA' : '✅ ACTIVA'
+        })));
+
+        // Log primeras 3 cajas inactivas para debugging
+        if (inactiveBoxes.length > 0) {
+            console.log('📋 Cajas inactivas encontradas:', 
+                inactiveBoxes.slice(0, 3).map(b => ({
+                    nombre: b.name,
+                    is_active: b.is_active,
+                    available: b.available,
+                    inactive_reason: b.inactive_reason
+                }))
+            );
+        } else {
+            console.log('⚠️ NO SE ENCONTRARON CAJAS INACTIVAS');
+        }
+
+        // Actualizar contadores
+        const activeCount = document.getElementById('activeBoxesCount');
+        const inactiveCount = document.getElementById('inactiveBoxesCount');
+        if (activeCount) activeCount.textContent = activeBoxes.length;
+        if (inactiveCount) inactiveCount.textContent = inactiveBoxes.length;
+
+        // Renderizar tabla de activas
+        this.renderActiveBoxesTable(activeBoxes);
+        
+        // Renderizar tabla de inactivas
+        this.renderInactiveBoxesTable(inactiveBoxes);
+        
+        // Guardar para búsqueda
+        this.allInactiveBoxes = inactiveBoxes;
+    }
+
+    renderActiveBoxesTable(boxes) {
+        const tbody = document.querySelector('#activeBoxesTable tbody');
+        if (!tbody) return;
+
+        if (boxes.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #666; padding: 2rem;">
+                        <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        No hay cajas activas
+                    </td>
+                </tr>
+            `;
+            return;
+        }
 
         let rows = '';
-        this.boxes.slice(0, 50).forEach(box => {
+        boxes.forEach(box => {
             const stock = Number(box.stock_quantity || 0);
             const minStock = Number(box.min_stock || 0);
             const price = Number(box.price_cop || 0);
             const isLow = stock <= minStock;
-            const isActive = box.available !== false;
 
             const statusClass = isLow ? 'stock-low' : 'stock-good';
             const statusIcon = isLow ? 'fa-exclamation-triangle' : 'fa-check-circle';
 
             rows += `
                 <tr>
-                    <td>${this.escapeHtml(box.name)}</td>
+                    <td>
+                        <div class="product-cell">
+                            <img src="/public/images/caja/${box.image_url || 'default.png'}" 
+                                 alt="${this.escapeHtml(box.name)}" 
+                                 style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; margin-right: 10px;">
+                            <strong>${this.escapeHtml(box.name)}</strong>
+                        </div>
+                    </td>
                     <td>${this.escapeHtml(box.description || 'Sin descripción')}</td>
-                    <td>${this.formatPrice(price)}</td>
+                    <td><strong>${this.formatPrice(price)}</strong></td>
                     <td>
                         <span class="${statusClass}">
                             <i class="fas ${statusIcon}"></i>
                             ${this.formatNumber(stock)} unidades
                         </span>
                     </td>
-                    <td>${isActive ? 'Disponible' : 'No disponible'}</td>
                     <td>
-                        <button class="btn-sm btn-info" onclick="boxesManagement.editSelectedBoxFromModal(${box.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
+                        <div class="action-buttons-inline">
+                            <button class="btn-sm btn-action" onclick="boxesManagement.editSelectedBoxFromModal(${box.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-sm btn-outline" onclick="boxesManagement.deactivateBox(${box.id})" title="Desactivar">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
         });
 
-        container.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Caja</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
+        tbody.innerHTML = rows;
+    }
+
+    renderInactiveBoxesTable(boxes) {
+        const tbody = document.querySelector('#inactiveBoxesTable tbody');
+        if (!tbody) return;
+
+        // Verificar si es resultado de búsqueda
+        const isSearching = document.getElementById('inactiveBoxesSearchInput')?.value.trim().length > 0;
+
+        if (boxes.length === 0) {
+            const emptyMessage = isSearching 
+                ? `<i class="fas fa-search" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: #999;"></i>
+                   No se encontraron cajas inactivas con ese término`
+                : `<i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: var(--success);"></i>
+                   ¡Todas las cajas están activas!`;
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: #666; padding: 2rem;">
+                        ${emptyMessage}
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let rows = '';
+        boxes.forEach(box => {
+            const price = Number(box.price_cop || 0);
+            const reason = box.inactive_reason || 'Fuera de temporada';
+
+            rows += `
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <img src="/public/images/caja/${box.image_url || 'default.png'}" 
+                                 alt="${this.escapeHtml(box.name)}" 
+                                 style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; margin-right: 10px; opacity: 0.6;">
+                            <strong style="opacity: 0.7;">${this.escapeHtml(box.name)}</strong>
+                        </div>
+                    </td>
+                    <td>${this.escapeHtml(box.description || 'Sin descripción')}</td>
+                    <td>${this.formatPrice(price)}</td>
+                    <td>
+                        <span class="reason-badge">
+                            <i class="fas fa-info-circle"></i>
+                            ${this.escapeHtml(reason)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons-inline">
+                            <button class="btn-sm btn-secondary" onclick="boxesManagement.reactivateBox(${box.id})" title="Reactivar">
+                                <i class="fas fa-play"></i> Reactivar
+                            </button>
+                            <button class="btn-sm btn-action" onclick="boxesManagement.editSelectedBoxFromModal(${box.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = rows;
+    }
+
+    switchTab(tab) {
+        // Actualizar botones de pestañas
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.tab === tab) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Actualizar contenido de pestañas
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        if (tab === 'active') {
+            document.getElementById('activeBoxesTab').classList.add('active');
+        } else {
+            document.getElementById('inactiveBoxesTab').classList.add('active');
+        }
+    }
+
+    async deactivateBox(boxId) {
+        const reason = prompt('¿Por qué desactivas esta caja? (Ej: Fuera de temporada, Agotado)');
+        if (!reason) return;
+
+        try {
+            const box = this.boxes.find(b => b.id === boxId);
+            if (!box) return;
+
+            await this.dbService.updateBox(boxId, { 
+                is_active: false,
+                available: false,
+                inactive_reason: reason
+            });
+
+            this.showAlert(`✅ ${box.name} desactivada correctamente`, 'success');
+            await this.loadBoxes();
+        } catch (error) {
+            console.error('Error deactivating box:', error);
+            this.showAlert('Error al desactivar caja: ' + error.message, 'danger');
+        }
+    }
+
+    async reactivateBox(boxId) {
+        try {
+            const box = this.boxes.find(b => b.id === boxId);
+            if (!box) return;
+
+            await this.dbService.updateBox(boxId, { 
+                is_active: true,
+                available: true,
+                inactive_reason: null
+            });
+
+            this.showAlert(`✅ ${box.name} reactivada correctamente`, 'success');
+            await this.loadBoxes();
+        } catch (error) {
+            console.error('Error reactivating box:', error);
+            this.showAlert('Error al reactivar caja: ' + error.message, 'danger');
+        }
+    }
+
+    searchInactiveBoxes(query) {
+        if (!this.allInactiveBoxes) {
+            console.warn('No hay cajas inactivas cargadas');
+            return;
+        }
+
+        const searchTerm = query.toLowerCase().trim();
+        
+        if (!searchTerm) {
+            // Si no hay búsqueda, mostrar todas
+            this.renderInactiveBoxesTable(this.allInactiveBoxes);
+            return;
+        }
+
+        // Filtrar cajas
+        const filtered = this.allInactiveBoxes.filter(b => {
+            const name = (b.name || '').toLowerCase();
+            const description = (b.description || '').toLowerCase();
+            const reason = (b.inactive_reason || '').toLowerCase();
+            
+            return name.includes(searchTerm) || 
+                   description.includes(searchTerm) || 
+                   reason.includes(searchTerm);
+        });
+
+        console.log(`🔍 Búsqueda "${query}": ${filtered.length} resultados de ${this.allInactiveBoxes.length} cajas inactivas`);
+        
+        this.renderInactiveBoxesTable(filtered);
     }
 
     // ===== UTILITY METHODS =====

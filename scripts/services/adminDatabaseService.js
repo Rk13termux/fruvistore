@@ -348,16 +348,35 @@ class AdminDatabaseService {
     async getAllBoxes() {
         await this.ensureInitialized();
         try {
+            console.log('🔎 Consultando current_boxes en Supabase...');
             const { data, error } = await this.productsClient
                 .from('current_boxes')
                 .select('*')
                 .order('featured', { ascending: false })
                 .order('name');
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ Error en query de cajas:', error);
+                throw error;
+            }
+            
+            console.log('✅ Cajas recibidas de Supabase:', {
+                total: data?.length || 0,
+                primeras_3: data?.slice(0, 3).map(b => ({
+                    id: b.id,
+                    nombre: b.name,
+                    is_active: b.is_active,
+                    available: b.available
+                }))
+            });
+            
+            // Contar inactivas en los datos recibidos
+            const inactivasEnDB = data?.filter(b => b.is_active === false || b.available === false).length || 0;
+            console.log(`📊 Cajas inactivas en la base de datos: ${inactivasEnDB}`);
+            
             return data || [];
         } catch (error) {
-            console.error('Error fetching boxes:', error);
+            console.error('❌ Error fetching boxes:', error);
             throw error;
         }
     }
@@ -408,17 +427,27 @@ class AdminDatabaseService {
     async updateBox(boxId, updates) {
         await this.ensureInitialized();
         try {
+            console.log('🔧 Updating box:', boxId, updates);
+            
+            // Actualizar en la tabla management_boxes
+            updates.updated_at = new Date().toISOString();
+            
             const { data, error } = await this.productsClient
-                .from('current_boxes')
+                .from('management_boxes')
                 .update(updates)
                 .eq('id', boxId)
                 .select()
                 .single();
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ Error updating box:', error);
+                throw error;
+            }
+            
+            console.log('✅ Box updated:', data);
             return data;
         } catch (error) {
-            console.error('Error updating box:', error);
+            console.error('❌ Error in updateBox:', error);
             throw error;
         }
     }
