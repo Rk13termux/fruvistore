@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'database/**'
+      - '.gitignore'
   workflow_dispatch:
 
 permissions:
@@ -31,13 +35,13 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
 
       - name: Create minimal build environment
         run: |
           echo "# Build environment for Vite" > .env
           echo "VITE_ENVIRONMENT=production" >> .env
-          echo "VITE_BUILD_DATE=$(date)" >> .env
+          echo "VITE_BUILD_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> .env
 
       - name: Build
         run: npm run build
@@ -61,11 +65,13 @@ jobs:
 # ============================================================================
 # 
 # ✅ CONFIGURACIÓN COMPLETA:
-# - Todas las credenciales están en config.js
-# - Deploy automático en cada push a main
+# - Deploy optimizado con cache y paths-ignore
+# - Deploy solo cuando hay cambios relevantes (excluye .md, database/)
+# - Todas las credenciales en config.js
 # - Sin secrets requeridos en GitHub
 # - Funcionamiento completo out-of-the-box
 #
-# 📝 ACTIVAR GITHUB PAGES:
-# Settings → Pages → Source: GitHub Actions
+# 📝 CONFIGURACIÓN GITHUB PAGES:
+# Settings → Pages → Source: GitHub Actions (NO Branch)
+# Esto evita deployments duplicados
 # ============================================================================
