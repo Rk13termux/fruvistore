@@ -381,9 +381,13 @@ button {
 }
 
 /* Hero sections responsive */
-.hero-premium,
-.store-hero {
+.hero-premium {
   padding-block: clamp(2rem, 8vw, 5rem);
+  text-align: center;
+}
+
+.store-hero {
+  padding-block: 0;
   text-align: center;
 }
 
