@@ -29,8 +29,7 @@ body[data-page="tienda"] {
 
 /* Aplicar colores en la tienda */
 .store .btn-primary,
-.store .add-to-cart,
-.store .cart-checkout {
+.store .add-to-cart {
   background: linear-gradient(135deg, #4ecdc4 0%, #f6d365 50%, #fda085 100%);
   background-size: 200% 100%;
   color: #000;
@@ -41,9 +40,44 @@ body[data-page="tienda"] {
   overflow: hidden;
 }
 
+/* Botón de proceder al pago - Color turquesa sólido */
+.store .cart-checkout {
+  background: #4ecdc4 !important;
+  color: #000 !important;
+  font-weight: 700;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.store .cart-checkout::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.store .cart-checkout:hover,
+.store .cart-checkout:active {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(246, 211, 101, 0.5);
+}
+
+.store .cart-checkout:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(246, 211, 101, 0.4);
+}
+
 .store .btn-primary::before,
-.store .add-to-cart::before,
-.store .cart-checkout::before {
+.store .add-to-cart::before {
   content: '';
   position: absolute;
   top: 0;
@@ -56,16 +90,14 @@ body[data-page="tienda"] {
 }
 
 .store .btn-primary:hover,
-.store .add-to-cart:hover,
-.store .cart-checkout:hover {
+.store .add-to-cart:hover {
   background-position: 100% 0;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
 }
 
 .store .btn-primary:hover::before,
-.store .add-to-cart:hover::before,
-.store .cart-checkout:hover::before {
+.store .add-to-cart:hover::before {
   left: 0;
 }
 
@@ -146,8 +178,7 @@ body[data-page="cajas"] {
 
 /* Aplicar colores en FruviBox */
 .boxes-store .btn-primary,
-.boxes-store .add-to-cart,
-.boxes-store .cart-checkout {
+.boxes-store .add-to-cart {
   background: linear-gradient(135deg, #56ab2f 0%, #a8e063 50%, #4ecdc4 100%);
   background-size: 200% 100%;
   color: #000;
@@ -158,9 +189,44 @@ body[data-page="cajas"] {
   overflow: hidden;
 }
 
+/* Botón de proceder al pago - Color verde lima sólido */
+.boxes-store .cart-checkout {
+  background: #a8e063 !important;
+  color: #000 !important;
+  font-weight: 700;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(168, 224, 99, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.boxes-store .cart-checkout::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #56ab2f 0%, #4ecdc4 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.boxes-store .cart-checkout:hover,
+.boxes-store .cart-checkout:active {
+  background: linear-gradient(135deg, #56ab2f 0%, #4ecdc4 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(86, 171, 47, 0.5);
+}
+
+.boxes-store .cart-checkout:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(86, 171, 47, 0.4);
+}
+
 .boxes-store .btn-primary::before,
-.boxes-store .add-to-cart::before,
-.boxes-store .cart-checkout::before {
+.boxes-store .add-to-cart::before {
   content: '';
   position: absolute;
   top: 0;
@@ -173,16 +239,14 @@ body[data-page="cajas"] {
 }
 
 .boxes-store .btn-primary:hover,
-.boxes-store .add-to-cart:hover,
-.boxes-store .cart-checkout:hover {
+.boxes-store .add-to-cart:hover {
   background-position: 100% 0;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(168, 224, 99, 0.4);
 }
 
 .boxes-store .btn-primary:hover::before,
-.boxes-store .add-to-cart:hover::before,
-.boxes-store .cart-checkout:hover::before {
+.boxes-store .add-to-cart:hover::before {
   left: 0;
 }
 
