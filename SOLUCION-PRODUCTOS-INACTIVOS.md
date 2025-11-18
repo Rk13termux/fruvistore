@@ -7,7 +7,7 @@ El **Aguacate Papelillo** fue desactivado pero no aparece en la pestaña de Prod
 ## 🔍 Causa Raíz
 
 1. **Método faltante**: `updateProduct()` no existía en `adminDatabaseService.js`
-2. **Campos faltantes**: `available` e `inactive_reason` podrían no existir en `management_products`
+2. **Campos faltantes**: `available` e `inactive_reason` podrían no existir en `managementaefgergeargerge_products`
 3. **Vista desactualizada**: `current_products` no incluía los nuevos campos
 
 ## ✅ SOLUCIÓN IMPLEMENTADA
