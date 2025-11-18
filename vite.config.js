@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import { copyFileSync } from 'fs'
+import { copyFileSync, cpSync, existsSync, mkdirSync } from 'fs'
 import { resolve } from 'path'
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -38,13 +38,38 @@ export default defineConfig({
     {
       name: 'copy-admin-files',
       writeBundle() {
-        // Copy admin files to dist after build
         try {
-          copyFileSync('admin-panel-secure.html', 'dist/admin-panel-secure.html')
-          copyFileSync('secure-access.html', 'dist/secure-access.html')
-          console.log('✅ Admin files copied to dist/')
+          // Copy entire admin folder to dist
+          const adminSrc = 'admin'
+          const adminDest = 'dist/admin'
+          
+          if (!existsSync(adminDest)) {
+            mkdirSync(adminDest, { recursive: true })
+          }
+          
+          cpSync(adminSrc, adminDest, { recursive: true })
+          console.log('✅ Admin folder copied to dist/admin/')
+          
+          // Copy _redirects file (for Netlify compatibility)
+          if (existsSync('_redirects')) {
+            copyFileSync('_redirects', 'dist/_redirects')
+            console.log('✅ _redirects copied to dist/')
+          }
+          
+          // Copy CNAME file (for GitHub Pages custom domain)
+          if (existsSync('CNAME')) {
+            copyFileSync('CNAME', 'dist/CNAME')
+            console.log('✅ CNAME copied to dist/')
+          }
+          
+          // Copy .nojekyll (for GitHub Pages)
+          if (existsSync('.nojekyll')) {
+            copyFileSync('.nojekyll', 'dist/.nojekyll')
+            console.log('✅ .nojekyll copied to dist/')
+          }
+          
         } catch (error) {
-          console.error('❌ Error copying admin files:', error)
+          console.error('❌ Error copying files:', error)
         }
       }
     }
