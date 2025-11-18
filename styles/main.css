@@ -154,8 +154,10 @@ body {
    ========================================================= */
 
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   background: rgba(0, 0, 0, 0.92);
   backdrop-filter: saturate(180%) blur(20px);
@@ -3438,7 +3440,18 @@ body {
 .glow-pulse { animation: glowPulse 2.2s ease-in-out infinite; }
 
 /* App root spacing (header fixed) */
-.app-root { padding-top: 0px; min-height: 60vh; }
+.app-root { 
+  padding-top: 80px; 
+  min-height: calc(100vh - 80px); 
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+  .app-root {
+    padding-top: 70px;
+    min-height: calc(100vh - 70px);
+  }
+}
 
 /* ========================= */
 /* Fruvi ChatGPT Fullscreen  */
