@@ -46,9 +46,9 @@
             position: absolute;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at 20% 50%, rgba(74, 158, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(139, 218, 1, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 20%, rgba(74, 158, 255, 0.15) 0%, transparent 50%);
+            background: radial-gradient(circle at 20% 50%, rgba(255, 155, 64, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(139, 218, 1, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(255, 155, 64, 0.06) 0%, transparent 50%);
             animation: bgMove 15s ease-in-out infinite;
             pointer-events: none;
         }
@@ -92,21 +92,19 @@
 
         .logo-container {
             position: relative;
-            width: 90px;
-            height: 90px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 25px;
         }
 
         .logo-icon {
-            width: 90px;
-            height: 90px;
-            background: linear-gradient(135deg, #4A9EFF 0%, #3A8EEF 100%);
-            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            background: transparent;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 15px 40px rgba(74, 158, 255, 0.4),
-                        0 0 0 8px rgba(74, 158, 255, 0.1);
             position: relative;
             animation: pulse 3s ease-in-out infinite;
         }
@@ -116,21 +114,11 @@
             50% { transform: scale(1.05); }
         }
 
-        .logo-icon::before {
-            content: '';
-            position: absolute;
+        .logo-icon img {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4A9EFF 0%, #3A8EEF 100%);
-            filter: blur(20px);
-            opacity: 0.5;
-            z-index: -1;
-        }
-
-        .logo-icon i {
-            font-size: 42px;
-            color: #fff;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 30px rgba(255, 155, 64, 0.3));
         }
 
         .login-header h1 {
@@ -221,15 +209,15 @@
 
         .form-control:focus {
             outline: none;
-            border-color: #4A9EFF;
+            border-color: #ff9b40;
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(74, 158, 255, 0.15),
+            box-shadow: 0 0 0 4px rgba(255, 155, 64, 0.15),
                         0 8px 20px rgba(0, 0, 0, 0.2);
             transform: translateY(-1px);
         }
 
         .form-control:focus + i {
-            color: #4A9EFF;
+            color: #ff9b40;
         }
 
         .form-control::placeholder {
@@ -239,15 +227,15 @@
         .btn-login {
             width: 100%;
             padding: 18px;
-            background: linear-gradient(135deg, #4A9EFF 0%, #3A8EEF 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #ff9b40 0%, #8bda01 100%);
+            color: #000;
             border: none;
             border-radius: 14px;
             font-size: 17px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px rgba(74, 158, 255, 0.35);
+            box-shadow: 0 10px 25px rgba(255, 155, 64, 0.35);
             position: relative;
             overflow: hidden;
             margin-top: 10px;
@@ -270,7 +258,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(74, 158, 255, 0.45);
+            box-shadow: 0 15px 35px rgba(255, 155, 64, 0.45);
         }
 
         .btn-login:active {
@@ -304,7 +292,7 @@
         }
 
         .back-link a:hover {
-            color: #4A9EFF;
+            color: #ff9b40;
             transform: translateX(-3px);
         }
 
@@ -317,8 +305,8 @@
             display: inline-block;
             width: 18px;
             height: 18px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-top-color: #000;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin-left: 8px;
@@ -339,13 +327,14 @@
                 font-size: 28px;
             }
 
-            .logo-icon {
-                width: 75px;
-                height: 75px;
+            .logo-container {
+                width: 100px;
+                height: 100px;
             }
 
-            .logo-icon i {
-                font-size: 35px;
+            .logo-icon {
+                width: 100px;
+                height: 100px;
             }
 
             .form-control {
@@ -385,7 +374,7 @@
         <div class="login-header">
             <div class="logo-container">
                 <div class="logo-icon">
-                    <i class="fas fa-leaf"></i>
+                    <img src="../public/logo.png" alt="Fruvi Logo">
                 </div>
             </div>
             <h1>Admin Access</h1>
