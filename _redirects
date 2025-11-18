@@ -1,10 +1,14 @@
 # Redirect admin login URLs
 /secure-access.html /admin/secure-access.html 301
+/secure-access /admin/secure-access.html 301
 /admin /admin/secure-access.html 301
 /login /admin/secure-access.html 301
+/admin-login /admin/secure-access.html 301
 
 # Redirect admin panel URLs
 /admin-panel.html /admin/admin-panel-secure.html 301
+/admin-panel-secure.html /admin/admin-panel-secure.html 301
 /admin-panel /admin/admin-panel-secure.html 301
 /dashboard /admin/admin-panel-secure.html 301
+/panel /admin/admin-panel-secure.html 301
 

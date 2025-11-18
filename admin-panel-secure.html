@@ -2,336 +2,49 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#000000">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <title>Panel Admin - Fruvi</title>
-    <link rel="stylesheet" href="styles/admin.css?v=2.0.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirigiendo...</title>
+    <meta http-equiv="refresh" content="0; url=/admin/admin-panel-secure.html">
+    <link rel="canonical" href="/admin/admin-panel-secure.html">
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .redirect-message {
+            text-align: center;
+            padding: 2rem;
+        }
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        // Immediate redirect
+        window.location.replace('/admin/admin-panel-secure.html');
+    </script>
 </head>
 <body>
-    <!-- Header -->
-    <header class="admin-header">
-        <div class="header-content">
-            <!-- Logo -->
-            <div class="logo">
-                <i class="fas fa-leaf"></i>
-                <span>Fruvi Admin</span>
-            </div>
-
-            <!-- Desktop Navigation -->
-            <nav class="main-nav">
-                <button class="nav-btn active" onclick="showSection('dashboard')" data-section="dashboard">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </button>
-                <button class="nav-btn" onclick="showSection('store')" data-section="store">
-                    <i class="fas fa-store"></i>
-                    <span>Tienda</span>
-                </button>
-                <button class="nav-btn" onclick="showSection('boxes')" data-section="boxes">
-                    <i class="fas fa-box"></i>
-                    <span>Cajas</span>
-                </button>
-                <button class="nav-btn" onclick="showSection('credits')" data-section="credits">
-                    <i class="fas fa-coins"></i>
-                    <span>Créditos</span>
-                </button>
-            </nav>
-
-            <!-- Header Actions -->
-            <div class="header-actions">
-                <button class="mobile-menu-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <button class="btn btn-outline" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Salir</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Mobile Sidebar -->
-    <div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
-    <aside class="mobile-sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-leaf"></i>
-                <span>Fruvi Admin</span>
-            </div>
-            <button class="sidebar-close" onclick="toggleMobileSidebar()" aria-label="Cerrar menú">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <nav class="sidebar-nav">
-            <button class="sidebar-nav-btn active" onclick="showSectionMobile('dashboard')" data-section="dashboard">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </button>
-            <button class="sidebar-nav-btn" onclick="showSectionMobile('store')" data-section="store">
-                <i class="fas fa-store"></i>
-                <span>Tienda</span>
-            </button>
-            <button class="sidebar-nav-btn" onclick="showSectionMobile('boxes')" data-section="boxes">
-                <i class="fas fa-box"></i>
-                <span>Cajas Premium</span>
-            </button>
-            <button class="sidebar-nav-btn" onclick="showSectionMobile('credits')" data-section="credits">
-                <i class="fas fa-coins"></i>
-                <span>Créditos IA</span>
-            </button>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="admin-main">
-        <!-- Dashboard Section -->
-        <section id="dashboard-section" class="content-section active">
-            <div id="dashboard-content">
-                <!-- Dashboard will be loaded here -->
-            </div>
-        </section>
-
-        <!-- Store Management Section -->
-        <section id="store-section" class="content-section">
-            <div id="store-management-content">
-                <!-- Store management will be loaded here -->
-            </div>
-        </section>
-
-        <!-- Boxes Management Section -->
-        <section id="boxes-section" class="content-section">
-            <div id="boxes-management-content">
-                <!-- Boxes management will be loaded here -->
-            </div>
-        </section>
-
-        <!-- Credits Management Section -->
-        <section id="credits-section" class="content-section">
-            <div id="credits-management-content">
-                <!-- Credits management will be loaded here -->
-            </div>
-        </section>
-    </main>
-
-    <!-- Scripts -->
-    <script type="module">
-        // Authentication check
-        function checkAdminAuth() {
-            const isLoggedIn = localStorage.getItem('adminLoggedIn');
-            const loginTimeRaw = localStorage.getItem('adminLoginTime');
-            const loginTime = loginTimeRaw ? parseInt(loginTimeRaw, 10) : 0;
-
-            if (!isLoggedIn || !loginTime || Number.isNaN(loginTime)) {
-                window.location.replace('./secure-access.html');
-                return false;
-            }
-
-            // Check if session expired (1 hour)
-            if (Date.now() - loginTime > 60 * 60 * 1000) {
-                localStorage.removeItem('adminLoggedIn');
-                localStorage.removeItem('adminLoginTime');
-                localStorage.removeItem('adminUser');
-                window.location.replace('./secure-access.html');
-                return false;
-            }
-
-            return true;
-        }
-
-        // Section navigation
-        window.showSection = function(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-
-            // Remove active class from all nav buttons
-            document.querySelectorAll('.nav-btn, .sidebar-nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected section
-            const targetSection = document.getElementById(sectionName + '-section');
-            const targetNavButton = document.querySelector(`.nav-btn[data-section="${sectionName}"]`);
-
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
-            if (targetNavButton) {
-                targetNavButton.classList.add('active');
-            }
-
-            // Load section content dynamically
-            loadSectionContent(sectionName);
-        };
-
-        // Show section for mobile sidebar
-        window.showSectionMobile = function(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-
-            // Remove active class from all buttons
-            document.querySelectorAll('.nav-btn, .sidebar-nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Show selected section
-            const targetSection = document.getElementById(sectionName + '-section');
-            const targetNavBtn = document.querySelector(`.nav-btn[data-section="${sectionName}"]`);
-            const targetSidebarBtn = document.querySelector(`.sidebar-nav-btn[data-section="${sectionName}"]`);
-
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
-            if (targetNavBtn) {
-                targetNavBtn.classList.add('active');
-            }
-            if (targetSidebarBtn) {
-                targetSidebarBtn.classList.add('active');
-            }
-
-            // Close mobile sidebar
-            toggleMobileSidebar();
-
-            // Load section content dynamically
-            loadSectionContent(sectionName);
-        };
-
-        // Toggle mobile sidebar
-        window.toggleMobileSidebar = function() {
-            const sidebar = document.querySelector('.mobile-sidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            const body = document.body;
-
-            if (sidebar && overlay) {
-                const isOpen = sidebar.classList.contains('active');
-                
-                if (isOpen) {
-                    // Close sidebar
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
-                    body.classList.remove('sidebar-open');
-                } else {
-                    // Open sidebar
-                    sidebar.classList.add('active');
-                    overlay.classList.add('active');
-                    body.classList.add('active');
-                }
-            }
-        };
-
-        // Load section content
-        async function loadSectionContent(sectionName) {
-            try {
-                switch(sectionName) {
-                    case 'dashboard':
-                        await loadDashboard();
-                        break;
-                    case 'store':
-                        await loadStoreManagement();
-                        break;
-                    case 'boxes':
-                        await loadBoxesManagement();
-                        break;
-                    case 'credits':
-                        await loadCreditsManagement();
-                        break;
-                }
-            } catch (error) {
-                console.error('Error loading section:', sectionName, error);
-            }
-        }
-
-        // Load dashboard
-        async function loadDashboard() {
-            const container = document.getElementById('dashboard-content');
-            if (!container) return;
-
-            try {
-                // Import and initialize dashboard
-                const { default: adminDashboard } = await import('./adminDashboard.js');
-                await adminDashboard.initialize('dashboard-content');
-            } catch (error) {
-                console.error('Error loading dashboard:', error);
-                container.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Error cargando dashboard</div>';
-            }
-        }
-
-        // Load store management
-        async function loadStoreManagement() {
-            const container = document.getElementById('store-management-content');
-            if (!container) return;
-
-            try {
-                // Import and initialize store management
-                const { default: storeManagement } = await import('./storeManagement.js');
-                await storeManagement.initialize('store-management-content');
-            } catch (error) {
-                console.error('Error loading store management:', error);
-                container.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Error cargando gestión de tienda</div>';
-            }
-        }
-
-        // Load boxes management
-        async function loadBoxesManagement() {
-            const container = document.getElementById('boxes-management-content');
-            if (!container) return;
-
-            try {
-                // Import and initialize boxes management
-                const { default: boxesManagement } = await import('./boxesManagement.js');
-                await boxesManagement.initialize('boxes-management-content');
-            } catch (error) {
-                console.error('Error loading boxes management:', error);
-                container.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Error cargando gestión de cajas</div>';
-            }
-        }
-
-        // Load credits management
-        async function loadCreditsManagement() {
-            const container = document.getElementById('credits-management-content');
-            if (!container) return;
-
-            try {
-                // Import and initialize credits management
-                const { default: creditsManagement } = await import('./creditsManagement.js');
-                await creditsManagement.initialize('credits-management-content');
-            } catch (error) {
-                console.error('Error loading credits management:', error);
-                container.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-triangle"></i> Error cargando gestión de créditos</div>';
-            }
-        }
-
-        // Logout function
-        window.logout = function() {
-            localStorage.removeItem('adminLoggedIn');
-            localStorage.removeItem('adminLoginTime');
-            localStorage.removeItem('adminUser');
-            window.location.replace('./secure-access.html');
-        };
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAdminAuth()) {
-                return; // Will redirect if not authenticated
-            }
-
-            // Load dashboard by default
-            showSection('dashboard');
-        });
-    </script>
+    <div class="redirect-message">
+        <div class="spinner"></div>
+        <h2>Redirigiendo al panel de administración...</h2>
+        <p>Si no eres redirigido automáticamente, <a href="/admin/admin-panel-secure.html" style="color: #ffd700;">haz clic aquí</a></p>
+    </div>
 </body>
 </html>

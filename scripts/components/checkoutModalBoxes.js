@@ -200,20 +200,30 @@ export class CheckoutModalBoxes {
     const shipping = 5.00;
     const total = subtotal + shipping;
 
-    let message = '🛒 *NUEVO PEDIDO - Cajas Fruvi*\\n\\n';
-    message += '*Productos:*\n';
+    // Mensaje profesional y persuasivo para FruviBox
+    let message = '📦 *NUEVO PEDIDO FRUVIBOX* 🎁\n\n';
+    
+    message += '🎉 *TUS CAJAS PREMIUM*\n\n';
 
-    items.forEach(item => {
-      message += `• ${item.name}\n`;
-      message += `  Cantidad: ${item.quantity}kg × $${item.price.toFixed(2)}/kg\n`;
-      message += `  Subtotal: $${(item.price * item.quantity).toFixed(2)}\n\n`;
+    items.forEach((item, index) => {
+      message += `${index + 1}. *${item.name}*\n`;
+      message += `   Cantidad: *${item.quantity} ${item.quantity > 1 ? 'cajas' : 'caja'}*\n`;
+      message += `   Precio: $${item.price.toFixed(2)}/caja\n`;
+      message += `   Subtotal: *$${(item.price * item.quantity).toFixed(2)}*\n\n`;
     });
 
-    message += `*Resumen:*\n`;
+    message += '----------------------------\n\n';
+    message += '📊 *RESUMEN DEL PEDIDO*\n\n';
     message += `Subtotal: $${subtotal.toFixed(2)}\n`;
     message += `Envío: $${shipping.toFixed(2)}\n`;
-    message += `Total: $${total.toFixed(2)}\n\n`;
-    message += `✅ Listo para procesar el pedido. ¡Gracias por tu compra!`;
+    message += `*TOTAL: $${total.toFixed(2)}*\n\n`;
+    
+    message += '✨ *Tu FruviBox lista para enviarse*\n\n';
+    message += '🎁 *Beneficios:*\n';
+    message += '✅ Combinaciones balanceadas\n';
+    message += '✅ Frutas premium\n';
+    message += '✅ Variedad garantizada\n\n';
+    message += '🙏 *¡Gracias por elegir FruviBox!* 💝';
 
     return message;
   }

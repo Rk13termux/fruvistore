@@ -410,7 +410,7 @@ export async function renderStorePage(root) {
               Regístrate para Comprar
             </button>
           ` : `
-            <button class="btn-primary cart-checkout" id="cartCheckout">
+            <button class="btn-primary cart-checkout" id="cartCheckout" style="background: #4ecdc4; color: #000;">
               Proceder al Pago
             </button>
           `}

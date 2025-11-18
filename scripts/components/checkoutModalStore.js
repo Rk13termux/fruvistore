@@ -46,7 +46,7 @@ export class CheckoutModalStore {
                     <span id="orderTotalStore">$0.00</span>
                   </div>
                 </div>
-                <button id="whatsappBtnStore" class="btn-primary whatsapp-btn">
+                <button id="whatsappBtnStore" class="btn-primary whatsapp-btn cart-checkout">
                   <i class="fab fa-whatsapp"></i>
                   Enviar Pedido por WhatsApp
                 </button>
@@ -200,20 +200,30 @@ export class CheckoutModalStore {
     const shipping = 5.00;
     const total = subtotal + shipping;
 
-    let message = '🛒 *NUEVO PEDIDO - Tienda Fruvi*\n\n';
-    message += '*Productos:*\n';
+    // Mensaje optimizado para WhatsApp - sin caracteres especiales problemáticos
+    let message = '🍎 *NUEVO PEDIDO FRUVI* 🥭\n\n';
+    
+    message += '🛍 *TUS PRODUCTOS PREMIUM*\n\n';
 
-    items.forEach(item => {
-      message += `• ${item.name}\n`;
-      message += `  Cantidad: ${item.quantity}kg × $${item.price.toFixed(2)}/kg\n`;
-      message += `  Subtotal: $${(item.price * item.quantity).toFixed(2)}\n\n`;
+    items.forEach((item, index) => {
+      message += `${index + 1}. *${item.name}*\n`;
+      message += `   Cantidad: *${item.quantity}kg*\n`;
+      message += `   Precio: $${item.price.toFixed(2)}/kg\n`;
+      message += `   Subtotal: *$${(item.price * item.quantity).toFixed(2)}*\n\n`;
     });
 
-    message += `*Resumen:*\n`;
+    message += '----------------------------\n\n';
+    message += '📊 *RESUMEN DEL PEDIDO*\n\n';
     message += `Subtotal: $${subtotal.toFixed(2)}\n`;
     message += `Envío: $${shipping.toFixed(2)}\n`;
-    message += `Total: $${total.toFixed(2)}\n\n`;
-    message += `✅ Listo para procesar el pedido. ¡Gracias por tu compra!`;
+    message += `*TOTAL: $${total.toFixed(2)}*\n\n`;
+    
+    message += '✨ *Tu pedido será procesado inmediatamente*\n\n';
+    message += '🎁 *Beneficios:*\n';
+    message += '✅ Frutas 100% frescas\n';
+    message += '✅ Entrega rápida\n';
+    message += '✅ Calidad garantizada\n\n';
+    message += '🙏 *¡Gracias por confiar en Fruvi!* 💚';
 
     return message;
   }
