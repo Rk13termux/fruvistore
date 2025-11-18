@@ -1671,6 +1671,17 @@ body {
    Los heroes están en hero-optimized.css
    ============================================ */
 .store { padding: 0; margin-top: 0; }
+
+/* Store Hero - mismo comportamiento que recipes-hero */
+.store-hero {
+  background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(246, 211, 101, 0.1)),
+              radial-gradient(ellipse at top, rgba(253, 160, 133, 0.1), transparent 60%);
+  padding: 20px 0 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
 .store-header { text-align: center; margin-bottom: 40px; }
 .store-header h2 { color: var(--txt); text-shadow: 0 0 18px rgba(255,155,64,0.18); margin-bottom: 12px; }
 .store-subtitle { color: var(--muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
@@ -1971,11 +1982,11 @@ body {
 
 @media (max-width: 768px) {
   .store-hero {
-    padding: 40px 0 0;
+    padding: 20px 0 20px;
   }
   
   .hero-container {
-    padding: 40px 1rem;
+    padding: 20px 1rem;
   }
   
   .title-icon {
@@ -2657,7 +2668,12 @@ body {
 }
 
 @media (max-width: 480px) {
-  .store { padding: 40px 0; }
+  .store { padding: 0; }
+  
+  .store-hero {
+    padding: 60px 0 40px;
+  }
+  
   .products-grid { gap: 16px; }
   .product-card { margin: 0; }
   .product-info { padding: 16px; }
@@ -6010,15 +6026,29 @@ body {
 }
 
 /* Navigation Tabs Visibility Control */
+/* Sistema anti-FOUC: pestañas premium ocultas por defecto */
+.premium-tab {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Mostrar premium tabs cuando el usuario está autenticado Y auth-ready */
+body.auth-ready .premium-tab:not(.hidden) {
+  display: flex !important;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Forzar ocultar cuando tiene clase hidden */
 .premium-tab.hidden {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
 }
-/* Allow premium tabs to be visible by default; JS toggles 'hidden' */
-.premium-tab { display: list-item; opacity: 1; visibility: visible; }
 
-/* Hide basic tabs when JS adds 'hidden' after login */
+/* Ocultar basic tabs cuando está logueado */
 .basic-tab.hidden {
   display: none !important;
   opacity: 0 !important;

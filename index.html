@@ -23,6 +23,30 @@
     <link rel="stylesheet" href="styles/page-colors.css?v=2.1.2">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Prevenir FOUC (Flash of Unstyled Content) -->
+    <style>
+        /* Ocultar TODAS las pestañas por defecto hasta que JS esté listo */
+        .nav-links {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Mostrar cuando JS esté listo */
+        body.auth-ready .nav-links {
+            opacity: 1;
+        }
+        
+        /* Items de autenticación dinámicos */
+        [data-auth-item] {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        body.auth-ready [data-auth-item] {
+            opacity: 1;
+        }
+    </style>
+    
     <!-- Production Configuration -->
     <script src="config.js"></script>
   </head>

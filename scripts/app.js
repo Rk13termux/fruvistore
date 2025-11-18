@@ -949,6 +949,9 @@ async function renderAuthNav() {
     }, 100);
   }
   
+  // Marcar que la autenticación está lista para evitar FOUC
+  document.body.classList.add('auth-ready');
+  
   console.log('✅ Auth navigation rendered');
 }
 
