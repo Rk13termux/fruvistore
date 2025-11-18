@@ -50,6 +50,24 @@ export default defineConfig({
           cpSync(adminSrc, adminDest, { recursive: true })
           console.log('✅ Admin folder copied to dist/admin/')
           
+          // Copy scripts folder (needed for admin dashboard)
+          const scriptsSrc = 'scripts'
+          const scriptsDest = 'dist/scripts'
+          
+          if (existsSync(scriptsSrc)) {
+            cpSync(scriptsSrc, scriptsDest, { recursive: true })
+            console.log('✅ Scripts folder copied to dist/scripts/')
+          }
+          
+          // Copy styles folder (needed for admin)
+          const stylesSrc = 'styles'
+          const stylesDest = 'dist/styles'
+          
+          if (existsSync(stylesSrc)) {
+            cpSync(stylesSrc, stylesDest, { recursive: true })
+            console.log('✅ Styles folder copied to dist/styles/')
+          }
+          
           // Copy _redirects file (for Netlify compatibility)
           if (existsSync('_redirects')) {
             copyFileSync('_redirects', 'dist/_redirects')
