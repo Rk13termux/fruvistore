@@ -139,20 +139,115 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 
 	root.innerHTML = `
 		<section class="store boxes-store">
-			<div class="store-hero">
+			<!-- Hero Section - Optimizado psicológicamente -->
+			<div class="store-hero hero-optimized">
 				<div class="container">
-					<div class="hero-content">
-						<h1 class="hero-title">
+					<div class="hero-content-optimized">
+						<!-- Badge Premium -->
+						<div class="hero-badge-premium boxes-badge">
 							<i class="fas fa-box-open"></i>
-							Cajas de Frutas Seleccionadas
+							<span>Combinaciones Perfectas</span>
+						</div>
+
+						<!-- Título Principal - Enfoque en conveniencia -->
+						<h1 class="hero-title-optimized">
+							<span class="title-line-1 boxes-color">FruviBox</span>
+							<span class="title-line-2 boxes-gradient">Seleccionadas</span>
 						</h1>
-						<p class="hero-subtitle">
-							Combinaciones listas para compartir, preparadas con frutas frescas y balanceadas.
+
+						<!-- Subtítulo - Propuesta de valor -->
+						<p class="hero-subtitle-optimized">
+							Combinaciones listas para compartir, preparadas con frutas frescas y balanceadas nutricionalmente
 						</p>
-						${heroStats}
+
+						<!-- Features - Beneficios clave -->
+						<div class="hero-features-optimized">
+							<div class="feature-item-optimized boxes-feature">
+								<i class="fas fa-balance-scale"></i>
+								<span>Balanceadas</span>
+							</div>
+							<div class="feature-item-optimized boxes-feature">
+								<i class="fas fa-clock"></i>
+								<span>Listas Ya</span>
+							</div>
+							<div class="feature-item-optimized boxes-feature">
+								<i class="fas fa-piggy-bank"></i>
+								<span>Mejor Precio</span>
+							</div>
+						</div>
+
+						<!-- Stats - Prueba social -->
+						<div class="hero-stats-optimized">
+							<div class="stat-item-optimized boxes-stat">
+								<div class="stat-number">${boxes.length}</div>
+								<div class="stat-label">FruviBox activas</div>
+							</div>
+							<div class="stat-item-optimized boxes-stat">
+								<div class="stat-number">${Math.max(0, categories.length - 1)}</div>
+								<div class="stat-label">Categorías</div>
+							</div>
+							<div class="stat-item-optimized boxes-stat">
+								<div class="stat-number">${ratingStat}</div>
+								<div class="stat-label">Calificación</div>
+							</div>
+						</div>
+
+						<!-- Trust badges - Credibilidad -->
+						<div class="hero-trust-optimized">
+							<div class="trust-badge-optimized boxes-trust">
+								<i class="fas fa-apple-alt"></i>
+								<span>Variedad</span>
+							</div>
+							<div class="trust-badge-optimized boxes-trust">
+								<i class="fas fa-heart"></i>
+								<span>Nutritivo</span>
+							</div>
+							<div class="trust-badge-optimized boxes-trust">
+								<i class="fas fa-users"></i>
+								<span>Para Compartir</span>
+							</div>
+						</div>
+
+						<!-- Urgency banner - Escasez y ahorro -->
+						<div class="hero-urgency-optimized boxes-urgency">
+							<i class="fas fa-tags"></i>
+							<span>Ahorra hasta 20% vs frutas individuales</span>
+						</div>
 					</div>
 				</div>
-				${heroGallery}
+
+				<!-- Featured Boxes Gallery -->
+				${featuredBoxes.length ? `
+					<div class="best-sellers-gallery boxes-gallery" style="margin-top: 60px;">
+						<h2 class="gallery-title" style="text-align: center; font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 32px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+							<i class="fas fa-star" style="color: #a8e063;"></i>
+							FruviBox Destacadas
+							<span class="featured-badge" style="background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800;">POPULARES</span>
+						</h2>
+						<div class="gallery-scroll infinite-scroll">
+							<div class="gallery-track">
+								${featuredBoxes.map(box => `
+									<div class="gallery-item">
+										<img src="${box.img}" alt="${box.name}" loading="lazy">
+										<div class="gallery-item-info">
+											<h4>${box.name}</h4>
+											<span class="gallery-price">$${box.totalPrice.toFixed(2)}</span>
+										</div>
+									</div>
+								`).join('')}
+								${featuredBoxes.map(box => `
+									<div class="gallery-item">
+										<img src="${box.img}" alt="${box.name}" loading="lazy">
+										<div class="gallery-item-info">
+											<h4>${box.name}</h4>
+											<span class="gallery-price">$${box.totalPrice.toFixed(2)}</span>
+										</div>
+									</div>
+								`).join('')}
+							</div>
+						</div>
+					</div>
+				` : ''}
 			</div>
 
 			<div class="container">
@@ -187,7 +282,7 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 					</div>
 					<div class="filter-group">
 						<label>Resultados:</label>
-						<span id="resultsCount">${boxes.length} cajas encontradas</span>
+						<span id="resultsCount">${boxes.length} FruviBox encontradas</span>
 					</div>
 				</div>
 
@@ -351,7 +446,7 @@ function setupBoxesInteractions(boxes) {
 		});
 
 		filtered = sortBoxes(filtered, sortValue);
-		resultsCount.textContent = `${filtered.length} cajas encontradas`;
+		resultsCount.textContent = `${filtered.length} FruviBox encontradas`;
 
 		boxesGrid.innerHTML = filtered.map(getBoxCardHTML).join('');
 		wireCardInteractions();

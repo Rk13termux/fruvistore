@@ -1,0 +1,884 @@
+/* ============================================
+   HERO OPTIMIZADO v3.4.0 - RESPONSIVE CORREGIDO
+   
+   CAMBIOS v3.4.0:
+   - ✅ Corregido responsive: eliminada regla contain que bloqueaba media queries
+   - ✅ Container con width: 100% y padding clamp() para responsividad fluida
+   - ✅ Font-size con clamp() en todos los elementos de texto
+   - ✅ Eliminados padding extra de contenedores flex
+   - ✅ Media queries con padding-left/right específicos (no shorthand)
+   
+   CAMBIOS v3.3.0:
+   - Eliminados TODOS los transforms en animaciones y hovers
+   - Animaciones solo usan opacity (sin translateY, scale, rotate)
+   - Hovers solo usan filter: brightness() y box-shadow
+   
+   CAMBIOS v3.0.0:
+   - Sincronizado con ancho máximo de 1200px de la web
+   - Box-sizing: border-box en todos los elementos
+   ============================================ */
+
+/* FORZAR SIN SCROLL HORIZONTAL - Máxima prioridad */
+html:has(.hero-optimized),
+body:has(.hero-optimized) {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+}
+
+/* Hero Container Base - SIN SCROLL HORIZONTAL */
+.hero-optimized {
+  background: #000 !important;
+  padding: 60px 0 80px !important;
+  position: relative;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.hero-optimized::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(78, 205, 196, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-optimized .container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding-left: clamp(1rem, 5vw, 2rem);
+  padding-right: clamp(1rem, 5vw, 2rem);
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  position: relative;
+}
+
+.hero-content-optimized {
+  text-align: center;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+/* ============================================
+   BADGE PREMIUM
+   ============================================ */
+.hero-badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border-radius: 50px;
+  margin-bottom: 28px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+  position: relative;
+}
+
+.hero-badge-premium::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50px;
+  padding: 2px;
+  background: inherit;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+}
+
+.hero-badge-premium:hover {
+  filter: brightness(1.1);
+}
+
+/* Ícono con fondo transparente circular */
+.hero-badge-premium i {
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.hero-badge-premium:hover i {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Badge - Tienda (Dorado/Naranja) */
+.hero-badge-premium:not(.boxes-badge):not(.recipes-badge) {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #000;
+  box-shadow: 0 4px 20px rgba(246, 211, 101, 0.4);
+}
+
+.hero-badge-premium:not(.boxes-badge):not(.recipes-badge):hover {
+  box-shadow: 0 6px 28px rgba(246, 211, 101, 0.5);
+}
+
+/* Badge - FruviBox (Verde/Turquesa) */
+.hero-badge-premium.boxes-badge {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
+}
+
+.hero-badge-premium.boxes-badge:hover {
+  box-shadow: 0 6px 28px rgba(78, 205, 196, 0.5);
+}
+
+/* Badge - Frushake (Morado/Púrpura) */
+.hero-badge-premium.recipes-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+}
+
+.hero-badge-premium.recipes-badge:hover {
+  box-shadow: 0 6px 28px rgba(102, 126, 234, 0.5);
+}
+
+/* ============================================
+   TÍTULOS PRINCIPALES
+   ============================================ */
+.hero-title-optimized {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 24px;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.title-line-1 {
+  display: block;
+  color: #4ecdc4;
+  margin-bottom: 8px;
+  animation: fadeInDown 0.8s ease-out;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.title-line-2 {
+  display: block;
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Variantes de color para FruviBox */
+.title-line-1.boxes-color {
+  color: #4ecdc4;
+}
+
+.title-line-2.boxes-gradient {
+  background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Variantes de color para Frushake */
+.title-line-1.recipes-color {
+  color: #667eea;
+}
+
+.title-line-2.recipes-gradient {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   SUBTÍTULO
+   ============================================ */
+.hero-subtitle-optimized {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 36px;
+  max-width: min(620px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 400;
+  animation: fadeIn 1s ease-out 0.4s both;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ============================================
+   FEATURES (3 ícono-texto)
+   ============================================ */
+.hero-features-optimized {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(20px, 4vw, 40px);
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.feature-item-optimized {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #4ecdc4;
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: rgba(78, 205, 196, 0.05);
+  box-sizing: border-box;
+  flex-shrink: 1;
+  flex-grow: 0;
+  min-width: 0;
+  max-width: 280px;
+}
+
+.feature-item-optimized:hover {
+  background: rgba(78, 205, 196, 0.1);
+  filter: brightness(1.1);
+}
+
+/* Ícono con fondo transparente circular */
+.feature-item-optimized i {
+  font-size: 24px;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(78, 205, 196, 0.15);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(78, 205, 196, 0.2);
+  transition: all 0.3s ease;
+}
+
+.feature-item-optimized:hover i {
+  background: rgba(78, 205, 196, 0.25);
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+/* Variantes para FruviBox */
+.feature-item-optimized.boxes-feature {
+  color: #a8e063;
+  background: rgba(168, 224, 99, 0.05);
+}
+
+.feature-item-optimized.boxes-feature:hover {
+  background: rgba(168, 224, 99, 0.1);
+}
+
+.feature-item-optimized.boxes-feature i {
+  background: rgba(168, 224, 99, 0.15);
+  box-shadow: 0 2px 10px rgba(168, 224, 99, 0.2);
+}
+
+.feature-item-optimized.boxes-feature:hover i {
+  background: rgba(168, 224, 99, 0.25);
+  box-shadow: 0 4px 15px rgba(168, 224, 99, 0.3);
+}
+
+/* Variantes para Frushake */
+.feature-item-optimized.recipes-feature {
+  color: #f093fb;
+  background: rgba(240, 147, 251, 0.05);
+}
+
+.feature-item-optimized.recipes-feature:hover {
+  background: rgba(240, 147, 251, 0.1);
+}
+
+.feature-item-optimized.recipes-feature i {
+  background: rgba(240, 147, 251, 0.15);
+  box-shadow: 0 2px 10px rgba(240, 147, 251, 0.2);
+}
+
+.feature-item-optimized.recipes-feature:hover i {
+  background: rgba(240, 147, 251, 0.25);
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+/* ============================================
+   STATS (Números grandes)
+   ============================================ */
+.hero-stats-optimized {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(24px, 5vw, 56px);
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.stat-item-optimized {
+  text-align: center;
+  min-width: 80px;
+  max-width: 150px;
+  flex-shrink: 1;
+  flex-grow: 0;
+  box-sizing: border-box;
+}
+
+.stat-item-optimized .stat-number {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  color: #f6d365;
+  line-height: 1;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.stat-item-optimized .stat-label {
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-item-optimized .stat-icon {
+  font-size: 1.5rem;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: unset !important;
+  color: #ffd700 !important;
+  filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.6));
+  margin-left: 8px;
+  vertical-align: middle;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Variantes para FruviBox */
+.stat-item-optimized.boxes-stat .stat-number {
+  color: #a8e063;
+}
+
+/* Variantes para Frushake */
+.stat-item-optimized.recipes-stat .stat-number {
+  color: #f093fb;
+}
+
+/* ============================================
+   TRUST BADGES (Pequeños badges)
+   ============================================ */
+.hero-trust-optimized {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(16px, 3vw, 24px);
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.trust-badge-optimized {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(78, 205, 196, 0.12);
+  border: 1px solid rgba(78, 205, 196, 0.35);
+  border-radius: 24px;
+  color: #4ecdc4;
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: default;
+  flex-shrink: 1;
+  flex-grow: 0;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 200px;
+}
+
+.trust-badge-optimized:hover {
+  background: rgba(78, 205, 196, 0.18);
+  border-color: rgba(78, 205, 196, 0.5);
+  filter: brightness(1.1);
+}
+
+/* Ícono con fondo transparente circular */
+.trust-badge-optimized i {
+  font-size: 1.15rem;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(78, 205, 196, 0.2);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.trust-badge-optimized:hover i {
+  background: rgba(78, 205, 196, 0.3);
+  box-shadow: 0 0 12px rgba(78, 205, 196, 0.4);
+}
+
+/* Variantes para FruviBox */
+.trust-badge-optimized.boxes-trust {
+  background: rgba(168, 224, 99, 0.12);
+  border-color: rgba(168, 224, 99, 0.35);
+  color: #a8e063;
+}
+
+.trust-badge-optimized.boxes-trust:hover {
+  background: rgba(168, 224, 99, 0.18);
+  border-color: rgba(168, 224, 99, 0.5);
+}
+
+.trust-badge-optimized.boxes-trust i {
+  background: rgba(168, 224, 99, 0.2);
+}
+
+.trust-badge-optimized.boxes-trust:hover i {
+  background: rgba(168, 224, 99, 0.3);
+}
+
+/* Variantes para Frushake */
+.trust-badge-optimized.recipes-trust {
+  background: rgba(240, 147, 251, 0.12);
+  border-color: rgba(240, 147, 251, 0.35);
+  color: #f093fb;
+}
+
+.trust-badge-optimized.recipes-trust:hover {
+  background: rgba(240, 147, 251, 0.18);
+  border-color: rgba(240, 147, 251, 0.5);
+}
+
+.trust-badge-optimized.recipes-trust i {
+  background: rgba(240, 147, 251, 0.2);
+}
+
+.trust-badge-optimized.recipes-trust:hover i {
+  background: rgba(240, 147, 251, 0.3);
+}
+
+/* ============================================
+   URGENCY BANNER (CTA principal)
+   ============================================ */
+.hero-urgency-optimized {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16px 36px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  animation: pulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+.hero-urgency-optimized::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50px;
+  background: inherit;
+  opacity: 0.3;
+  filter: blur(8px);
+  z-index: -1;
+}
+
+.hero-urgency-optimized:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation-play-state: paused;
+  filter: brightness(1.1);
+}
+
+/* Ícono con fondo transparente circular */
+.hero-urgency-optimized i {
+  font-size: 1.4rem;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.hero-urgency-optimized:hover i {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Urgency - Tienda (Rojo fuego) */
+.hero-urgency-optimized.store-urgency {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: #fff;
+}
+
+/* Urgency - FruviBox (Verde ahorro) */
+.hero-urgency-optimized.boxes-urgency {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  color: #000;
+}
+
+.hero-urgency-optimized.boxes-urgency i {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.hero-urgency-optimized.boxes-urgency:hover i {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Urgency - Frushake (Morado motivacional) */
+.hero-urgency-optimized.recipes-urgency {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+/* ============================================
+   ANIMACIONES - SIN OVERFLOW
+   Solo opacidad y colores, sin transforms que causen scroll
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - TABLETS
+   ============================================ */
+@media (max-width: 992px) {
+  .hero-optimized {
+    padding: 50px 0 60px !important;
+  }
+
+  .hero-features-optimized {
+    gap: 24px;
+  }
+
+  .feature-item-optimized {
+    font-size: 1rem;
+  }
+
+  .feature-item-optimized i {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+  }
+
+  .hero-stats-optimized {
+    gap: 32px;
+  }
+
+  .stat-item-optimized .stat-number {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+  }
+
+  .trust-badge-optimized {
+    font-size: 0.9rem;
+    padding: 9px 18px;
+  }
+
+  .trust-badge-optimized i {
+    width: 26px;
+    height: 26px;
+  }
+
+  .hero-urgency-optimized {
+    font-size: 1.05rem;
+    padding: 14px 28px;
+  }
+
+  .hero-urgency-optimized i {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE - MÓVILES
+   ============================================ */
+@media (max-width: 768px) {
+  .hero-optimized {
+    padding: 40px 0 50px !important;
+  }
+
+  .hero-optimized .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hero-content-optimized {
+    padding: 0;
+  }
+
+  .hero-badge-premium {
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    gap: 8px;
+  }
+
+  .hero-badge-premium i {
+    width: 28px;
+    height: 28px;
+    font-size: 1.05rem;
+  }
+
+  .hero-subtitle-optimized {
+    margin-bottom: 28px;
+    padding: 0 0.5rem;
+  }
+
+  .hero-features-optimized {
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .feature-item-optimized {
+    font-size: 0.95rem;
+    padding: 6px 12px;
+  }
+
+  .feature-item-optimized i {
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero-stats-optimized {
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+
+  .stat-item-optimized .stat-number {
+    font-size: clamp(1.6rem, 3.5vw, 2rem);
+  }
+
+  .stat-item-optimized .stat-label {
+    font-size: 0.85rem;
+  }
+
+  .hero-trust-optimized {
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .trust-badge-optimized {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .trust-badge-optimized i {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
+  }
+
+  .hero-urgency-optimized {
+    font-size: 1rem;
+    padding: 12px 24px;
+    gap: 10px;
+  }
+
+  .hero-urgency-optimized i {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-optimized .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .hero-subtitle-optimized {
+    padding: 0 0.25rem;
+  }
+
+  .hero-features-optimized {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .feature-item-optimized {
+    width: 100%;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  .hero-stats-optimized {
+    gap: 20px;
+  }
+
+  .stat-item-optimized .stat-number {
+    font-size: clamp(1.5rem, 3vw, 1.8rem);
+  }
+
+  .hero-urgency-optimized {
+    font-size: 0.95rem;
+    padding: 10px 20px;
+  }
+
+  .hero-urgency-optimized i {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ============================================
+   REGLAS GLOBALES ANTI-SCROLL
+   Fuerza que ningún elemento cause scroll horizontal
+   ============================================ */
+.hero-optimized * {
+  box-sizing: border-box !important;
+}
+
+.hero-optimized *:not(.hero-optimized):not(.container) {
+  max-width: 100% !important;
+}
+
+/* DESACTIVAR TRANSFORMS QUE CAUSEN OVERFLOW */
+.hero-optimized *,
+.hero-optimized *:hover,
+.hero-optimized *:active {
+  will-change: auto !important;
+}
+
+/* Asegurar que elementos flex no causen overflow */
+.hero-features-optimized,
+.hero-stats-optimized,
+.hero-trust-optimized {
+  overflow-x: hidden !important;
+  justify-content: center !important;
+}
+
+/* Prevenir overflow en elementos de texto */
+.hero-title-optimized,
+.title-line-1,
+.title-line-2,
+.hero-subtitle-optimized {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+/* Prevenir que elementos inline causen overflow */
+.feature-item-optimized,
+.stat-item-optimized,
+.trust-badge-optimized,
+.hero-badge-premium,
+.hero-urgency-optimized {
+  max-width: calc(100vw - 4rem) !important;
+  white-space: normal !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Forzar contención en iconos y elementos decorativos */
+.hero-optimized i,
+.hero-optimized .stat-icon {
+  flex-shrink: 0 !important;
+}

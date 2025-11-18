@@ -93,30 +93,82 @@ export function renderRecipesBlogPage(root) {
 
   root.innerHTML = `
     <section class="recipes-blog">
-      <!-- Hero Section -->
-      <div class="recipes-hero">
+      <!-- Hero Section - Optimizado psicológicamente -->
+      <div class="recipes-hero hero-optimized">
         <div class="container">
-          <div class="hero-content">
-            <h1 class="hero-title">
+          <div class="hero-content-optimized">
+            <!-- Badge Premium -->
+            <div class="hero-badge-premium recipes-badge">
               <i class="fas fa-seedling"></i>
-              Blog de Recetas Frutales
+              <span>Frushake</span>
+            </div>
+
+            <!-- Título Principal - Enfoque en salud y creatividad -->
+            <h1 class="hero-title-optimized">
+              <span class="title-line-1 recipes-color">Frushake</span>
+              <span class="title-line-2 recipes-gradient">Creaciones Frutales</span>
             </h1>
-            <p class="hero-subtitle">
-              Descubre recetas innovadoras y saludables con las mejores frutas de temporada
+
+            <!-- Subtítulo - Propuesta de valor -->
+            <p class="hero-subtitle-optimized">
+              Descubre smoothies y batidos innovadores que transformarán tu nutrición y energía diaria
             </p>
-            <div class="hero-stats">
-              <div class="stat-item">
-                <span class="stat-number">${recipes.length}</span>
-                <span class="stat-label">Recetas</span>
+
+            <!-- Features - Beneficios clave -->
+            <div class="hero-features-optimized">
+              <div class="feature-item-optimized recipes-feature">
+                <i class="fas fa-heart"></i>
+                <span>Mejora tu Salud</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">3</span>
-                <span class="stat-label">Categorías</span>
+              <div class="feature-item-optimized recipes-feature">
+                <i class="fas fa-lightbulb"></i>
+                <span>Fácil de Hacer</span>
               </div>
-              <div class="stat-item">
-                <span class="stat-number">100%</span>
-                <span class="stat-label">Natural</span>
+              <div class="feature-item-optimized recipes-feature">
+                <i class="fas fa-star"></i>
+                <span>Sabor Delicioso</span>
               </div>
+            </div>
+
+            <!-- Stats - Prueba social -->
+            <div class="hero-stats-optimized">
+              <div class="stat-item-optimized recipes-stat">
+                <div class="stat-number">${recipes.length}</div>
+                <div class="stat-label">Frushakes</div>
+              </div>
+              <div class="stat-item-optimized recipes-stat">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Categorías</div>
+              </div>
+              <div class="stat-item-optimized recipes-stat">
+                <div class="stat-number">
+                  100%
+                  <span class="stat-icon">🌱</span>
+                </div>
+                <div class="stat-label">Natural</div>
+              </div>
+            </div>
+
+            <!-- Trust badges - Credibilidad -->
+            <div class="hero-trust-optimized">
+              <div class="trust-badge-optimized recipes-trust">
+                <i class="fas fa-user-md"></i>
+                <span>Avaladas</span>
+              </div>
+              <div class="trust-badge-optimized recipes-trust">
+                <i class="fas fa-leaf"></i>
+                <span>100% Natural</span>
+              </div>
+              <div class="trust-badge-optimized recipes-trust">
+                <i class="fas fa-clock"></i>
+                <span>Rápidas</span>
+              </div>
+            </div>
+
+            <!-- Urgency banner - Motivación -->
+            <div class="hero-urgency-optimized recipes-urgency">
+              <i class="fas fa-gift"></i>
+              <span>Nuevos Frushakes cada semana</span>
             </div>
           </div>
         </div>
@@ -128,7 +180,7 @@ export function renderRecipesBlogPage(root) {
           <div class="controls-content">
             <div class="search-box">
               <i class="fas fa-search"></i>
-              <input type="text" id="recipeSearch" placeholder="Buscar recetas...">
+              <input type="text" id="recipeSearch" placeholder="Buscar Frushakes...">
             </div>
             <div class="category-filters">
               ${categories.map(cat => `
@@ -146,7 +198,7 @@ export function renderRecipesBlogPage(root) {
         <div class="container">
           <h2 class="section-title">
             <i class="fas fa-star"></i>
-            Recetas Destacadas
+            Frushakes Destacados
           </h2>
           <div class="featured-grid">
             ${recipes.filter(recipe => recipe.featured).map(recipe => `
@@ -180,7 +232,7 @@ export function renderRecipesBlogPage(root) {
                   </div>
                   <button class="btn-primary view-recipe" data-recipe-id="${recipe.id}">
                     <i class="fas fa-eye"></i>
-                    Ver Receta
+                    Ver Frushake
                   </button>
                 </div>
               </div>
@@ -194,7 +246,7 @@ export function renderRecipesBlogPage(root) {
         <div class="container">
           <h2 class="section-title">
             <i class="fas fa-th-large"></i>
-            Todas las Recetas
+            Todos los Frushakes
           </h2>
           <div class="recipes-grid" id="recipesGrid">
             ${recipes.map(recipe => `
@@ -219,7 +271,7 @@ export function renderRecipesBlogPage(root) {
                   </div>
                   <button class="btn-outline view-recipe" data-recipe-id="${recipe.id}">
                     <i class="fas fa-eye"></i>
-                    Ver Receta
+                    Ver Frushake
                   </button>
                 </div>
               </div>
@@ -235,9 +287,9 @@ export function renderRecipesBlogPage(root) {
             <div class="newsletter-text">
               <h3>
                 <i class="fas fa-envelope"></i>
-                ¡Suscríbete a Nuestras Recetas!
+                ¡Suscríbete a Frushake!
               </h3>
-              <p>Recibe nuevas recetas directamente en tu correo cada semana</p>
+              <p>Recibe nuevos Frushakes directamente en tu correo cada semana</p>
             </div>
             <div class="newsletter-form">
               <input type="email" placeholder="Tu correo electrónico" id="newsletterEmail">
@@ -294,7 +346,7 @@ function setupRecipeInteractions(recipes) {
   subscribeBtn.addEventListener('click', () => {
     const email = document.getElementById('newsletterEmail').value;
     if (email) {
-      showNotification('¡Gracias por suscribirte! Recibirás nuestras recetas semanalmente.');
+      showNotification('¡Gracias por suscribirte! Recibirás nuevos Frushakes semanalmente.');
       document.getElementById('newsletterEmail').value = '';
     } else {
       showNotification('Por favor ingresa tu correo electrónico.', false);

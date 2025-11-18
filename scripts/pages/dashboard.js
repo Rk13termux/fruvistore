@@ -228,7 +228,7 @@ function renderDashboard(root, user, data) {
               <i class="fas fa-box"></i>
             </div>
             <div class="action-content">
-              <h4>Cajas Premium</h4>
+              <h4>FruviBox</h4>
               <p>Suscripciones personalizadas de frutas</p>
             </div>
             <div class="action-arrow">
@@ -254,8 +254,8 @@ function renderDashboard(root, user, data) {
               <i class="fas fa-utensils"></i>
             </div>
             <div class="action-content">
-              <h4>Recetas Saludables</h4>
-              <p>Crea platos deliciosos con IA</p>
+              <h4>Frushake</h4>
+              <p>Smoothies deliciosos con IA</p>
             </div>
             <div class="action-arrow">
               <i class="fas fa-arrow-right"></i>

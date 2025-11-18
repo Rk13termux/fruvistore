@@ -1,0 +1,850 @@
+/* ============================================
+   COLORES ESPECÍFICOS POR PÁGINA
+   Basados en los colores de los heros
+   ============================================ */
+
+/* Variables globales base */
+body {
+  --bg: #000;
+  --bg-secondary: #0b0f14;
+  --surface: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.14);
+}
+
+/* ============================================
+   TIENDA - Naranja/Dorado/Verde Agua
+   ============================================ */
+.store .store,
+body[data-page="tienda"] {
+  --page-primary: #4ecdc4;
+  --page-primary-rgb: 78, 205, 196;
+  --page-secondary: #f6d365;
+  --page-secondary-rgb: 246, 211, 101;
+  --page-accent: #fda085;
+  --page-accent-rgb: 253, 160, 133;
+  --page-gradient-start: #f6d365;
+  --page-gradient-end: #fda085;
+  --page-gradient-alt: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #f6d365 100%);
+}
+
+/* Aplicar colores en la tienda */
+.store .btn-primary,
+.store .add-to-cart,
+.store .cart-checkout {
+  background: linear-gradient(135deg, #4ecdc4 0%, #f6d365 50%, #fda085 100%);
+  background-size: 200% 100%;
+  color: #000;
+  font-weight: 700;
+  border: none;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.store .btn-primary::before,
+.store .add-to-cart::before,
+.store .cart-checkout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fda085 0%, #f6d365 50%, #4ecdc4 100%);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+.store .btn-primary:hover,
+.store .add-to-cart:hover,
+.store .cart-checkout:hover {
+  background-position: 100% 0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+}
+
+.store .btn-primary:hover::before,
+.store .add-to-cart:hover::before,
+.store .cart-checkout:hover::before {
+  left: 0;
+}
+
+.store .product-badge.organic,
+.store .hero-badge {
+  background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
+  color: #000;
+}
+
+.store .product-price .price-main,
+.store .cart-amount {
+  color: var(--page-secondary);
+  text-shadow: 0 0 10px rgba(246, 211, 101, 0.3);
+}
+
+.store .product-rating .stars {
+  color: var(--page-secondary);
+}
+
+.store .rating-score {
+  color: var(--page-primary);
+  font-weight: 600;
+}
+
+.store .filter-group select,
+.store .filter-group input {
+  border-color: rgba(var(--page-primary-rgb), 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.store .filter-group select:focus,
+.store .filter-group input:focus {
+  border-color: var(--page-primary);
+  box-shadow: 0 0 0 3px rgba(var(--page-primary-rgb), 0.1);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.store .store-filters {
+  border: 1px solid rgba(var(--page-primary-rgb), 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+/* Quantity selector buttons */
+.store .qty-btn {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.store .qty-btn:hover {
+  background: linear-gradient(135deg, #44a08d 0%, #4ecdc4 100%);
+  transform: scale(1.1);
+}
+
+/* Total price */
+.store .total-price {
+  color: var(--page-secondary);
+  font-weight: 700;
+}
+
+/* ============================================
+   FRUVIBOX - Verde Lima/Turquesa
+   ============================================ */
+.boxes-store,
+body[data-page="cajas"] {
+  --page-primary: #a8e063;
+  --page-primary-rgb: 168, 224, 99;
+  --page-secondary: #4ecdc4;
+  --page-secondary-rgb: 78, 205, 196;
+  --page-accent: #56ab2f;
+  --page-accent-rgb: 86, 171, 47;
+  --page-gradient-start: #56ab2f;
+  --page-gradient-end: #a8e063;
+}
+
+/* Aplicar colores en FruviBox */
+.boxes-store .btn-primary,
+.boxes-store .add-to-cart,
+.boxes-store .cart-checkout {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 50%, #4ecdc4 100%);
+  background-size: 200% 100%;
+  color: #000;
+  font-weight: 700;
+  border: none;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.boxes-store .btn-primary::before,
+.boxes-store .add-to-cart::before,
+.boxes-store .cart-checkout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #4ecdc4 0%, #a8e063 50%, #56ab2f 100%);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+.boxes-store .btn-primary:hover,
+.boxes-store .add-to-cart:hover,
+.boxes-store .cart-checkout:hover {
+  background-position: 100% 0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168, 224, 99, 0.4);
+}
+
+.boxes-store .btn-primary:hover::before,
+.boxes-store .add-to-cart:hover::before,
+.boxes-store .cart-checkout:hover::before {
+  left: 0;
+}
+
+.boxes-store .product-badge.organic,
+.boxes-store .hero-badge {
+  background: linear-gradient(135deg, var(--page-secondary), var(--page-accent));
+  color: #fff;
+}
+
+.boxes-store .product-price .price-main,
+.boxes-store .cart-amount,
+.boxes-store .box-card .box-price {
+  color: var(--page-primary);
+  text-shadow: 0 0 10px rgba(168, 224, 99, 0.3);
+}
+
+.boxes-store .product-rating .stars {
+  color: var(--page-primary);
+}
+
+.boxes-store .rating-score {
+  color: var(--page-secondary);
+  font-weight: 600;
+}
+
+.boxes-store .filter-group select,
+.boxes-store .filter-group input {
+  border-color: rgba(var(--page-primary-rgb), 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.boxes-store .filter-group select:focus,
+.boxes-store .filter-group input:focus {
+  border-color: var(--page-primary);
+  box-shadow: 0 0 0 3px rgba(var(--page-primary-rgb), 0.1);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.boxes-store .store-filters {
+  border: 1px solid rgba(var(--page-primary-rgb), 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+/* Quantity selector buttons */
+.boxes-store .qty-btn {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  color: #000;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.boxes-store .qty-btn:hover {
+  background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+  transform: scale(1.1);
+}
+
+/* Total price */
+.boxes-store .total-price {
+  color: var(--page-primary);
+  font-weight: 700;
+}
+
+/* ============================================
+   FRUSHAKE - Rosa/Morado/Púrpura
+   ============================================ */
+.recipes-blog,
+body[data-page="recetas"] {
+  --page-primary: #f093fb;
+  --page-primary-rgb: 240, 147, 251;
+  --page-secondary: #667eea;
+  --page-secondary-rgb: 102, 126, 234;
+  --page-accent: #764ba2;
+  --page-accent-rgb: 118, 75, 162;
+  --page-gradient-start: #667eea;
+  --page-gradient-end: #764ba2;
+}
+
+/* Aplicar colores en Frushake */
+.recipes-blog .btn-primary,
+.recipes-blog .filter-btn.active,
+.recipes-blog .view-recipe-btn,
+.recipes-blog .recipe-cta {
+  background: linear-gradient(135deg, #667eea 0%, #f093fb 50%, #764ba2 100%);
+  background-size: 200% 100%;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.recipes-blog .btn-primary::before,
+.recipes-blog .filter-btn.active::before,
+.recipes-blog .view-recipe-btn::before,
+.recipes-blog .recipe-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #764ba2 0%, #f093fb 50%, #667eea 100%);
+  transition: left 0.4s ease;
+  z-index: -1;
+}
+
+.recipes-blog .btn-primary:hover,
+.recipes-blog .filter-btn.active:hover,
+.recipes-blog .view-recipe-btn:hover,
+.recipes-blog .recipe-cta:hover {
+  background-position: 100% 0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+}
+
+.recipes-blog .btn-primary:hover::before,
+.recipes-blog .filter-btn.active:hover::before,
+.recipes-blog .view-recipe-btn:hover::before,
+.recipes-blog .recipe-cta:hover::before {
+  left: 0;
+}
+
+.recipes-blog .hero-badge {
+  background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
+  color: #fff;
+}
+
+.recipes-blog .recipe-category,
+.recipes-blog .section-title i,
+.recipes-blog .recipe-time,
+.recipes-blog .recipe-servings,
+.recipes-blog .prep-time-value {
+  color: var(--page-primary);
+  text-shadow: 0 0 10px rgba(240, 147, 251, 0.3);
+}
+
+.recipes-blog .recipe-difficulty {
+  color: var(--page-secondary);
+  font-weight: 600;
+}
+
+.recipes-blog .card-badge,
+.recipes-blog .featured-badge {
+  background: linear-gradient(135deg, var(--page-primary), var(--page-accent));
+  color: #fff;
+}
+
+.recipes-blog .filter-btn {
+  border-color: rgba(var(--page-primary-rgb), 0.3);
+  color: var(--page-primary);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.recipes-blog .filter-btn:hover {
+  background: rgba(var(--page-primary-rgb), 0.1);
+  border-color: var(--page-primary);
+}
+
+.recipes-blog .search-box input,
+.recipes-blog .filter-group select,
+.recipes-blog .filter-group input {
+  border-color: rgba(var(--page-primary-rgb), 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.recipes-blog .search-box input:focus,
+.recipes-blog .filter-group select:focus,
+.recipes-blog .filter-group input:focus {
+  border-color: var(--page-primary);
+  box-shadow: 0 0 0 3px rgba(var(--page-primary-rgb), 0.1);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.recipes-blog .recipe-filters {
+  border: 1px solid rgba(var(--page-primary-rgb), 0.2);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+}
+
+/* Recipe category buttons */
+.recipes-blog .category-btn {
+  background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+  color: #fff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.recipes-blog .category-btn:hover {
+  background: linear-gradient(135deg, #f093fb 0%, #667eea 100%);
+  transform: scale(1.05);
+}
+
+/* Rating stars */
+.recipes-blog .recipe-rating .stars {
+  color: var(--page-accent);
+  text-shadow: 0 0 8px rgba(240, 147, 251, 0.4);
+}
+
+/* ============================================
+   ELEMENTOS COMUNES - Usarán colores de página
+   ============================================ */
+
+/* Glass effect con color de página */
+.store .glass,
+.boxes-store .glass,
+.recipes-blog .glass {
+  background: rgba(var(--page-primary-rgb), 0.04);
+  border: 1px solid rgba(var(--page-primary-rgb), 0.12);
+}
+
+/* Botones secundarios */
+.store .btn-outline,
+.boxes-store .btn-outline,
+.recipes-blog .btn-outline {
+  border: 2px solid var(--page-primary);
+  color: var(--page-primary);
+}
+
+.store .btn-outline:hover,
+.boxes-store .btn-outline:hover,
+.recipes-blog .btn-outline:hover {
+  background: rgba(var(--page-primary-rgb), 0.1);
+  border-color: var(--page-primary);
+}
+
+/* Links y elementos interactivos */
+.store a:hover,
+.boxes-store a:hover,
+.recipes-blog a:hover {
+  color: var(--page-primary);
+}
+
+/* Scrollbar personalizada */
+.store ::-webkit-scrollbar-thumb,
+.boxes-store ::-webkit-scrollbar-thumb,
+.recipes-blog ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
+}
+
+/* Cart Summary */
+.store .cart-summary,
+.boxes-store .cart-summary {
+  border: 1px solid rgba(var(--page-primary-rgb), 0.2);
+  box-shadow: 0 4px 20px rgba(var(--page-primary-rgb), 0.15);
+}
+
+.store .cart-checkout,
+.boxes-store .cart-checkout {
+  background: linear-gradient(135deg, var(--page-gradient-start), var(--page-gradient-end));
+  color: #000;
+}
+
+.boxes-store .cart-checkout {
+  color: #fff;
+}
+
+/* Product cards hover */
+.store .product-card:hover,
+.boxes-store .product-card:hover {
+  border-color: rgba(var(--page-primary-rgb), 0.4);
+  box-shadow: 0 8px 32px rgba(var(--page-primary-rgb), 0.15);
+}
+
+/* Notifications */
+.store-notification.success {
+  background: rgba(var(--page-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--page-primary-rgb), 0.3);
+  color: var(--page-primary);
+}
+
+/* ============================================
+   PREVENIR SCROLL HORIZONTAL
+   ============================================ */
+html,
+body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  position: relative;
+}
+
+.store,
+.boxes-store,
+.recipes-blog {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100%;
+}
+
+.store .container,
+.boxes-store .container,
+.recipes-blog .container {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.store .store-hero,
+.boxes-store .store-hero,
+.recipes-blog .recipes-hero {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100%;
+}
+
+/* Gallery que puede causar scroll */
+.best-sellers-gallery,
+.boxes-gallery {
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100% !important;
+}
+
+.gallery-scroll {
+  overflow-x: hidden !important;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  max-width: 100% !important;
+  width: 100%;
+}
+
+.gallery-track {
+  max-width: none;
+  width: auto;
+}
+
+.gallery-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.gallery-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.gallery-scroll::-webkit-scrollbar-thumb {
+  background: rgba(var(--page-primary-rgb), 0.5);
+  border-radius: 3px;
+}
+
+.gallery-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--page-primary);
+}
+
+/* Asegurar que ningún hijo cause overflow */
+* {
+  max-width: 100%;
+}
+
+section,
+.section {
+  overflow-x: hidden;
+}
+
+/* ============================================
+   FILTROS MEJORADOS - TIENDA
+   ============================================ */
+
+/* Contenedor principal de filtros */
+.store-filters-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 0 clamp(1rem, 5vw, 2rem);
+  box-sizing: border-box;
+}
+
+.store-filters {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(20px);
+  border: 2px solid transparent;
+  border-image: linear-gradient(135deg, #4ecdc4 0%, #f6d365 50%, #fda085 100%) 1;
+  border-radius: 16px;
+  padding: clamp(1.5rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  position: relative;
+  overflow: visible;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.store-filters::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4ecdc4 0%, #f6d365 50%, #fda085 100%);
+  opacity: 0.8;
+  border-radius: 16px 16px 0 0;
+}
+
+/* Fila de filtros */
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Grupo de filtro */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filter-group label {
+  font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+  font-weight: 700;
+  color: #4ecdc4;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-group label i {
+  font-size: 0.85rem;
+  color: #f6d365;
+  flex-shrink: 0;
+}
+
+/* Grupo de búsqueda - Ancho completo */
+.search-group {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.search-input-wrapper input {
+  flex: 1;
+  padding-right: 40px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.search-clear {
+  position: absolute;
+  right: 12px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+}
+
+.search-clear:hover {
+  color: #fda085;
+  transform: scale(1.2);
+}
+
+/* Inputs y Selects */
+.filter-select,
+.filter-input,
+#searchFilter {
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(78, 205, 196, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  box-sizing: border-box;
+}
+
+.filter-select:focus,
+.filter-input:focus,
+#searchFilter:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  background: rgba(78, 205, 196, 0.08);
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
+}
+
+.filter-select:hover,
+.filter-input:hover,
+#searchFilter:hover {
+  border-color: #f6d365;
+  background: rgba(246, 211, 101, 0.05);
+}
+
+/* Placeholder styling */
+.filter-input::placeholder,
+#searchFilter::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+}
+
+/* Select dropdown arrow custom */
+.filter-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234ecdc4' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 35px;
+}
+
+/* Checkbox personalizado */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.organic-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px 16px;
+  background: rgba(168, 224, 99, 0.05);
+  border: 1px solid rgba(168, 224, 99, 0.3);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
+.organic-checkbox:hover {
+  background: rgba(168, 224, 99, 0.1);
+  border-color: #a8e063;
+  transform: translateY(-2px);
+}
+
+.organic-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #a8e063;
+  border-radius: 6px;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.organic-checkbox input:checked + .checkbox-custom {
+  background: linear-gradient(135deg, #56ab2f, #a8e063);
+  border-color: #a8e063;
+}
+
+.organic-checkbox input:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.checkbox-label {
+  font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+  font-weight: 700;
+  color: #a8e063;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.checkbox-label i {
+  color: #56ab2f;
+  font-size: 0.95rem;
+}
+
+/* Responsive para filtros */
+@media (max-width: 992px) {
+  .filters-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .store-filters-container {
+    padding: 0 1rem;
+  }
+
+  .store-filters {
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .filters-row {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  .filter-group label {
+    font-size: 0.7rem;
+  }
+
+  .filter-select,
+  .filter-input,
+  #searchFilter {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .store-filters-container {
+    padding: 0 0.75rem;
+  }
+
+  .store-filters {
+    padding: 1rem 0.875rem;
+    border-width: 1px;
+  }
+
+  .filters-row {
+    gap: 0.75rem;
+  }
+
+  .filter-group label {
+    font-size: 0.68rem;
+  }
+
+  .filter-select,
+  .filter-input,
+  #searchFilter {
+    font-size: 0.8rem;
+    padding: 9px 12px;
+  }
+}

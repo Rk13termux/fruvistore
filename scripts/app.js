@@ -991,20 +991,20 @@ function showRegistrationRequiredPage(rootEl, pageName) {
   const pageTitles = { 
     nutricion: 'Nutrición', 
     asistente: 'Asistente IA', 
-    recetas: 'Recetas', 
+    recetas: 'Frushake', 
     perfil: 'Perfil', 
-    receta: 'Receta', 
+    receta: 'Frushake', 
     tienda: 'Tienda',
-    cajas: 'Cajas',
+    cajas: 'FruviBox',
     dashboard: 'Dashboard'
   };
   const pageTitle = pageTitles[pageName] || 'Esta página';
   const pageDescriptions = {
     tienda: 'comprar frutas premium',
-    cajas: 'suscribirte a cajas de frutas',
+    cajas: 'suscribirte a FruviBox',
     nutricion: 'obtener planes nutricionales personalizados',
     asistente: 'usar nuestro asistente de IA',
-    recetas: 'acceder a recetas exclusivas',
+    recetas: 'acceder a Frushakes exclusivos',
     dashboard: 'ver tu panel de control personalizado'
   };
   const pageDesc = pageDescriptions[pageName] || 'acceder a esta función';

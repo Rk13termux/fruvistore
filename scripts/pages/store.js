@@ -34,100 +34,92 @@ export async function renderStorePage(root) {
 
   root.innerHTML = `
     <section class="store">
-      <!-- Hero Section -->
-      <div class="store-hero">
-        <div class="hero-background">
-          <div class="hero-particles"></div>
-          <div class="hero-gradient"></div>
-        </div>
-        
-        <div class="hero-container">
-          <div class="hero-content">
-            <!-- Single row layout -->
-            <div class="hero-single-row">
-              <!-- Badge + Logo -->
-              <div class="hero-left">
-                <div class="hero-badge">
-                  <i class="fas fa-crown"></i>
-                  <span>Calidad Premium</span>
-                </div>
-                <div class="hero-logo-wrapper">
-                  <img src="/logo.png" alt="Fruvi Logo" class="hero-logo">
-                </div>
+      <!-- Hero Section - Optimizado psicológicamente -->
+      <div class="store-hero hero-optimized">
+        <div class="container">
+          <div class="hero-content-optimized">
+            <!-- Badge Premium -->
+            <div class="hero-badge-premium">
+              <i class="fas fa-crown"></i>
+              <span>Calidad Premium</span>
+            </div>
+
+            <!-- Título Principal - Enfoque en beneficio -->
+            <h1 class="hero-title-optimized">
+              <span class="title-line-1">Frutas Frescas</span>
+              <span class="title-line-2">Directo a tu Puerta</span>
+            </h1>
+
+            <!-- Subtítulo - Propuesta de valor -->
+            <p class="hero-subtitle-optimized">
+              Nutrición de calidad, frescura garantizada y la mejor selección de frutas premium a un clic de distancia
+            </p>
+
+            <!-- Features - Beneficios clave -->
+            <div class="hero-features-optimized">
+              <div class="feature-item-optimized">
+                <i class="fas fa-check-circle"></i>
+                <span>100% Orgánico</span>
               </div>
-              
-              <!-- Title + Subtitle -->
-              <div class="hero-center">
-                <h1 class="hero-title-inline">
-                  <span class="title-part">Frutas Frescas</span>
-                  <span class="title-highlight-inline">Directo a tu Puerta</span>
-                </h1>
-                <div class="hero-subtitle-inline">
-                  <div class="feature-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>100% Orgánico</span>
-                  </div>
-                  <div class="feature-item">
-                    <i class="fas fa-truck"></i>
-                    <span>Entrega Hoy</span>
-                  </div>
-                  <div class="feature-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Frescura Garantizada</span>
-                  </div>
-                </div>
+              <div class="feature-item-optimized">
+                <i class="fas fa-truck"></i>
+                <span>Entrega Hoy</span>
               </div>
-              
-              <!-- Stats inline -->
-              <div class="hero-stats-inline">
-                <div class="stat-inline">
-                  <span class="stat-number">${products.length}+</span>
-                  <span class="stat-text">Productos</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-inline stat-featured">
-                  <span class="stat-number">100%</span>
-                  <span class="stat-text">Satisfacción</span>
-                  <span class="stat-badge-mini">⭐</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-inline">
-                  <span class="stat-number">${categories.length - 1}</span>
-                  <span class="stat-text">Categorías</span>
-                </div>
+              <div class="feature-item-optimized">
+                <i class="fas fa-shield-alt"></i>
+                <span>Frescura Garantizada</span>
               </div>
-              
-              <!-- Trust badges inline -->
-              <div class="hero-trust-inline">
-                <div class="trust-mini">
-                  <i class="fas fa-shipping-fast"></i>
-                  <span>Express</span>
-                </div>
-                <div class="trust-mini">
-                  <i class="fas fa-leaf"></i>
-                  <span>Orgánico</span>
-                </div>
-                <div class="trust-mini">
-                  <i class="fas fa-lock"></i>
-                  <span>Seguro</span>
-                </div>
+            </div>
+
+            <!-- Stats - Prueba social -->
+            <div class="hero-stats-optimized">
+              <div class="stat-item-optimized">
+                <div class="stat-number">${products.length}+</div>
+                <div class="stat-label">Productos</div>
               </div>
-              
-              <!-- Urgency banner -->
-              <div class="hero-urgency-inline">
-                <i class="fas fa-fire"></i>
-                <span>Envío GRATIS +$50k</span>
+              <div class="stat-item-optimized featured-stat">
+                <div class="stat-number">
+                  100%
+                  <i class="fas fa-star stat-icon"></i>
+                </div>
+                <div class="stat-label">Satisfacción</div>
               </div>
+              <div class="stat-item-optimized">
+                <div class="stat-number">${categories.length - 1}</div>
+                <div class="stat-label">Categorías</div>
+              </div>
+            </div>
+
+            <!-- Trust badges - Credibilidad -->
+            <div class="hero-trust-optimized">
+              <div class="trust-badge-optimized">
+                <i class="fas fa-shipping-fast"></i>
+                <span>Express</span>
+              </div>
+              <div class="trust-badge-optimized">
+                <i class="fas fa-leaf"></i>
+                <span>Orgánico</span>
+              </div>
+              <div class="trust-badge-optimized">
+                <i class="fas fa-lock"></i>
+                <span>Seguro</span>
+              </div>
+            </div>
+
+            <!-- Urgency banner - Escasez y urgencia -->
+            <div class="hero-urgency-optimized store-urgency">
+              <i class="fas fa-fire"></i>
+              <span>Envío GRATIS +$50k</span>
             </div>
           </div>
         </div>
 
         <!-- Best Sellers Gallery -->
-        <div class="best-sellers-gallery">
-          <h2 class="gallery-title">
-            <i class="fas fa-fire"></i>
+        <div class="best-sellers-gallery" style="margin-top: 60px;">
+          <h2 class="gallery-title" style="text-align: center; font-size: 2rem; font-weight: 700; color: #fff; margin-bottom: 32px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+            <i class="fas fa-fire" style="color: #ff6b6b;"></i>
             Los Más Vendidos de la Semana
-            <span class="trending-badge">TRENDING</span>
+            <span class="trending-badge" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 800;">TRENDING</span>
           </h2>
           <div class="gallery-scroll infinite-scroll">
             <div class="gallery-track">
@@ -212,51 +204,126 @@ export async function renderStorePage(root) {
           </div>
         ` : ''}
 
-        <!-- Filters -->
-        <div class="store-filters glass">
-          <div class="filter-group">
-            <label>Categoría:</label>
-            <select id="categoryFilter">
-              ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
-            </select>
-          </div>
-          <div class="filter-group">
-            <label>Ordenar por:</label>
-            <select id="sortFilter">
-              <option value="name" selected>Nombre</option>
-              <option value="price-low">Precio (Menor a Mayor)</option>
-              <option value="price-high">Precio (Mayor a Menor)</option>
-              <option value="rating">Calificación</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label>
-              <input type="checkbox" id="organicFilter"> Solo Orgánicas
-            </label>
-          </div>
-          <div class="filter-group">
-            <label>Precio mínimo:</label>
-            <input type="number" id="priceMinFilter" placeholder="0.00" step="0.01" min="0">
-          </div>
-          <div class="filter-group">
-            <label>Precio máximo:</label>
-            <input type="number" id="priceMaxFilter" placeholder="20.00" step="0.01" min="0">
-          </div>
-          <div class="filter-group">
-            <label>Calificación mínima:</label>
-            <select id="ratingMinFilter">
-              <option value="">Todas</option>
-              <option value="4.5">4.5+</option>
-              <option value="4.0">4.0+</option>
-              <option value="3.5">3.5+</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label>Origen:</label>
-            <select id="originFilter">
-              <option value="">Todos</option>
-              ${origins.map(origin => `<option value="${origin}">${origin}</option>`).join('')}
-            </select>
+        <!-- Filters Section - Rediseñada -->
+        <div class="store-filters-container">
+          <div class="store-filters glass">
+            <!-- Buscador de Frutas - Fila completa -->
+            <div class="filter-group search-group">
+              <label>
+                <i class="fas fa-search"></i>
+                BUSCAR FRUTAS:
+              </label>
+              <div class="search-input-wrapper">
+                <input 
+                  type="text" 
+                  id="searchFilter" 
+                  placeholder="Buscar por nombre..."
+                  autocomplete="off"
+                >
+                <i class="fas fa-times search-clear" id="searchClear" style="display: none;"></i>
+              </div>
+            </div>
+
+            <!-- Primera fila de filtros -->
+            <div class="filters-row">
+              <!-- Categoría -->
+              <div class="filter-group">
+                <label>
+                  <i class="fas fa-tags"></i>
+                  CATEGORÍA:
+                </label>
+                <select id="categoryFilter" class="filter-select">
+                  ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                </select>
+              </div>
+
+              <!-- Ordenar por -->
+              <div class="filter-group">
+                <label>
+                  <i class="fas fa-sort"></i>
+                  ORDENAR POR:
+                </label>
+                <select id="sortFilter" class="filter-select">
+                  <option value="name" selected>Nombre</option>
+                  <option value="price-low">Precio (↓)</option>
+                  <option value="price-high">Precio (↑)</option>
+                  <option value="rating">Calificación</option>
+                </select>
+              </div>
+
+              <!-- Calificación Mínima -->
+              <div class="filter-group">
+                <label>
+                  <i class="fas fa-star"></i>
+                  CALIFICACIÓN MÍNIMA:
+                </label>
+                <select id="ratingMinFilter" class="filter-select">
+                  <option value="">Todas</option>
+                  <option value="4.5">4.5+ ⭐</option>
+                  <option value="4.0">4.0+ ⭐</option>
+                  <option value="3.5">3.5+ ⭐</option>
+                </select>
+              </div>
+
+              <!-- Origen -->
+              <div class="filter-group">
+                <label>
+                  <i class="fas fa-map-marker-alt"></i>
+                  ORIGEN:
+                </label>
+                <select id="originFilter" class="filter-select">
+                  <option value="">Todos</option>
+                  ${origins.map(origin => `<option value="${origin}">${origin}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            <!-- Segunda fila de filtros -->
+            <div class="filters-row">
+              <!-- Precio Mínimo -->
+              <div class="filter-group">
+                <label>
+                  <i class="fas fa-dollar-sign"></i>
+                  PRECIO MÍNIMO:
+                </label>
+                <input 
+                  type="number" 
+                  id="priceMinFilter" 
+                  class="filter-input"
+                  placeholder="0.00" 
+                  step="0.01" 
+                  min="0"
+                >
+              </div>
+
+              <!-- Precio Máximo -->
+              <div class="filter-group">
+                <label>
+                  <i class="fas fa-dollar-sign"></i>
+                  PRECIO MÁXIMO:
+                </label>
+                <input 
+                  type="number" 
+                  id="priceMaxFilter" 
+                  class="filter-input"
+                  placeholder="20.00" 
+                  step="0.01" 
+                  min="0"
+                >
+              </div>
+
+              <!-- Solo Orgánicas - Checkbox mejorado -->
+              <div class="filter-group checkbox-group">
+                <label class="organic-checkbox">
+                  <input type="checkbox" id="organicFilter">
+                  <span class="checkbox-custom"></span>
+                  <span class="checkbox-label">
+                    <i class="fas fa-leaf"></i>
+                    SOLO ORGÁNICAS
+                  </span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -376,10 +443,34 @@ function setupFilters(products) {
   const priceMaxFilter = document.getElementById('priceMaxFilter');
   const ratingMinFilter = document.getElementById('ratingMinFilter');
   const originFilter = document.getElementById('originFilter');
+  const searchFilter = document.getElementById('searchFilter');
+  const searchClear = document.getElementById('searchClear');
   const grid = document.getElementById('productsGrid');
+
+  // Search clear button
+  searchFilter.addEventListener('input', () => {
+    searchClear.style.display = searchFilter.value ? 'block' : 'none';
+    applyFilters();
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchFilter.value = '';
+    searchClear.style.display = 'none';
+    applyFilters();
+  });
 
   function applyFilters() {
     let filtered = [...products];
+
+    // Search filter
+    const searchTerm = searchFilter.value.toLowerCase().trim();
+    if (searchTerm) {
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(searchTerm) ||
+        p.desc.toLowerCase().includes(searchTerm) ||
+        p.category.toLowerCase().includes(searchTerm)
+      );
+    }
 
     // Category filter
     const category = categoryFilter.value;
