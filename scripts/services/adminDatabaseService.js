@@ -429,11 +429,11 @@ class AdminDatabaseService {
         try {
             console.log('🔧 Updating box:', boxId, updates);
             
-            // Actualizar en la tabla management_boxes
+            // Actualizar en la tabla current_boxes (no es vista, es tabla principal)
             updates.updated_at = new Date().toISOString();
             
             const { data, error } = await this.productsClient
-                .from('management_boxes')
+                .from('current_boxes')
                 .update(updates)
                 .eq('id', boxId)
                 .select()
