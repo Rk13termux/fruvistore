@@ -215,25 +215,25 @@ export async function renderStorePage(root) {
           </div>
           
           <div class="store-filters glass">
-            <!-- Buscador de Frutas - Fila completa -->
-            <div class="filter-group search-group full-width">
-              <label>
-                <i class="fas fa-search"></i>
-                BUSCAR FRUTAS:
-              </label>
-              <div class="search-input-wrapper">
-                <input 
-                  type="text" 
-                  id="searchFilter" 
-                  placeholder="Escribe el nombre de la fruta que buscas..."
-                  autocomplete="off"
-                >
-                <i class="fas fa-times search-clear" id="searchClear" style="display: none;"></i>
-              </div>
-            </div>
-
-            <!-- Grid de filtros - 4 columnas -->
+            <!-- Grid de filtros vertical -->
             <div class="filters-grid">
+              <!-- Buscador de Frutas -->
+              <div class="filter-group search-group">
+                <label>
+                  <i class="fas fa-search"></i>
+                  BUSCAR FRUTAS:
+                </label>
+                <div class="search-input-wrapper">
+                  <input 
+                    type="text" 
+                    id="searchFilter" 
+                    placeholder="Escribe el nombre de la fruta que buscas..."
+                    autocomplete="off"
+                  >
+                  <i class="fas fa-times search-clear" id="searchClear" style="display: none;"></i>
+                </div>
+              </div>
+
               <!-- Categoría -->
               <div class="filter-group">
                 <label>
@@ -284,10 +284,7 @@ export async function renderStorePage(root) {
                   ${origins.map(origin => `<option value="${origin}">${origin}</option>`).join('')}
                 </select>
               </div>
-            </div>
 
-            <!-- Segunda fila de filtros -->
-            <div class="filters-grid">
               <!-- Precio Mínimo -->
               <div class="filter-group">
                 <label>
@@ -322,21 +319,29 @@ export async function renderStorePage(root) {
 
               <!-- Solo Orgánicas -->
               <div class="filter-group checkbox-group">
+                <label>
+                  <i class="fas fa-leaf"></i>
+                  FILTROS ADICIONALES:
+                </label>
                 <label class="checkbox-label">
                   <input type="checkbox" id="organicFilter">
                   <span class="checkbox-custom"></span>
                   <span class="checkbox-text">
                     <i class="fas fa-leaf"></i>
-                    SOLO ORGÁNICAS
+                    Solo Frutas Orgánicas
                   </span>
                 </label>
               </div>
 
               <!-- Botón Limpiar Filtros -->
               <div class="filter-group">
+                <label>
+                  <i class="fas fa-redo"></i>
+                  ACCIONES:
+                </label>
                 <button class="btn-clear-filters" id="clearFilters">
                   <i class="fas fa-redo"></i>
-                  Limpiar Filtros
+                  Limpiar Todos los Filtros
                 </button>
               </div>
             </div>

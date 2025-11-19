@@ -268,7 +268,7 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 					</div>
 					
 					<div class="store-filters glass">
-						<!-- Grid de filtros - 4 columnas -->
+						<!-- Grid de filtros vertical -->
 						<div class="filters-grid">
 							<!-- Categoría -->
 							<div class="filter-group">
@@ -298,12 +298,16 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 
 							<!-- Solo Orgánicas -->
 							<div class="filter-group checkbox-group">
+								<label>
+									<i class="fas fa-leaf"></i>
+									FILTROS ADICIONALES:
+								</label>
 								<label class="checkbox-label">
 									<input type="checkbox" id="organicFilter">
 									<span class="checkbox-custom"></span>
 									<span class="checkbox-text">
 										<i class="fas fa-leaf"></i>
-										SOLO ORGÁNICAS
+										Solo FruviBox Orgánicas
 									</span>
 								</label>
 							</div>
@@ -314,7 +318,7 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 									<i class="fas fa-box"></i>
 									RESULTADOS:
 								</label>
-								<span id="resultsCount" class="count-badge">${boxes.length} FruviBox</span>
+								<span id="resultsCount" class="count-badge">${boxes.length} FruviBox Disponibles</span>
 							</div>
 						</div>
 					</div>
