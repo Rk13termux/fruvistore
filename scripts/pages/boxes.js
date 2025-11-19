@@ -252,37 +252,71 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 
 			<div class="container">
 				<div class="store-header">
-					<h2>Listas para disfrutar</h2>
-					<p class="store-subtitle">Elige la caja ideal para tu familia, oficina o evento.</p>
+					<h2>FruviBox Premium</h2>
+					<p class="store-subtitle">Combinaciones perfectamente balanceadas de frutas frescas. Diseñadas por nutricionistas para máxima frescura y valor nutricional.</p>
 					${registrationBanner}
 				</div>
 
-				<div class="store-filters glass">
-					<div class="filter-group">
-						<label>Categoría:</label>
-						<select id="categoryFilter">
-							${categoryOptions}
-						</select>
+				<!-- Filters Section - Rediseñada -->
+				<div class="store-filters-container">
+					<div class="filters-header">
+						<h3>
+							<i class="fas fa-filter"></i>
+							Encuentra Tu FruviBox Perfecta
+						</h3>
+						<p>Personaliza tu selección con nuestros filtros inteligentes para encontrar la caja ideal</p>
 					</div>
-					<div class="filter-group">
-						<label>Ordenar por:</label>
-						<select id="sortFilter">
-							<option value="featured" selected>Destacados primero</option>
-							<option value="price-low">Precio: menor a mayor</option>
-							<option value="price-high">Precio: mayor a menor</option>
-							<option value="rating">Mejor calificados</option>
-							<option value="name">Nombre A-Z</option>
-						</select>
-					</div>
-					<div class="filter-group">
-						<label>
-							<input type="checkbox" id="organicFilter">
-							Solo orgánicas
-						</label>
-					</div>
-					<div class="filter-group">
-						<label>Resultados:</label>
-						<span id="resultsCount">${boxes.length} FruviBox encontradas</span>
+					
+					<div class="store-filters glass">
+						<!-- Grid de filtros - 4 columnas -->
+						<div class="filters-grid">
+							<!-- Categoría -->
+							<div class="filter-group">
+								<label>
+									<i class="fas fa-tags"></i>
+									CATEGORÍA:
+								</label>
+								<select id="categoryFilter" class="filter-select">
+									${categoryOptions}
+								</select>
+							</div>
+
+							<!-- Ordenar por -->
+							<div class="filter-group">
+								<label>
+									<i class="fas fa-sort"></i>
+									ORDENAR POR:
+								</label>
+								<select id="sortFilter" class="filter-select">
+									<option value="featured" selected>Destacadas Primero</option>
+									<option value="price-low">Precio: Menor a Mayor</option>
+									<option value="price-high">Precio: Mayor a Menor</option>
+									<option value="rating">Mejor Calificadas</option>
+									<option value="name">Nombre A-Z</option>
+								</select>
+							</div>
+
+							<!-- Solo Orgánicas -->
+							<div class="filter-group checkbox-group">
+								<label class="checkbox-label">
+									<input type="checkbox" id="organicFilter">
+									<span class="checkbox-custom"></span>
+									<span class="checkbox-text">
+										<i class="fas fa-leaf"></i>
+										SOLO ORGÁNICAS
+									</span>
+								</label>
+							</div>
+
+							<!-- Contador de Resultados -->
+							<div class="filter-group results-count">
+								<label>
+									<i class="fas fa-box"></i>
+									RESULTADOS:
+								</label>
+								<span id="resultsCount" class="count-badge">${boxes.length} FruviBox</span>
+							</div>
+						</div>
 					</div>
 				</div>
 

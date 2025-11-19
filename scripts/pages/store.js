@@ -157,7 +157,7 @@ export async function renderStorePage(root) {
         <!-- Header -->
         <div class="store-header">
           <h2>Frutas Premium</h2>
-          <p class="store-subtitle">Selección fresca y de la más alta calidad, entregada directamente a tu puerta</p>
+          <p class="store-subtitle">Frescura garantizada directo del campo a tu mesa. Cada fruta seleccionada con los más altos estándares de calidad para tu bienestar.</p>
 
           <!-- Registration Banner for non-registered users -->
           ${userStatus.isGuest ? `
@@ -206,9 +206,17 @@ export async function renderStorePage(root) {
 
         <!-- Filters Section - Rediseñada -->
         <div class="store-filters-container">
+          <div class="filters-header">
+            <h3>
+              <i class="fas fa-filter"></i>
+              Encuentra Tu Fruta Ideal
+            </h3>
+            <p>Utiliza los filtros para personalizar tu búsqueda y encontrar las frutas perfectas para ti</p>
+          </div>
+          
           <div class="store-filters glass">
             <!-- Buscador de Frutas - Fila completa -->
-            <div class="filter-group search-group">
+            <div class="filter-group search-group full-width">
               <label>
                 <i class="fas fa-search"></i>
                 BUSCAR FRUTAS:
@@ -217,15 +225,15 @@ export async function renderStorePage(root) {
                 <input 
                   type="text" 
                   id="searchFilter" 
-                  placeholder="Buscar por nombre..."
+                  placeholder="Escribe el nombre de la fruta que buscas..."
                   autocomplete="off"
                 >
                 <i class="fas fa-times search-clear" id="searchClear" style="display: none;"></i>
               </div>
             </div>
 
-            <!-- Primera fila de filtros -->
-            <div class="filters-row">
+            <!-- Grid de filtros - 4 columnas -->
+            <div class="filters-grid">
               <!-- Categoría -->
               <div class="filter-group">
                 <label>
@@ -245,9 +253,9 @@ export async function renderStorePage(root) {
                 </label>
                 <select id="sortFilter" class="filter-select">
                   <option value="name" selected>Nombre</option>
-                  <option value="price-low">Precio (↓)</option>
-                  <option value="price-high">Precio (↑)</option>
-                  <option value="rating">Calificación</option>
+                  <option value="price-low">Precio: Menor a Mayor</option>
+                  <option value="price-high">Precio: Mayor a Menor</option>
+                  <option value="rating">Mejor Calificadas</option>
                 </select>
               </div>
 
@@ -259,9 +267,9 @@ export async function renderStorePage(root) {
                 </label>
                 <select id="ratingMinFilter" class="filter-select">
                   <option value="">Todas</option>
-                  <option value="4.5">4.5+ ⭐</option>
-                  <option value="4.0">4.0+ ⭐</option>
-                  <option value="3.5">3.5+ ⭐</option>
+                  <option value="4.5">⭐ 4.5 Estrellas</option>
+                  <option value="4.0">⭐ 4.0 Estrellas</option>
+                  <option value="3.5">⭐ 3.5 Estrellas</option>
                 </select>
               </div>
 
@@ -272,14 +280,14 @@ export async function renderStorePage(root) {
                   ORIGEN:
                 </label>
                 <select id="originFilter" class="filter-select">
-                  <option value="">Todos</option>
+                  <option value="">Todos los Orígenes</option>
                   ${origins.map(origin => `<option value="${origin}">${origin}</option>`).join('')}
                 </select>
               </div>
             </div>
 
             <!-- Segunda fila de filtros -->
-            <div class="filters-row">
+            <div class="filters-grid">
               <!-- Precio Mínimo -->
               <div class="filter-group">
                 <label>
@@ -289,10 +297,10 @@ export async function renderStorePage(root) {
                 <input 
                   type="number" 
                   id="priceMinFilter" 
-                  class="filter-input"
+                  class="filter-input" 
                   placeholder="0.00" 
-                  step="0.01" 
-                  min="0"
+                  min="0" 
+                  step="0.01"
                 >
               </div>
 
@@ -305,23 +313,31 @@ export async function renderStorePage(root) {
                 <input 
                   type="number" 
                   id="priceMaxFilter" 
-                  class="filter-input"
+                  class="filter-input" 
                   placeholder="20.00" 
-                  step="0.01" 
-                  min="0"
+                  min="0" 
+                  step="0.01"
                 >
               </div>
 
-              <!-- Solo Orgánicas - Checkbox mejorado -->
+              <!-- Solo Orgánicas -->
               <div class="filter-group checkbox-group">
-                <label class="organic-checkbox">
+                <label class="checkbox-label">
                   <input type="checkbox" id="organicFilter">
                   <span class="checkbox-custom"></span>
-                  <span class="checkbox-label">
+                  <span class="checkbox-text">
                     <i class="fas fa-leaf"></i>
                     SOLO ORGÁNICAS
                   </span>
                 </label>
+              </div>
+
+              <!-- Botón Limpiar Filtros -->
+              <div class="filter-group">
+                <button class="btn-clear-filters" id="clearFilters">
+                  <i class="fas fa-redo"></i>
+                  Limpiar Filtros
+                </button>
               </div>
             </div>
           </div>
