@@ -268,7 +268,7 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 					</div>
 					
 					<div class="store-filters glass">
-						<!-- Grid de filtros vertical -->
+						<!-- Grid de filtros horizontal -->
 						<div class="filters-grid">
 							<!-- Categoría -->
 							<div class="filter-group">
@@ -288,7 +288,7 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 									ORDENAR POR:
 								</label>
 								<select id="sortFilter" class="filter-select">
-									<option value="featured" selected>Destacadas Primero</option>
+									<option value="featured" selected>Destacadas</option>
 									<option value="price-low">Precio: Menor a Mayor</option>
 									<option value="price-high">Precio: Mayor a Menor</option>
 									<option value="rating">Mejor Calificadas</option>
@@ -300,15 +300,12 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 							<div class="filter-group checkbox-group">
 								<label>
 									<i class="fas fa-leaf"></i>
-									FILTROS ADICIONALES:
+									ORGÁNICAS:
 								</label>
 								<label class="checkbox-label">
 									<input type="checkbox" id="organicFilter">
 									<span class="checkbox-custom"></span>
-									<span class="checkbox-text">
-										<i class="fas fa-leaf"></i>
-										Solo FruviBox Orgánicas
-									</span>
+									<span class="checkbox-text">Solo Orgánicas</span>
 								</label>
 							</div>
 
@@ -318,7 +315,7 @@ function renderBoxesHTML(root, boxes, categories, userStatus) {
 									<i class="fas fa-box"></i>
 									RESULTADOS:
 								</label>
-								<span id="resultsCount" class="count-badge">${boxes.length} FruviBox Disponibles</span>
+								<span id="resultsCount" class="count-badge">${boxes.length} FruviBox</span>
 							</div>
 						</div>
 					</div>

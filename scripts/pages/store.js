@@ -215,10 +215,10 @@ export async function renderStorePage(root) {
           </div>
           
           <div class="store-filters glass">
-            <!-- Grid de filtros vertical -->
+            <!-- Grid de filtros horizontal -->
             <div class="filters-grid">
               <!-- Buscador de Frutas -->
-              <div class="filter-group search-group">
+              <div class="filter-group search-group full-width">
                 <label>
                   <i class="fas fa-search"></i>
                   BUSCAR FRUTAS:
@@ -227,7 +227,7 @@ export async function renderStorePage(root) {
                   <input 
                     type="text" 
                     id="searchFilter" 
-                    placeholder="Escribe el nombre de la fruta que buscas..."
+                    placeholder="Escribe el nombre de la fruta..."
                     autocomplete="off"
                   >
                   <i class="fas fa-times search-clear" id="searchClear" style="display: none;"></i>
@@ -263,13 +263,13 @@ export async function renderStorePage(root) {
               <div class="filter-group">
                 <label>
                   <i class="fas fa-star"></i>
-                  CALIFICACIÓN MÍNIMA:
+                  CALIFICACIÓN:
                 </label>
                 <select id="ratingMinFilter" class="filter-select">
                   <option value="">Todas</option>
-                  <option value="4.5">⭐ 4.5 Estrellas</option>
-                  <option value="4.0">⭐ 4.0 Estrellas</option>
-                  <option value="3.5">⭐ 3.5 Estrellas</option>
+                  <option value="4.5">⭐ 4.5+</option>
+                  <option value="4.0">⭐ 4.0+</option>
+                  <option value="3.5">⭐ 3.5+</option>
                 </select>
               </div>
 
@@ -280,7 +280,7 @@ export async function renderStorePage(root) {
                   ORIGEN:
                 </label>
                 <select id="originFilter" class="filter-select">
-                  <option value="">Todos los Orígenes</option>
+                  <option value="">Todos</option>
                   ${origins.map(origin => `<option value="${origin}">${origin}</option>`).join('')}
                 </select>
               </div>
@@ -321,15 +321,12 @@ export async function renderStorePage(root) {
               <div class="filter-group checkbox-group">
                 <label>
                   <i class="fas fa-leaf"></i>
-                  FILTROS ADICIONALES:
+                  ORGÁNICAS:
                 </label>
                 <label class="checkbox-label">
                   <input type="checkbox" id="organicFilter">
                   <span class="checkbox-custom"></span>
-                  <span class="checkbox-text">
-                    <i class="fas fa-leaf"></i>
-                    Solo Frutas Orgánicas
-                  </span>
+                  <span class="checkbox-text">Solo Orgánicas</span>
                 </label>
               </div>
 
@@ -341,7 +338,7 @@ export async function renderStorePage(root) {
                 </label>
                 <button class="btn-clear-filters" id="clearFilters">
                   <i class="fas fa-redo"></i>
-                  Limpiar Todos los Filtros
+                  Limpiar Filtros
                 </button>
               </div>
             </div>

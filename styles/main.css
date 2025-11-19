@@ -1729,11 +1729,13 @@ body {
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-/* Filters Grid - Disposición vertical */
+/* Filters Grid - Disposición horizontal */
 .filters-grid {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-end;
 }
 
 .filters-grid:last-child {
@@ -1742,14 +1744,16 @@ body {
 
 /* Full width search */
 .full-width {
-  width: 100%;
+  flex: 1 1 100%;
+  min-width: 100%;
 }
 
 .filter-group { 
   display: flex; 
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem; 
+  flex-direction: column;
+  gap: 0.6rem; 
+  flex: 1;
+  min-width: 200px;
 }
 
 .filter-group label { 
@@ -1761,8 +1765,6 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 180px;
-  flex-shrink: 0;
 }
 
 .filter-group label i {
@@ -1771,7 +1773,7 @@ body {
 
 .filter-select,
 .filter-input { 
-  flex: 1;
+  width: 100%;
   padding: 0.75rem 1rem; 
   border-radius: 8px; 
   border: 1px solid rgba(255,155,64,0.3); 
@@ -1798,14 +1800,13 @@ body {
 /* Search Group */
 .search-group {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .search-input-wrapper {
   position: relative;
-  flex: 1;
+  width: 100%;
 }
 
 .search-input-wrapper input {
@@ -1829,7 +1830,7 @@ body {
 
 /* Checkbox Group */
 .checkbox-group {
-  justify-content: flex-start;
+  justify-content: flex-end;
 }
 
 .checkbox-label {
@@ -1842,7 +1843,7 @@ body {
   border: 1px solid rgba(255,155,64,0.3);
   background: rgba(255,255,255,0.05);
   transition: all 0.3s ease;
-  flex: 1;
+  width: 100%;
 }
 
 .checkbox-label:hover {
@@ -1893,7 +1894,7 @@ body {
 
 /* Clear Filters Button */
 .btn-clear-filters {
-  flex: 1;
+  width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 8px;
   border: 1px solid rgba(255,155,64,0.3);
@@ -1917,11 +1918,11 @@ body {
 
 /* Results Count */
 .results-count {
-  align-items: center;
+  align-items: flex-start;
 }
 
 .count-badge {
-  flex: 1;
+  width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 8px;
   background: linear-gradient(135deg, var(--brand-2), var(--brand));
@@ -2208,17 +2209,17 @@ body {
 
   /* Filters Responsive */
   .filters-grid {
-    gap: 0.8rem;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .filter-group {
-    flex-direction: column;
-    align-items: flex-start;
+    min-width: 100%;
+    flex: 1 1 100%;
   }
 
-  .filter-group label {
-    min-width: auto;
-    width: 100%;
+  .full-width {
+    order: -1;
   }
 
   .store-filters {
@@ -2244,8 +2245,6 @@ body {
 
   .checkbox-label {
     width: 100%;
-  }
-
   }
   
   .hero-stats {
@@ -2312,14 +2311,14 @@ body {
   .gallery-price {
     font-size: 1rem;
   }
-  
-  @keyframes scroll-infinite-mobile {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-180px * 10 - 20px * 9));
-    }
+}
+
+@keyframes scroll-infinite-mobile {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-180px * 10 - 20px * 9));
   }
 }
 
