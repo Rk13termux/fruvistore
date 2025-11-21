@@ -7,7 +7,7 @@ import './navigation-menu.js';
 // Dynamic imports with error handling
 let startRouter, registerRoute, getCurrentPath;
 let renderHomePage, renderStorePage, renderBoxesPage;
-let renderNutritionPage, renderAssistantPage, renderRegistrationPage, renderLoginPage;
+let renderAssistantPage, renderRegistrationPage, renderLoginPage;
 let renderProfilePage, renderRecipesBlogPage, renderRecipeDetailPage;
 let renderDashboardPage, renderSubscriptionPage, initChatWidget, CheckoutModalStore, CheckoutModalBoxes;
 
@@ -32,11 +32,9 @@ async function loadModules() {
     const boxesModule = await import('./pages/boxes.js');
     ({ renderBoxesPage } = boxesModule);
 
-    const nutritionModule = await import('./pages/nutrition-new.js');
-    ({ renderNutritionPage } = nutritionModule);
-
-    const assistantModule = await import('./pages/assistant.js');
-    ({ renderAssistantPage } = assistantModule);
+    // DR. LARA - Nutricionista IA Premium (reemplaza nutrition y assistant)
+    const drLaraModule = await import('./pages/dr-lara.js');
+    ({ renderDrLaraPage: renderAssistantPage } = drLaraModule);
 
     const registrationModule = await import('./pages/registration.js');
     ({ renderRegistrationPage } = registrationModule);

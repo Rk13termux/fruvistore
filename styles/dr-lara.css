@@ -1,0 +1,824 @@
+/* =====================================================
+   DR. LARA - NUTRICIONISTA IA PREMIUM
+   Diseño Minimalista Estilo Apple/Nespresso 2025
+   Fondo Blanco Puro + Dorado Suave + Verde Esmeralda
+   ===================================================== */
+
+:root {
+  /* Paleta Premium Dr. Lara - Fondo Negro */
+  --lara-black: #000000;
+  --lara-dark: #0a0a0a;
+  --lara-white: #FFFFFF;
+  --lara-gold: #D4AF37;
+  --lara-gold-light: #E8D7A3;
+  --lara-emerald: #50C878;
+  --lara-emerald-light: #7FD99C;
+  --lara-gray: #1a1a1a;
+  --lara-gray-light: #2a2a2a;
+  --lara-text: #FFFFFF;
+  --lara-text-secondary: #9AA0A6;
+  
+  /* Tipografía Premium */
+  --lara-font-title: 'Playfair Display', serif;
+  --lara-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* Espaciado Elegante */
+  --lara-space-xs: 8px;
+  --lara-space-sm: 16px;
+  --lara-space-md: 32px;
+  --lara-space-lg: 48px;
+  --lara-space-xl: 64px;
+  --lara-space-xxl: 96px;
+  
+  /* Sombras Sutiles */
+  --lara-shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --lara-shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --lara-shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+/* ==================== INTRO DR. LARA ==================== */
+.dr-lara-intro {
+  background: linear-gradient(135deg, var(--lara-black) 0%, var(--lara-dark) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: var(--lara-space-xxl) 0;
+}
+
+.dr-lara-intro__content {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--lara-space-xl);
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--lara-space-md);
+}
+
+/* Header Dr. Lara */
+.dr-lara-header {
+  display: flex;
+  align-items: center;
+  gap: var(--lara-space-md);
+  margin-bottom: var(--lara-space-lg);
+}
+
+.dr-lara-logo {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--lara-shadow-lg);
+}
+
+.dr-lara-logo i {
+  font-size: 2.5rem;
+  color: var(--lara-white);
+}
+
+.dr-lara-info {
+  flex: 1;
+}
+
+.dr-lara-title {
+  font-family: var(--lara-font-title);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--lara-text);
+  margin: 0 0 var(--lara-space-xs) 0;
+  line-height: 1.2;
+}
+
+.dr-lara-specialty {
+  font-family: var(--lara-font-body);
+  font-size: 1.1rem;
+  color: var(--lara-text-secondary);
+  margin: 0 0 var(--lara-space-sm) 0;
+}
+
+.user-status {
+  display: inline-block;
+}
+
+.status-free,
+.status-premium,
+.status-guest {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.status-free {
+  background: linear-gradient(135deg, var(--lara-gray), #E5E5E5);
+  color: var(--lara-text-secondary);
+}
+
+.status-premium {
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  color: var(--lara-white);
+  box-shadow: var(--lara-shadow-md);
+}
+
+.status-guest {
+  background: var(--lara-gray);
+  color: var(--lara-text-secondary);
+}
+
+/* Pain Points */
+.pain-points {
+  display: grid;
+  gap: var(--lara-space-sm);
+  margin-bottom: var(--lara-space-lg);
+}
+
+.pain-point {
+  display: flex;
+  align-items: center;
+  gap: var(--lara-space-sm);
+  padding: var(--lara-space-sm) var(--lara-space-md);
+  background: var(--lara-gray);
+  border-left: 4px solid var(--lara-emerald);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--lara-white);
+  transition: all 0.3s ease;
+}
+
+.pain-point:hover {
+  transform: translateX(8px);
+  box-shadow: var(--lara-shadow-sm);
+}
+
+.pain-point i {
+  color: var(--lara-emerald);
+  font-size: 1.2rem;
+}
+
+/* Solutions */
+.solutions {
+  margin-bottom: var(--lara-space-lg);
+}
+
+.solutions h2 {
+  font-family: var(--lara-font-title);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--lara-text);
+  margin-bottom: var(--lara-space-md);
+  text-align: center;
+}
+
+.solution-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--lara-space-md);
+}
+
+.feature {
+  text-align: center;
+  padding: var(--lara-space-md);
+  background: var(--lara-gray);
+  border: 1px solid var(--lara-gray-light);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+  border-color: var(--lara-gold);
+  background: var(--lara-gray-light);
+}
+
+.feature i {
+  font-size: 3rem;
+  color: var(--lara-gold);
+  margin-bottom: var(--lara-space-sm);
+}
+
+.feature h3 {
+  font-family: var(--lara-font-body);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--lara-white);
+  margin-bottom: var(--lara-space-xs);
+}
+
+.feature p {
+  font-size: 0.95rem;
+  color: var(--lara-text-secondary);
+  line-height: 1.6;
+}
+
+/* Credits Info */
+.credits-info {
+  background: linear-gradient(135deg, var(--lara-emerald-light), var(--lara-emerald));
+  padding: var(--lara-space-md);
+  border-radius: 16px;
+  box-shadow: var(--lara-shadow-md);
+  margin-bottom: var(--lara-space-lg);
+}
+
+.credits-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lara-space-sm);
+  color: var(--lara-white);
+}
+
+.credits-display i {
+  font-size: 2rem;
+}
+
+.credits-display #currentCredits {
+  font-size: 3rem;
+  font-weight: 900;
+  font-family: var(--lara-font-title);
+}
+
+.credits-label {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+@keyframes credits-update-animation {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+#currentCredits.credits-update-animation {
+  animation: credits-update-animation 0.8s ease;
+}
+
+/* CTA Section */
+.cta-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lara-space-md);
+  margin-bottom: var(--lara-space-lg);
+}
+
+.cta-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lara-space-sm);
+  padding: var(--lara-space-md) var(--lara-space-lg);
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  color: var(--lara-white);
+  font-family: var(--lara-font-body);
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--lara-shadow-md);
+}
+
+.cta-button:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--lara-shadow-lg);
+}
+
+.cta-button i {
+  font-size: 1.3rem;
+}
+
+.secondary-ctas {
+  display: flex;
+  gap: var(--lara-space-sm);
+}
+
+.btn-premium {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--lara-space-sm) var(--lara-space-md);
+  background: transparent;
+  color: var(--lara-gold);
+  font-weight: 600;
+  border: 2px solid var(--lara-gold);
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+  background: var(--lara-gold);
+  color: var(--lara-white);
+}
+
+/* Social Proof */
+.social-proof {
+  padding: var(--lara-space-md);
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+}
+
+.trust-indicators {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--lara-space-md);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--lara-text-secondary);
+  font-weight: 500;
+}
+
+.trust-item i {
+  color: var(--lara-emerald);
+  font-size: 1.2rem;
+}
+
+/* Visual */
+.dr-lara-intro__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==================== IMAGEN/VIDEO PROFESIONAL ==================== */
+.dr-lara-media {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+  background: var(--lara-gray);
+  border: 2px solid var(--lara-gold);
+  width: 100%;
+  max-width: 500px;
+}
+
+.dr-lara-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 24px;
+}
+
+.dr-lara-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 24px;
+}
+
+.media-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(212, 175, 55, 0.95);
+  color: var(--lara-black);
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dr-lara-avatar {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 24px;
+  box-shadow: var(--lara-shadow-lg);
+}
+
+/* ==================== CHAT DR. LARA FULLWIDTH ==================== */
+.dr-lara-chatgpt {
+  display: block;
+  width: 100vw;
+  max-width: 100vw;
+  background: var(--lara-black);
+  margin: 0;
+  padding: 0;
+}
+
+.dr-lara-chatgpt__container {
+  width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+  padding: 0;
+}
+
+.dr-lara-chatgpt__messages {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--lara-space-lg) var(--lara-space-md) var(--lara-space-md) var(--lara-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--lara-space-md);
+  min-height: 320px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.dr-lara-chatgpt__inputbar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--lara-space-md) 0;
+  background: var(--lara-dark);
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(80,200,120,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dr-lara-chatgpt__form {
+  width: 100%;
+  display: flex;
+  gap: var(--lara-space-sm);
+  align-items: flex-end;
+  background: var(--lara-dark);
+  border-radius: 24px;
+  box-shadow: none;
+  padding: var(--lara-space-sm) var(--lara-space-md);
+}
+
+.dr-lara-chatgpt__form textarea {
+  flex: 1;
+  padding: var(--lara-space-md);
+  border: 1.5px solid var(--lara-gold);
+  border-radius: 18px;
+  resize: none;
+  font-family: var(--lara-font-body);
+  font-size: 1.1rem;
+  color: var(--lara-white);
+  background: var(--lara-black);
+  transition: border-color 0.3s;
+  min-height: 48px;
+  max-height: 120px;
+  box-shadow: 0 2px 8px rgba(212,175,55,0.08);
+}
+
+.dr-lara-chatgpt__form textarea:focus {
+  outline: none;
+  border-color: var(--lara-emerald);
+  box-shadow: 0 0 0 4px rgba(80,200,120,0.12);
+}
+
+.dr-lara-chatgpt__form textarea::placeholder {
+  color: var(--lara-text-secondary);
+  font-size: 1rem;
+}
+
+.dr-lara-send-btn {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  color: var(--lara-white);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(212,175,55,0.15);
+}
+
+.dr-lara-send-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 32px rgba(212,175,55,0.22);
+}
+
+.dr-lara-chatgpt__creditsbar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--lara-space-xs) 0 var(--lara-space-xs) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lara-space-md);
+}
+
+.credits-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--lara-gray);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lara-emerald), var(--lara-emerald-light));
+  transition: width 0.5s ease;
+}
+
+.credits-progress-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--lara-white);
+  font-size: 1rem;
+}
+
+.dr-lara-chatgpt__disclaimer {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--lara-space-xs) var(--lara-space-md);
+  display: flex;
+  gap: var(--lara-space-md);
+  font-size: 0.95rem;
+  color: var(--lara-text-secondary);
+  justify-content: flex-start;
+}
+
+/* Messages */
+.dr-lara-msg {
+  display: flex;
+  gap: var(--lara-space-sm);
+  margin-bottom: var(--lara-space-md);
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dr-lara-msg__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+}
+
+.dr-lara-msg--user .dr-lara-msg__avatar {
+  background: linear-gradient(135deg, var(--lara-emerald), var(--lara-emerald-light));
+  color: var(--lara-white);
+}
+
+.dr-lara-msg--assistant .dr-lara-msg__avatar {
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  color: var(--lara-white);
+}
+
+.dr-lara-msg__bubble {
+  flex: 1;
+  padding: var(--lara-space-md);
+  border-radius: 16px;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.dr-lara-msg--user .dr-lara-msg__bubble {
+  background: var(--lara-gray);
+  color: var(--lara-white);
+  border: 1px solid var(--lara-gray-light);
+}
+
+.dr-lara-msg--assistant .dr-lara-msg__bubble {
+  background: var(--lara-dark);
+  color: var(--lara-white);
+  border: 1px solid var(--lara-gold-light);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background: var(--lara-gold);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+}
+
+/* Input */
+.dr-lara-chatgpt__input {
+  background: var(--lara-dark);
+  border-top: 1px solid var(--lara-gray-light);
+  padding: var(--lara-space-md);
+}
+
+.credits-progress-section {
+  background: var(--lara-black);
+  padding: var(--lara-space-sm) 0;
+  margin-bottom: var(--lara-space-sm);
+}
+
+.credits-progress-container {
+  display: flex;
+  align-items: center;
+  gap: var(--lara-space-sm);
+}
+
+.credits-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--lara-gray);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lara-emerald), var(--lara-emerald-light));
+  transition: width 0.5s ease;
+}
+
+.credits-progress-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--lara-white);
+}
+
+.dr-lara-chatgpt__form {
+  display: flex;
+  gap: var(--lara-space-sm);
+  align-items: flex-end;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.dr-lara-chatgpt__form textarea {
+  flex: 1;
+  padding: var(--lara-space-sm) var(--lara-space-md);
+  border: 1px solid var(--lara-gray-light);
+  border-radius: 24px;
+  resize: none;
+  font-family: var(--lara-font-body);
+  font-size: 1rem;
+  color: var(--lara-white);
+  background: var(--lara-black);
+  transition: all 0.3s ease;
+}
+
+.dr-lara-chatgpt__form textarea:focus {
+  outline: none;
+  border-color: var(--lara-gold);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+}
+
+.dr-lara-chatgpt__form textarea::placeholder {
+  color: var(--lara-text-secondary);
+}
+
+.dr-lara-send-btn {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  color: var(--lara-white);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  box-shadow: var(--lara-shadow-md);
+}
+
+.dr-lara-send-btn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--lara-shadow-lg);
+}
+
+.credits-disclaimer {
+  display: flex;
+  justify-content: center;
+  gap: var(--lara-space-md);
+  margin-top: var(--lara-space-sm);
+  font-size: 0.85rem;
+  color: var(--lara-text-secondary);
+}
+
+.disclaimer-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.disclaimer-item i {
+  color: var(--lara-gold);
+}
+
+.dr-lara-chatgpt__hint {
+  text-align: center;
+  margin-top: var(--lara-space-sm);
+  font-size: 0.85rem;
+  color: var(--lara-text-secondary);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+  .dr-lara-intro__content {
+    grid-template-columns: 1fr;
+    gap: var(--lara-space-lg);
+  }
+  
+  .solution-features {
+    grid-template-columns: 1fr;
+  }
+  
+  .dr-lara-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dr-lara-intro {
+    padding: var(--lara-space-lg) 0;
+  }
+  
+  .dr-lara-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .dr-lara-logo {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .dr-lara-logo i {
+    font-size: 2rem;
+  }
+  
+  .dr-lara-title {
+    font-size: 2rem;
+  }
+  
+  .solutions h2 {
+    font-size: 2rem;
+  }
+  
+  .secondary-ctas {
+    flex-direction: column;
+  }
+  
+  .trust-indicators {
+    flex-direction: column;
+  }
+}
