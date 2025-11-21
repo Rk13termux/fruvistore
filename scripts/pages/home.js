@@ -20,7 +20,7 @@ export function renderHomePage(root) {
     <div class="container hero-premium__content">
       <div class="hero-premium__text">
         <div class="hero-premium__badge">
-          <i class="fas fa-crown"></i>
+          <i class="fas fa-sparkles"></i>
           Centro Médico Nutricional con IA
         </div>
         <h1 class="hero-premium__title">
@@ -33,7 +33,7 @@ export function renderHomePage(root) {
 
         <div class="hero-premium__stats">
           <div class="stat-item">
-            <div class="stat-icon"><i class="fas fa-users-medical"></i></div>
+            <div class="stat-icon"><i class="fas fa-heart-pulse"></i></div>
             <div class="stat-number">15,247</div>
             <div class="stat-label">Vidas Transformadas</div>
           </div>
@@ -43,7 +43,7 @@ export function renderHomePage(root) {
             <div class="stat-label">Frutas Analizadas</div>
           </div>
           <div class="stat-item">
-            <div class="stat-icon"><i class="fas fa-robot"></i></div>
+            <div class="stat-icon"><i class="fas fa-brain-circuit"></i></div>
             <div class="stat-number">24/7</div>
             <div class="stat-label">Dr. IA Activo</div>
           </div>
@@ -51,11 +51,11 @@ export function renderHomePage(root) {
 
         <div class="hero-premium__actions">
           <a class="cta-button-premium pulse-cta" href="#/registro">
-            <i class="fas fa-rocket"></i>
+            <i class="fas fa-user-plus"></i>
             Comenzar Gratis Ahora
           </a>
           <a class="btn-link-premium" href="#/login">
-            <i class="fas fa-sign-in-alt"></i>
+            <i class="fas fa-right-to-bracket"></i>
             Ya soy miembro →
           </a>
         </div>
@@ -71,7 +71,7 @@ export function renderHomePage(root) {
               100% Orgánico
             </span>
             <span class="trust-badge">
-              <i class="fas fa-award"></i>
+              <i class="fas fa-certificate"></i>
               Calidad Certificada
             </span>
           </div>
@@ -84,7 +84,7 @@ export function renderHomePage(root) {
             <video src="/video/video02.mp4" alt="Fruvi Premium Experience" autoplay muted loop playsinline class="hero-video-main"></video>
             <div class="showcase-overlay">
               <div class="nutrition-badge">
-                <i class="fas fa-heartbeat"></i>
+                <i class="fas fa-heart-pulse"></i>
                 <span>Potenciado con IA Médica</span>
               </div>
             </div>
@@ -101,7 +101,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y BENEFICIOS DE REGISTRO -->
   <section class="registration-benefits">
     <div class="container">
       <div class="benefits-header">
@@ -113,7 +112,7 @@ export function renderHomePage(root) {
       <div class="benefits-grid">
         <div class="benefit-card">
           <div class="benefit-icon">
-            <i class="fas fa-gifts"></i>
+            <i class="fas fa-layer-group"></i>
             <div class="icon-glow"></div>
           </div>
           <h3>Acceso Total a 5 Plataformas</h3>
@@ -126,7 +125,7 @@ export function renderHomePage(root) {
 
         <div class="benefit-card">
           <div class="benefit-icon">
-            <i class="fas fa-brain-circuit"></i>
+            <i class="fas fa-microchip"></i>
             <div class="icon-glow"></div>
           </div>
           <h3>IA que Aprende de Ti</h3>
@@ -178,7 +177,7 @@ export function renderHomePage(root) {
 
         <div class="benefit-card">
           <div class="benefit-icon">
-            <i class="fas fa-shield-halved"></i>
+            <i class="fas fa-shield-check"></i>
             <div class="icon-glow"></div>
           </div>
           <h3>Seguridad Médica Garantizada</h3>
@@ -192,7 +191,7 @@ export function renderHomePage(root) {
 
       <div class="benefits-cta">
         <a href="#/registro" class="cta-button-large">
-          <i class="fas fa-star-shooting"></i>
+          <i class="fas fa-sparkles"></i>
           Crear Mi Cuenta Gratis Ahora
         </a>
         <p class="cta-subtitle">⚡ Sin tarjeta de crédito • Activación en 30 segundos • Cancela cuando quieras</p>
@@ -200,13 +199,12 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y PLATAFORMA #1: TIENDA PREMIUM -->
   <section class="platform-section platform-tienda">
     <div class="container">
       <div class="platform-content">
         <div class="platform-text">
           <div class="platform-badge">
-            <i class="fas fa-store-alt"></i>
+            <i class="fas fa-store"></i>
             Plataforma 1 de 5
           </div>
           <h2>🛒 Tienda Premium de Frutas</h2>
@@ -216,23 +214,23 @@ export function renderHomePage(root) {
           
           <div class="platform-features">
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Filtros Inteligentes:</strong> Busca por categoría, origen geográfico, rango de precio, calificación de clientes y valores nutricionales específicos</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Reseñas Verificadas:</strong> Lee opiniones reales de más de 12,000 clientes con fotos de productos recibidos y calificaciones detalladas</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Análisis Nutricional:</strong> Información completa por cada 100g: calorías, macros, vitaminas, minerales y fitonutrientes</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Carrito Inteligente con IA:</strong> Sugerencias automáticas basadas en tu historial y objetivos de salud personalizados</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Checkout Ultrarrápido:</strong> Paga con tarjeta, transferencia o billetera digital en menos de 60 segundos con máxima seguridad</span>
             </div>
           </div>
@@ -275,7 +273,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y PLATAFORMA #2: FRUVIBOX -->
   <section class="platform-section platform-boxes">
     <div class="container">
       <div class="platform-content platform-content--reverse">
@@ -330,23 +327,23 @@ export function renderHomePage(root) {
           
           <div class="platform-features">
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>12+ Cajas Temáticas:</strong> Tropical, Energía Vital, Antioxidante, Detox, Inmune Boost, Fitness Pro, Keto Friendly, y más opciones especializadas</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>100% Personalizable:</strong> Indica alergias, frutas favoritas o que prefieres evitar. La IA ajusta cada caja automáticamente</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Frecuencia Flexible:</strong> Elige entrega semanal, quincenal o mensual. Pausa o cancela cuando quieras sin penalización</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Sorpresas Exclusivas:</strong> Cada caja incluye 1-2 frutas exóticas o de temporada que no están en la tienda regular</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Descuentos Automáticos:</strong> Ahorra hasta 25% con suscripciones recurrentes comparado con compras individuales</span>
             </div>
           </div>
@@ -367,13 +364,12 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y PLATAFORMA #3: FRUSHAKE IA -->
   <section class="platform-section platform-tienda">
     <div class="container">
       <div class="platform-content">
         <div class="platform-text">
           <div class="platform-badge">
-            <i class="fas fa-blender"></i>
+            <i class="fas fa-blender-phone"></i>
             Plataforma 3 de 5
           </div>
           <h2>🥤 Frushake IA - Recetas Inteligentes</h2>
@@ -383,23 +379,23 @@ export function renderHomePage(root) {
           
           <div class="platform-features">
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Recetas Personalizadas por IA:</strong> El algoritmo crea batidos únicos según tu perfil biométrico, nivel de actividad y metas de salud</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Información Nutricional Completa:</strong> Cada receta muestra macros, calorías, vitaminas, minerales y horario óptimo de consumo</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Filtros Avanzados:</strong> Busca por objetivo (energía, recovery, inmunidad), tiempo de preparación, calorías o ingredientes disponibles</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Modo Compra Rápida:</strong> Agrega todos los ingredientes de una receta al carrito con un solo clic</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Videos Paso a Paso:</strong> Aprende técnicas profesionales de preparación con videos HD y tips de chefs especializados</span>
             </div>
           </div>
@@ -442,7 +438,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y PLATAFORMA #4: NUTRICIÓN IA -->
   <section class="platform-section platform-boxes">
     <div class="container">
       <div class="platform-content platform-content--reverse">
@@ -470,7 +465,7 @@ export function renderHomePage(root) {
 
         <div class="platform-text">
           <div class="platform-badge">
-            <i class="fas fa-chart-mixed"></i>
+            <i class="fas fa-chart-pie"></i>
             Plataforma 4 de 5
           </div>
           <h2>🍎 Nutrición IA - Análisis Completo</h2>
@@ -480,23 +475,23 @@ export function renderHomePage(root) {
           
           <div class="platform-features">
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Base de Datos Médica:</strong> Información nutricional por 100g de 520+ frutas con datos del USDA, OMS y estudios científicos peer-reviewed</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Comparador Inteligente:</strong> Compara hasta 5 frutas simultáneamente en calorías, vitaminas, minerales, antioxidantes y fitonutrientes</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Calculadora de Porciones:</strong> Ajusta cantidades automáticamente según tus necesidades calóricas y objetivos nutricionales diarios</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Alertas de Salud:</strong> Recibe advertencias sobre interacciones con medicamentos o condiciones médicas específicas</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Reportes Visuales:</strong> Gráficos interactivos y dashboards para entender tu consumo nutricional de forma intuitiva</span>
             </div>
           </div>
@@ -517,7 +512,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y PLATAFORMA #5: DR. IA 24/7 -->
   <section class="platform-section platform-tienda">
     <div class="container">
       <div class="platform-content">
@@ -533,23 +527,23 @@ export function renderHomePage(root) {
           
           <div class="platform-features">
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Consultas Ilimitadas:</strong> Haz todas las preguntas que necesites sobre nutrición, frutas, dietas y salud sin límite de mensajes</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Respuestas Instantáneas:</strong> El Dr. IA responde en menos de 3 segundos con información médica respaldada por estudios científicos</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Planes Personalizados:</strong> Recibe planes alimenticios semanales adaptados a tus condiciones médicas, alergias y preferencias</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Modo de Emergencia:</strong> Consultas urgentes sobre reacciones alérgicas, interacciones o dudas médicas críticas con respuesta priorizada</span>
             </div>
             <div class="feature-item">
-              <i class="fas fa-check-double"></i>
+              <i class="fas fa-circle-check"></i>
               <span><strong>Historial Médico:</strong> Todas las conversaciones se guardan de forma segura y encriptada para seguimiento continuo</span>
             </div>
           </div>
@@ -592,7 +586,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y GARANTÍAS Y SEGURIDAD -->
   <section class="guarantees-section">
     <div class="container">
       <div class="guarantees-header">
@@ -636,7 +629,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y TESTIMONIOS -->
   <section class="testimonials-premium">
     <div class="container">
       <div class="testimonials-header">
@@ -715,7 +707,6 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y FAQ ELEGANTE -->
   <section class="faq-elegant">
     <div class="container">
       <div class="faq-header">
@@ -788,12 +779,11 @@ export function renderHomePage(root) {
     </div>
   </section>
 
-  <- Estructura limpia y CTA FINAL CON URGENCIA -->
   <section class="final-cta-urgent">
     <div class="container">
       <div class="cta-urgent-content">
         <div class="cta-urgent-badge">
-          <i class="fas fa-fire"></i>
+          <i class="fas fa-bolt"></i>
           Oferta de Lanzamiento
         </div>
         <h2>Únete Hoy y Recibe Beneficios Exclusivos</h2>
@@ -837,7 +827,7 @@ export function renderHomePage(root) {
 
         <div class="cta-urgent-actions">
           <a href="#/registro" class="cta-button-final">
-            <i class="fas fa-rocket"></i>
+            <i class="fas fa-star"></i>
             Crear Mi Cuenta Gratis Ahora
           </a>
           <p class="cta-urgent-note">
