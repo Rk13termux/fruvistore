@@ -70,24 +70,35 @@ export function renderDrLaraPage(root) {
   const startChatBtn = root.querySelector('#startChatBtn');
   const chatSection = root.querySelector('#chatSection') || root.querySelector('.dr-lara-grok-chat');
 
-  // Graceful logo loader with fallback sequence
+  // Graceful logo loader with fallback sequence using Vite base URL
   (function loadDrLaraLogo() {
     const logoEl = root.querySelector('.dr-lara-grok-logo');
     if (!logoEl) return;
+    const basePath = (import.meta.env?.BASE_URL || window.__ENV__?.BASE_URL || '/');
+    // Auto-detect base for GitHub Pages (e.g., '/fruvistore/') from window.location
+    const autoBase = (() => {
+      try {
+        const parts = window.location.pathname.split('/');
+        if (parts.length > 1 && parts[1]) {
+          return `/${parts[1]}/`;
+        }
+      } catch (e) { /* ignore */ }
+      return '/';
+    })();
+    const ts = new Date().getTime(); // cache-buster so new deployments fetch new image
     const candidates = [
-      '/public/logolara.png',
-      '/public/logo.png',
-      '/public/logolara.png',
-      'public/logolara.png',
-      './public/logolara.png',
-      '/images/logolara.png',
-      '/images/logo.png',
-      './logolara.png',
-      'logolara.png',
-      '/logolara.png',
-      '/logo.png',
-      '/assets/logolara.png',
-      'assets/logolara.png'
+      `${basePath}logolara.png?v=${ts}`,
+      `${basePath}logo.png?v=${ts}`,
+      `${autoBase}logolara.png?v=${ts}`,
+      `${autoBase}logo.png?v=${ts}`,
+      `${basePath}assets/logolara.png?v=${ts}`,
+      `${basePath}images/logolara.png?v=${ts}`,
+      `${basePath}public/logolara.png?v=${ts}`,
+      `/logolara.png?v=${ts}`,
+      `${autoBase}assets/logolara.png?v=${ts}`,
+      `/logo.png?v=${ts}`,
+      `/assets/logolara.png?v=${ts}`,
+      '/public/logolara.png', // fallback to absolute in case a specific build puts it here
     ];
     let idx = 0;
     function tryNext() {
