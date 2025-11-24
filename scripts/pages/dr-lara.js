@@ -39,7 +39,7 @@ export function renderDrLaraPage(root) {
   root.innerHTML = `
   <section class="dr-lara-grok-chat">
     <div class="dr-lara-grok-header" id="drLaraHeader">
-      <img src="/public/logolara.png" alt="Dra. Lara" class="dr-lara-grok-logo">
+      <img src="" alt="Dra. Lara" class="dr-lara-grok-logo" id="drLaraLogo">
       <h1 class="dr-lara-grok-title">Dr.Lara</h1>
     </div>
     <div class="dr-lara-grok-messages" id="chatMessages"></div>
@@ -67,6 +67,39 @@ export function renderDrLaraPage(root) {
   const form = root.querySelector('#chatForm');
   const input = root.querySelector('#userInput');
   const faqBtns = root.querySelectorAll('.dr-lara-grok-action-btn');
+  const startChatBtn = root.querySelector('#startChatBtn');
+  const chatSection = root.querySelector('#chatSection') || root.querySelector('.dr-lara-grok-chat');
+
+  // Graceful logo loader with fallback sequence
+  (function loadDrLaraLogo() {
+    const logoEl = root.querySelector('.dr-lara-grok-logo');
+    if (!logoEl) return;
+    const candidates = [
+      '/public/logolara.png',
+      '/public/logo.png',
+      '/public/logolara.png',
+      'public/logolara.png',
+      './public/logolara.png',
+      '/images/logolara.png',
+      '/images/logo.png',
+      './logolara.png',
+      'logolara.png',
+      '/logolara.png',
+      '/logo.png',
+      '/assets/logolara.png',
+      'assets/logolara.png'
+    ];
+    let idx = 0;
+    function tryNext() {
+      if (idx >= candidates.length) return;
+      const src = candidates[idx++];
+      const test = new Image();
+      test.onload = () => { logoEl.src = src; };
+      test.onerror = () => { tryNext(); };
+      test.src = src;
+    }
+    tryNext();
+  })();
 
   // Animación tipo Grok para respuestas
   function showAnimatedResponse(text, { replaceNode = null } = {}) {
@@ -277,10 +310,11 @@ export function renderDrLaraPage(root) {
     }
   }
 
-  // Handle start chat
-  startChatBtn.addEventListener('click', async () => {
+  // Handle start chat (guarded - not all variants contain a start button)
+  if (startChatBtn) {
+    startChatBtn.addEventListener('click', async () => {
     root.querySelector('.dr-lara-intro').style.display = 'none';
-    chatSection.style.display = 'grid';
+    if (chatSection) chatSection.style.display = 'grid';
 
     await loadUserStatus();
     animateCreditsUpdate();
@@ -288,7 +322,8 @@ export function renderDrLaraPage(root) {
     // Personalized greeting with knowledge base
     let greeting = await getPersonalizedGreeting();
     setTimeout(() => appendMessage('assistant', greeting), 300);
-  });
+    });
+  }
 
   // Get personalized greeting from knowledge base
   async function getPersonalizedGreeting() {
