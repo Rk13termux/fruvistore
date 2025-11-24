@@ -98,6 +98,7 @@ body:has(.hero-optimized) {
   border-radius: 50px;
   padding: 2px;
   background: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -130,13 +131,13 @@ body:has(.hero-optimized) {
 
 /* Badge - Tienda (Dorado/Naranja) */
 .hero-badge-premium:not(.boxes-badge):not(.recipes-badge) {
-  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #E8D7A3 100%);
   color: #000;
-  box-shadow: 0 4px 20px rgba(246, 211, 101, 0.4);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
 }
 
 .hero-badge-premium:not(.boxes-badge):not(.recipes-badge):hover {
-  box-shadow: 0 6px 28px rgba(246, 211, 101, 0.5);
+  box-shadow: 0 6px 28px rgba(212, 175, 55, 0.4);
 }
 
 /* Badge - FruviBox (Verde/Turquesa) */

@@ -510,7 +510,7 @@ body {
 }
 
 .stat-icon.orange {
-    background: linear-gradient(135deg, #ff9b40, #ff7b20);
+    background: linear-gradient(135deg, #D4AF37, #E8D7A3);
     color: white;
 }
 
@@ -1846,16 +1846,16 @@ select.form-control {
 .warning-box,
 .alert-warning,
 .message-warning {
-    background: linear-gradient(135deg, rgba(255, 155, 64, 0.15), rgba(255, 155, 64, 0.05));
-    border: 1px solid rgba(255, 155, 64, 0.3);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(232, 215, 163, 0.08));
+    border: 1px solid rgba(212, 175, 55, 0.3);
     color: #e9eef5;
 }
 
 .warning-box::before,
 .alert-warning::before,
 .message-warning::before {
-    background: linear-gradient(180deg, var(--warning), #e88a30);
-    box-shadow: 0 0 20px rgba(255, 155, 64, 0.5);
+    background: linear-gradient(180deg, #D4AF37, #E8D7A3);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
 }
 
 .warning-box i,
@@ -2142,14 +2142,14 @@ select.form-control {
 
 /* Botón de advertencia - Naranja */
 .btn-sm.btn-warning {
-    background: linear-gradient(135deg, var(--warning), #ffb366);
+    background: linear-gradient(135deg, #D4AF37, #E8D7A3);
     color: #000000;
-    border: 1px solid rgba(255, 155, 64, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 .btn-sm.btn-warning:hover {
-    background: linear-gradient(135deg, #ffb366, var(--warning));
-    box-shadow: 0 4px 12px rgba(255, 155, 64, 0.4);
+    background: linear-gradient(135deg, #E8D7A3, #D4AF37);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
     transform: translateY(-2px);
 }
 

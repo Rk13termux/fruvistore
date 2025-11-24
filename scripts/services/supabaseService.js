@@ -1,3 +1,33 @@
+// ================== FUNCIONES PARA BASE DE DATOS AI DR.LARA ==================
+// Consulta tabla company_knowledge
+export async function getCompanyKnowledge() {
+  if (!usersClient) await initializeDatabases();
+  const { data, error } = await usersClient
+    .from('company_knowledge')
+    .select('*');
+  if (error) throw error;
+  return data;
+}
+
+// Consulta tabla ai_knowledge_base
+export async function getAIKnowledgeBase() {
+  if (!usersClient) await initializeDatabases();
+  const { data, error } = await usersClient
+    .from('ai_knowledge_base')
+    .select('*');
+  if (error) throw error;
+  return data;
+}
+
+// Consulta tabla ai_forbidden_responses
+export async function getForbiddenResponses() {
+  if (!usersClient) await initializeDatabases();
+  const { data, error } = await usersClient
+    .from('ai_forbidden_responses')
+    .select('*');
+  if (error) throw error;
+  return data;
+}
 // Supabase Service: Database Distributor and API Manager
 // ============================================================================
 // Este servicio centraliza el acceso a todas las bases de datos de Supabase

@@ -341,12 +341,12 @@ body {
    NAVEGACIÓN - COLORES ESPECÍFICOS POR PÁGINA
    ========================================================= */
 
-/* Tienda - Naranja/Turquesa */
+/* Tienda - Dorado/Turquesa */
 .nav-link[href="#/tienda"]::before {
   background: linear-gradient(135deg, 
     rgba(78, 205, 196, 0.15), 
-    rgba(246, 211, 101, 0.15),
-    rgba(253, 160, 133, 0.15)
+    rgba(212, 175, 55, 0.15),
+    rgba(232, 215, 163, 0.15)
   );
 }
 
@@ -358,7 +358,7 @@ body {
 .nav-link[href="#/tienda"].active {
   background: linear-gradient(135deg, 
     rgba(78, 205, 196, 0.2), 
-    rgba(246, 211, 101, 0.15)
+    rgba(212, 175, 55, 0.15)
   );
   color: #4ecdc4;
   box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
@@ -366,7 +366,7 @@ body {
 
 .nav-link[href="#/tienda"].active i,
 .nav-link[href="#/tienda"]:hover i {
-  color: #f6d365;
+  color: #D4AF37;
 }
 
 /* FruviBox - Verde Lima/Turquesa */
@@ -660,12 +660,12 @@ body {
    MENÚ MÓVIL - COLORES ESPECÍFICOS POR PÁGINA
    ========================================================= */
 
-/* Tienda - Naranja/Turquesa */
+/* Tienda - Dorado/Turquesa */
 .mobile-menu-nav a[href="#/tienda"]::before {
   background: linear-gradient(90deg, 
     transparent, 
     rgba(78, 205, 196, 0.2),
-    rgba(246, 211, 101, 0.15),
+    rgba(212, 175, 55, 0.15),
     transparent
   );
 }
@@ -681,7 +681,7 @@ body {
 .mobile-menu-nav a[href="#/tienda"] i {
   background: linear-gradient(135deg, 
     rgba(78, 205, 196, 0.2), 
-    rgba(246, 211, 101, 0.15)
+    rgba(212, 175, 55, 0.15)
   );
   color: #4ecdc4;
 }
@@ -690,7 +690,7 @@ body {
   box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
   background: linear-gradient(135deg, 
     rgba(78, 205, 196, 0.3), 
-    rgba(246, 211, 101, 0.2)
+    rgba(212, 175, 55, 0.2)
   );
 }
 

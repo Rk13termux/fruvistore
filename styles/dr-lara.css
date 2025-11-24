@@ -1,3 +1,169 @@
+/* Animación de respuesta tipo Grok */
+.dr-lara-grok-response {
+  background: #181818;
+  color: #fff;
+  font-size: 1.18rem;
+  font-family: 'Inter', sans-serif;
+  border-radius: 18px;
+  padding: 24px 32px;
+  margin: 32px auto 0 auto;
+  max-width: calc(var(--dr-lara-chat-max-width) - 64px);
+  width: 100%;
+  box-shadow: 0 2px 16px rgba(212,175,55,0.10);
+  min-height: 64px;
+  position: relative;
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.dr-lara-grok-cursor {
+  display: inline-block;
+  width: 1ch;
+  color: #D4AF37;
+  animation: blink-cursor 1s steps(2) infinite;
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+/* ==================== CHAT TIPO GROK DR.LARA ==================== */
+.dr-lara-grok-chat {
+  background: transparent;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* center the header vertically within the page */
+  padding-top: var(--dr-lara-header-offset);
+}
+
+.dr-lara-grok-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: calc(var(--dr-lara-chat-gap) + 12px);
+  transform: translateY(6vh); /* nudge the header down a bit while centered */
+  text-align: center;
+  width: 100%;
+}
+
+.dr-lara-grok-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(212,175,55,0.15);
+  margin-bottom: 18px;
+}
+.dr-lara-grok-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #D4AF37;
+  letter-spacing: 1px;
+  margin: 0;
+  text-align: center;
+}
+
+.dr-lara-grok-inputbox {
+  width: 100%;
+  max-width: var(--dr-lara-chat-max-width);
+  margin: 0 auto var(--dr-lara-chat-gap) auto;
+  display: flex;
+  justify-content: center;
+}
+
+.dr-lara-grok-form {
+  width: 100%;
+  max-width: var(--dr-lara-chat-max-width);
+  display: flex;
+  align-items: center;
+  background: #181818;
+  border-radius: 32px;
+  box-shadow: 0 2px 12px rgba(212,175,55,0.08);
+  padding: 8px 16px;
+}
+
+.dr-lara-grok-form textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  font-family: 'Inter', sans-serif;
+  padding: 12px 0 12px 8px;
+  resize: none;
+  outline: none;
+  min-height: 48px;
+  max-height: 120px;
+}
+
+.dr-lara-grok-form textarea::placeholder {
+  color: #aaa;
+  font-size: 1.2rem;
+}
+
+.dr-lara-grok-send-btn {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #D4AF37, #E8D7A3);
+  color: #181818;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-left: 12px;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 6px 20px rgba(212,175,55,0.18);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.dr-lara-grok-send-btn:hover {
+  box-shadow: 0 12px 34px rgba(212,175,55,0.28);
+  transform: translateY(-2px);
+}
+
+.dr-lara-grok-send-btn:active { transform: translateY(0); box-shadow: 0 6px 20px rgba(212,175,55,0.22); }
+.dr-lara-grok-send-btn:focus-visible { outline: 3px solid rgba(80,200,120,0.22); outline-offset: 4px; }
+
+.dr-lara-grok-actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.dr-lara-grok-action-btn {
+  background: #181818;
+  color: #D4AF37;
+  border: 1.5px solid #D4AF37;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dr-lara-grok-action-btn:hover {
+  background: #D4AF37;
+  color: #181818;
+}
+
+.dr-lara-grok-messages {
+  width: 100%;
+  max-width: var(--dr-lara-chat-max-width);
+  margin: 0 auto;
+  min-height: 120px;
+  color: #fff;
+  font-size: 1.15rem;
+  font-family: 'Inter', sans-serif;
+  padding-top: 16px;
+  padding-bottom: calc(var(--dr-lara-chat-gap) + var(--dr-lara-input-height));
+}
 /* =====================================================
    DR. LARA - NUTRICIONISTA IA PREMIUM
    Diseño Minimalista Estilo Apple/Nespresso 2025
@@ -34,6 +200,12 @@
   --lara-shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
   --lara-shadow-md: 0 4px 16px rgba(0,0,0,0.08);
   --lara-shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  /* Dr. Lara chat sizing */
+  --dr-lara-chat-max-width: 1500px;
+  --dr-lara-chat-gap: 28px;
+  --dr-lara-input-height: 72px;
+  /* Header vertical offset */
+  --dr-lara-header-offset: 12vh; /* adjust for visual center */
 }
 
 /* ==================== INTRO DR. LARA ==================== */
@@ -431,7 +603,7 @@
 
 .dr-lara-chatgpt__messages {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--dr-lara-chat-max-width);
   margin: 0 auto;
   padding: var(--lara-space-lg) var(--lara-space-md) var(--lara-space-md) var(--lara-space-md);
   display: flex;
@@ -442,11 +614,12 @@
   border-radius: 0;
   box-shadow: none;
   overflow: visible;
+  padding-bottom: calc(var(--dr-lara-chat-gap) + var(--dr-lara-input-height));
 }
 
 .dr-lara-chatgpt__inputbar {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--dr-lara-chat-max-width);
   margin: 0 auto;
   padding: var(--lara-space-md) 0;
   background: var(--lara-dark);
@@ -496,8 +669,8 @@
 }
 
 .dr-lara-send-btn {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
   color: var(--lara-white);
   border: none;
@@ -508,17 +681,19 @@
   justify-content: center;
   font-size: 1.3rem;
   transition: all 0.3s;
-  box-shadow: 0 4px 16px rgba(212,175,55,0.15);
+  box-shadow: 0 8px 28px rgba(212,175,55,0.16);
 }
 
 .dr-lara-send-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 32px rgba(212,175,55,0.22);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 18px 46px rgba(212,175,55,0.26);
 }
+.dr-lara-send-btn:active { transform: translateY(0) scale(1); box-shadow: 0 8px 28px rgba(212,175,55,0.18); }
+.dr-lara-send-btn:focus-visible { outline: 3px solid rgba(80,200,120,0.22); outline-offset: 4px; }
 
 .dr-lara-chatgpt__creditsbar {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--dr-lara-chat-max-width);
   margin: 0 auto;
   padding: var(--lara-space-xs) 0 var(--lara-space-xs) 0;
   display: flex;
@@ -552,7 +727,7 @@
 
 .dr-lara-chatgpt__disclaimer {
   width: 100%;
-  max-width: 900px;
+  max-width: var(--dr-lara-chat-max-width);
   margin: 0 auto;
   padding: var(--lara-space-xs) var(--lara-space-md);
   display: flex;
@@ -569,6 +744,14 @@
   margin-bottom: var(--lara-space-md);
   opacity: 0;
   animation: fadeInUp 0.5s ease forwards;
+}
+
+.dr-lara-msg {
+  justify-content: center;
+  width: 100%;
+  max-width: calc(var(--dr-lara-chat-max-width) - 64px);
+  box-sizing: border-box;
+  margin: 0 auto var(--lara-space-md) auto;
 }
 
 @keyframes fadeInUp {
@@ -592,6 +775,7 @@
   flex-shrink: 0;
   font-size: 1.5rem;
 }
+.dr-lara-msg__avatar { display: none; }
 
 .dr-lara-msg--user .dr-lara-msg__avatar {
   background: linear-gradient(135deg, var(--lara-emerald), var(--lara-emerald-light));
@@ -609,6 +793,10 @@
   border-radius: 16px;
   line-height: 1.6;
   font-size: 1rem;
+  max-width: calc(var(--dr-lara-chat-max-width) - 64px); /* leave room for container padding */
+  width: auto;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .dr-lara-msg--user .dr-lara-msg__bubble {
@@ -622,6 +810,99 @@
   color: var(--lara-white);
   border: 1px solid var(--lara-gold-light);
   box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
+}
+
+/* Enhanced HTML response styling */
+.dr-lara-response-html p {
+  margin: 0 0 8px 0;
+  line-height: 1.7;
+}
+
+.dr-lara-response-html h2,
+.dr-lara-response-html h3,
+.dr-lara-response-html h4 {
+  color: var(--lara-gold);
+  margin: 0 0 8px 0;
+  font-family: var(--lara-font-title);
+}
+
+.dr-lara-response-html .dr-lara-list {
+  padding-left: 18px;
+}
+.dr-lara-response-html .dr-lara-list li {
+  margin: 6px 0;
+}
+
+.dr-lara-response-html .dr-lara-list li.product-item {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+  border: 1px solid rgba(212,175,55,0.06);
+  display: block;
+}
+.dr-lara-response-html .dr-lara-list li.product-item .product-name {
+  display: block;
+  font-weight: 800;
+  color: var(--lara-white);
+}
+.dr-lara-response-html .dr-lara-list li.product-item .product-details {
+  display: block;
+  color: var(--lara-text-secondary);
+  margin-top: 4px;
+}
+
+.dr-lara-response-html .product-card {
+  display: block;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+  border: 1px solid rgba(212, 175, 55, 0.12);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  margin: 10px 0;
+}
+
+.dr-lara-response-html .product-card .product-name {
+  font-weight: 800;
+  color: var(--lara-white);
+}
+.dr-lara-response-html .product-card .product-price { color: var(--lara-gold); font-weight: 900; }
+.dr-lara-response-html .product-card .product-stock { color: var(--lara-text-secondary); font-weight: 600; font-size: 0.95rem; }
+
+.dr-lara-response-html a {
+  color: var(--lara-gold);
+  text-decoration: underline;
+}
+
+.dr-lara-response-html .ai-cta {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, var(--lara-gold), var(--lara-gold-light));
+  color: var(--lara-black);
+  border-radius: 24px;
+  text-decoration: none;
+  font-weight: 800;
+  margin-top: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  cursor: pointer;
+  display: inline-flex;
+}
+
+.dr-lara-response-html .ai-cta:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 16px 40px rgba(0,0,0,0.40); }
+.dr-lara-response-html .ai-cta:active { transform: translateY(0) scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.30); }
+.dr-lara-response-html .ai-cta:focus-visible { outline: 3px solid rgba(80,200,120,0.22); outline-offset: 4px; }
+
+.dr-lara-response-html .ai-cta i { font-size: 1rem; }
+
+.dr-lara-response-html code {
+  background: rgba(255,255,255,0.04);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-family: monospace;
 }
 
 /* Typing Indicator */
@@ -697,7 +978,7 @@
   display: flex;
   gap: var(--lara-space-sm);
   align-items: flex-end;
-  max-width: 900px;
+  max-width: var(--dr-lara-chat-max-width);
   margin: 0 auto;
 }
 
@@ -820,5 +1101,13 @@
   
   .trust-indicators {
     flex-direction: column;
+  }
+}
+
+/* Make the chat width fluid on smaller screens */
+@media (max-width: 768px) {
+  :root {
+    --dr-lara-chat-max-width: calc(100% - 48px);
+    --dr-lara-chat-gap: 20px;
   }
 }

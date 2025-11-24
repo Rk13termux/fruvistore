@@ -12,19 +12,19 @@ body {
 }
 
 /* ============================================
-   TIENDA - Naranja/Dorado/Verde Agua
+   TIENDA - Dorado/Verde Agua
    ============================================ */
 .store .store,
 body[data-page="tienda"] {
   --page-primary: #4ecdc4;
   --page-primary-rgb: 78, 205, 196;
-  --page-secondary: #f6d365;
-  --page-secondary-rgb: 246, 211, 101;
-  --page-accent: #fda085;
-  --page-accent-rgb: 253, 160, 133;
-  --page-gradient-start: #f6d365;
-  --page-gradient-end: #fda085;
-  --page-gradient-alt: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #f6d365 100%);
+  --page-secondary: #D4AF37;
+  --page-secondary-rgb: 212, 175, 55;
+  --page-accent: #E8D7A3;
+  --page-accent-rgb: 232, 215, 163;
+  --page-gradient-start: #D4AF37;
+  --page-gradient-end: #E8D7A3;
+  --page-gradient-alt: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #D4AF37 100%);
 }
 
 /* Aplicar colores en la tienda */

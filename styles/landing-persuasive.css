@@ -4,12 +4,12 @@
 
 /* ==================== VARIABLES ==================== */
 :root {
-  --gradient-primary: linear-gradient(135deg, #ff9b40 0%, #ffc371 50%, #ff9b40 100%);
-  --gradient-secondary: linear-gradient(135deg, #8bda01 0%, #a8e063 50%, #8bda01 100%);
+  --gradient-primary: linear-gradient(135deg, #FFD700 0%, #FFF8DC 50%, #FFD700 100%);
+  --gradient-secondary: linear-gradient(135deg, #8bda01 0%, #FFF8DC 50%, #FFD700 100%);
   --gradient-dark: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
   --gradient-overlay: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 100%);
   --shadow-elegant: 0 20px 60px rgba(0,0,0,0.5);
-  --shadow-glow: 0 0 40px rgba(255,155,64,0.4);
+  --shadow-glow: 0 0 40px rgba(255, 215, 0, 0.4);
   --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

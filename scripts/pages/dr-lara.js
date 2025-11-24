@@ -1,185 +1,63 @@
 // DR. LARA - Nutricionista IA Premium con Base de Conocimiento Completa
-import { chatCompletionWithHistory } from '../services/groqService.js';
-import { getUsersClient } from '../services/supabaseService.js';
+import { chatCompletionWithHistory, chatCompletionWithDatabase } from '../services/groqService.js';
+import { getCompanyKnowledge, getAIKnowledgeBase, getForbiddenResponses, getProductsClient } from '../services/supabaseService.js';
 
 export function renderDrLaraPage(root) {
-  // Full page chat layout con introducción profesional
+    // Cargar datos de la base de datos AI al iniciar el chat
+    let companyKnowledge = [];
+    let aiKnowledgeBase = [];
+    let forbiddenResponses = [];
+    let productsInfo = [];
+
+    async function loadAIKnowledge() {
+      try {
+        companyKnowledge = await getCompanyKnowledge();
+        aiKnowledgeBase = await getAIKnowledgeBase();
+        forbiddenResponses = await getForbiddenResponses();
+          // Load some key products from the products database for realtime info
+          try {
+            const productsClient = getProductsClient();
+            const { data: products } = await productsClient
+              .from('current_products')
+              .select('id, name, category, priceKg, stock, organic')
+              .order('featured', { ascending: false })
+              .limit(8);
+            productsInfo = products || [];
+          } catch (e) {
+            console.log('No se pudo cargar información de productos en loadAIKnowledge:', e?.message || e);
+            productsInfo = [];
+          }
+        console.log('✅ Datos AI cargados:', { companyKnowledge, aiKnowledgeBase, forbiddenResponses });
+      } catch (err) {
+        console.error('❌ Error cargando datos AI:', err);
+      }
+    }
+
+    // Llama a la carga de datos al iniciar la página
+    loadAIKnowledge();
+  // Chat tipo Grok: logo centrado, título Dr.Lara, input grande, fondo negro
   root.innerHTML = `
-  <!-- Dr. Lara Introduction -->
-  <section class="dr-lara-intro">
-    <div class="container">
-      <div class="dr-lara-intro__content">
-        <div class="dr-lara-intro__text">
-          <div class="dr-lara-header">
-            <div class="dr-lara-logo">
-              <i class="fas fa-user-md"></i>
-            </div>
-            <div class="dr-lara-info">
-              <h1 class="dr-lara-title">Dra. Lara IA</h1>
-              <p class="dr-lara-specialty">Nutricionista Especializada en Frutas Premium</p>
-              <div class="user-status" id="userStatusBadge">
-                <span class="status-free">FREE</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pain Points Section -->
-          <div class="pain-points">
-            <div class="pain-point">
-              <i class="fas fa-exclamation-triangle"></i>
-              <span>¿Cansado de dietas que no funcionan?</span>
-            </div>
-            <div class="pain-point">
-              <i class="fas fa-weight"></i>
-              <span>¿Problemas con el peso y la salud?</span>
-            </div>
-            <div class="pain-point">
-              <i class="fas fa-question-circle"></i>
-              <span>¿Confundido con tanta información nutricional?</span>
-            </div>
-          </div>
-
-          <!-- Solutions Section -->
-          <div class="solutions">
-            <h2>¡La Solución Está Aquí!</h2>
-            <div class="solution-features">
-              <div class="feature">
-                <i class="fas fa-user-md"></i>
-                <h3>Asesoramiento Profesional</h3>
-                <p>Consultas personalizadas con IA especializada en nutrición premium</p>
-              </div>
-              <div class="feature">
-                <i class="fas fa-apple-alt"></i>
-                <h3>Frutas Premium Colombianas</h3>
-                <p>Recomendaciones con productos reales de Fruvi</p>
-              </div>
-              <div class="feature">
-                <i class="fas fa-chart-line"></i>
-                <h3>Seguimiento Continuo</h3>
-                <p>Monitorea tu progreso y ajusta tu alimentación</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="credits-info" id="creditsInfo">
-            <div class="credits-display">
-              <i class="fas fa-coins"></i>
-              <span id="currentCredits">Cargando...</span>
-              <span class="credits-label">créditos disponibles</span>
-            </div>
-          </div>
-
-          <!-- Call to Action Buttons -->
-          <div class="cta-section">
-            <button class="cta-button dr-lara-start-chat primary-cta" id="startChatBtn">
-              <i class="fas fa-comments"></i>
-              ¡Comienza Tu Consulta Gratis!
-            </button>
-
-            <div class="secondary-ctas">
-              <a href="#/suscripcion" class="btn-premium">
-                <i class="fas fa-crown"></i>
-                Obtener Premium Ilimitado
-              </a>
-            </div>
-          </div>
-
-          <!-- Social Proof -->
-          <div class="social-proof">
-            <div class="trust-indicators">
-              <div class="trust-item">
-                <i class="fas fa-shield-alt"></i>
-                <span>Información Confidencial</span>
-              </div>
-              <div class="trust-item">
-                <i class="fas fa-brain"></i>
-                <span>IA Especializada</span>
-              </div>
-              <div class="trust-item">
-                <i class="fas fa-heart"></i>
-                <span>Enfoque en Salud</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Visual Profesional -->
-        <div class="dr-lara-intro__visual">
-          <div class="dr-lara-media">
-            <video 
-              class="dr-lara-video" 
-              autoplay 
-              loop 
-              muted 
-              playsinline
-              poster="/images/dr-lara-poster.jpg"
-            >
-              <source src="/video/dra-lara-intro.mp4" type="video/mp4">
-              <source src="/video/dra-lara-intro.webm" type="video/webm">
-              <!-- Fallback para navegadores sin soporte de video -->
-              <img src="/images/dr-lara-avatar.png" alt="Dra. Lara" class="dr-lara-image">
-            </video>
-            <div class="media-badge">
-              <i class="fas fa-user-md"></i> Experta en Nutrición
-            </div>
-          </div>
-        </div>
-      </div>
+  <section class="dr-lara-grok-chat">
+    <div class="dr-lara-grok-header" id="drLaraHeader">
+      <img src="/public/logolara.png" alt="Dra. Lara" class="dr-lara-grok-logo">
+      <h1 class="dr-lara-grok-title">Dr.Lara</h1>
     </div>
-  </section>
-
-  <!-- Chat Interface (hidden initially) -->
-  <section class="dr-lara-chatgpt medical-chat" id="chatSection" style="display: none;">
-    <main class="dr-lara-chatgpt__main">
-      <div class="container dr-lara-chatgpt__scroll" id="chatMessages" aria-live="polite"></div>
-    </main>
-
-    <footer class="dr-lara-chatgpt__input medical-input">
-      <!-- Credits Progress Bar -->
-      <div class="credits-progress-section" id="creditsProgressSection">
-        <div class="container">
-          <div class="credits-progress-container">
-            <div class="credits-progress-bar">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="credits-progress-info">
-              <span class="credits-current" id="progressCurrentCredits">0</span>
-              <span class="credits-separator">/</span>
-              <span class="credits-total" id="progressTotalCredits">25</span>
-              <span class="credits-label">créditos</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="container">
-        <form id="chatForm" class="dr-lara-chatgpt__form" autocomplete="off">
-          <textarea id="userInput" rows="1" placeholder="Describe tus objetivos de salud, preguntas sobre nutrición o frutas premium..." aria-label="Escribe tu consulta"></textarea>
-          <div class="dr-lara-chatgpt__actions">
-            <button type="submit" class="btn-primary dr-lara-send-btn medical-send-btn" id="sendBtn" title="Enviar consulta">
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </div>
-        </form>
-        <div class="credits-disclaimer">
-          <div class="disclaimer-item">
-            <i class="fas fa-coins"></i>
-            <span id="creditCostDisplay">Consulta básica: 1 crédito</span>
-          </div>
-          <div class="disclaimer-item">
-            <i class="fas fa-brain"></i>
-            <span>IA especializada en nutrición premium</span>
-          </div>
-          <div class="disclaimer-item">
-            <i class="fas fa-shield-alt"></i>
-            <span>Información confidencial</span>
-          </div>
-        </div>
-        <p class="dr-lara-chatgpt__hint medical-hint">
-          <i class="fas fa-info-circle"></i>
-          Esta es información nutricional informativa. Para diagnósticos médicos, consulta a tu médico tratante.
-        </p>
-      </div>
-    </footer>
+    <div class="dr-lara-grok-messages" id="chatMessages"></div>
+    <div class="dr-lara-grok-inputbox">
+      <form id="chatForm" class="dr-lara-grok-form" autocomplete="off">
+        <textarea id="userInput" rows="1" placeholder="¿Qué quieres saber?" aria-label="Escribe tu consulta"></textarea>
+        <button type="submit" class="dr-lara-grok-send-btn" id="sendBtn" title="Enviar consulta" aria-label="Enviar consulta">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
+    <div class="dr-lara-grok-actions">
+      <button class="dr-lara-grok-action-btn" data-question="¿Cuáles son los mejores alimentos para bajar de peso de forma saludable?">¿Alimentos para bajar de peso?</button>
+      <button class="dr-lara-grok-action-btn" data-question="¿Qué frutas colombianas tienen más antioxidantes y beneficios para la salud?">¿Frutas antioxidantes?</button>
+      <button class="dr-lara-grok-action-btn" data-question="¿Cómo puedo mejorar mi digestión con la alimentación diaria?">¿Mejorar digestión?</button>
+      <button class="dr-lara-grok-action-btn" data-question="¿Qué desayuno recomienda una nutricionista para tener energía todo el día?">¿Desayuno saludable?</button>
+      <button class="dr-lara-grok-action-btn" data-question="¿Cuántas veces al día debo comer para mantener un peso saludable?">¿Frecuencia de comidas?</button>
+    </div>
   </section>
   `;
 
@@ -188,8 +66,75 @@ export function renderDrLaraPage(root) {
   const messagesEl = root.querySelector('#chatMessages');
   const form = root.querySelector('#chatForm');
   const input = root.querySelector('#userInput');
-  const chatSection = root.querySelector('#chatSection');
-  const startChatBtn = root.querySelector('#startChatBtn');
+  const faqBtns = root.querySelectorAll('.dr-lara-grok-action-btn');
+
+  // Animación tipo Grok para respuestas
+  function showAnimatedResponse(text, { replaceNode = null } = {}) {
+    // Append an animated response bubble, or replace a given node if needed
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'dr-lara-grok-response';
+    if (replaceNode && replaceNode.parentNode) {
+      replaceNode.parentNode.replaceChild(msgDiv, replaceNode);
+    } else {
+      messagesEl.appendChild(msgDiv);
+    }
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    let i = 0;
+    // Ocultar header al responder y ajustar layout para que el chat se muestre desde arriba
+    const header = document.getElementById('drLaraHeader');
+    if (header) header.style.display = 'none';
+    const chatWrap = document.querySelector('.dr-lara-grok-chat');
+    if (chatWrap) chatWrap.style.justifyContent = 'flex-start';
+    function typeChar() {
+      if (i <= text.length) {
+        msgDiv.innerHTML = text.slice(0, i) + '<span class="dr-lara-grok-cursor">|</span>';
+        i++;
+        setTimeout(typeChar, 12 + Math.random() * 30);
+      } else {
+        // Convert markdown to HTML after the typing animation finishes and add styling
+        msgDiv.innerHTML = renderSafeMarkdown(text);
+        msgDiv.classList.add('dr-lara-response-html');
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    }
+    typeChar();
+    return msgDiv;
+  }
+
+  // Enviar pregunta frecuente al chat
+  faqBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const question = btn.getAttribute('data-question');
+      input.value = question;
+      form.dispatchEvent(new Event('submit', { bubbles: true }));
+    });
+  });
+
+  // Manejar envío de pregunta
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+    input.value = '';
+    const loadingBubble = showAnimatedResponse('Pensando...');
+    try {
+      // Llamada real a Groq/Dr.Lara (solo historial y pregunta)
+      const response = await chatCompletionWithHistory([
+        ...history,
+        { role: 'user', content: question }
+      ]);
+      // Añadir pregunta y respuesta al historial
+      history.push({ role: 'user', content: question });
+      history.push({ role: 'assistant', content: response });
+      // Replace the loading bubble with the final response
+      showAnimatedResponse(response, { replaceNode: loadingBubble });
+      // Hide predefined questions after first response
+      const actions = document.querySelector('.dr-lara-grok-actions');
+      if (actions) actions.style.display = 'none';
+    } catch (err) {
+      showAnimatedResponse('Error al obtener respuesta. Intenta de nuevo.');
+    }
+  });
 
   // Load user status and credits on page load
   loadUserStatus();
@@ -394,11 +339,27 @@ export function renderDrLaraPage(root) {
           console.log('No se pudo cargar conocimiento de empresa:', e);
         }
 
+        // Load a few products for the greeting (realtime)
+        let topProductsSummary = '';
+        try {
+          const prodClient = getProductsClient();
+          const { data: topProducts } = await prodClient
+            .from('current_products')
+            .select('name, priceKg, stock, category')
+            .order('featured', { ascending: false })
+            .limit(4);
+          if (topProducts && topProducts.length) {
+            topProductsSummary = '\n\nProductos destacados: ' + topProducts.map(p => `${p.name} (${p.category}) - $${p.priceKg?.toLocaleString('es-CO') || 'N/A'}/kg`).join(', ');
+          }
+        } catch (e) {
+          console.log('No se pudo cargar productos para saludo:', e?.message || e);
+        }
+
         if (isPremium) {
-          greeting = `¡Hola ${fullUserName}! 👩‍⚕️✨\n\nSoy la <strong>Dra. Lara</strong>, tu nutricionista personal premium. Tengo acceso completo a:\n\n✅ Base de conocimiento especializada en frutas colombianas\n✅ Consultas ilimitadas sin restricciones\n✅ Planes nutricionales personalizados\n✅ Recomendaciones con productos reales de Fruvi\n\n¿Cómo puedo ayudarte hoy con tu salud y nutrición?${companyInfo}`;
+          greeting = `¡Hola ${fullUserName}! 👩‍⚕️✨\n\nSoy la <strong>Dra. Lara</strong>, tu nutricionista personal premium. Tengo acceso completo a:\n\n✅ Base de conocimiento especializada en frutas colombianas\n✅ Consultas ilimitadas sin restricciones\n✅ Planes nutricionales personalizados\n✅ Recomendaciones con productos reales de Fruvi\n\n¿Cómo puedo ayudarte hoy con tu salud y nutrición?${companyInfo}${topProductsSummary}`;
         } else {
           const credits = await window.getCreditBalance(user.id);
-          greeting = `¡Hola ${fullUserName}! 👩‍⚕️\n\nSoy la <strong>Dra. Lara</strong>, tu nutricionista especializada en frutas premium colombianas. Puedo ayudarte con:\n\n🍎 Recomendaciones nutricionales personalizadas\n🥑 Beneficios de frutas premium\n🌿 Planes alimenticios con productos Fruvi\n📊 Análisis nutricional básico\n\nTienes <strong>${credits} créditos</strong> disponibles. Cada consulta básica cuesta 1 crédito.\n\n💎 Con la membresía Premium obtienes consultas ilimitadas + descuentos permanentes.\n\n¿En qué puedo ayudarte?${companyInfo}`;
+          greeting = `¡Hola ${fullUserName}! 👩‍⚕️\n\nSoy la <strong>Dra. Lara</strong>, tu nutricionista especializada en frutas premium colombianas. Puedo ayudarte con:\n\n🍎 Recomendaciones nutricionales personalizadas\n🥑 Beneficios de frutas premium\n🌿 Planes alimenticios con productos Fruvi\n📊 Análisis nutricional básico\n\nTienes <strong>${credits} créditos</strong> disponibles. Cada consulta básica cuesta 1 crédito.\n\n💎 Con la membresía Premium obtienes consultas ilimitadas + descuentos permanentes.\n\n¿En qué puedo ayudarte?${companyInfo}${topProductsSummary}`;
 
           if (credits === 0) {
             greeting += `\n\n⚠️ <strong>Sin créditos disponibles</strong>. Adquiere más créditos o activa la membresía Premium para continuar.`;
@@ -424,7 +385,6 @@ export function renderDrLaraPage(root) {
     e.preventDefault();
     const text = (input.value || '').trim();
     if (!text) return;
-
     // Get current user for personalized responses
     let currentUserId = null;
     let userName = '';
@@ -535,8 +495,8 @@ export function renderDrLaraPage(root) {
     const stopTyping = showTyping();
 
     try {
-      // Use enhanced completion with full knowledge base
-      const reply = await chatCompletionWithDrLaraKnowledge(text, currentUserId, fullUserName);
+    // Use enhanced completion with database integration (includes products, knowledge base, medical info)
+    const reply = await chatCompletionWithDatabase(text, currentUserId, fullUserName);
       stopTyping();
       history.push({ role: 'assistant', content: reply });
       appendMessage('assistant', reply);
@@ -620,7 +580,23 @@ export function renderDrLaraPage(root) {
         console.log('No se pudo verificar acceso premium');
       }
 
-      // 5. Build enhanced system prompt
+      // 5. Include a short selection of products so the assistant can recommend real items
+      let productSnippet = '';
+      try {
+        const productsClient = getProductsClient();
+        const { data: products } = await productsClient
+          .from('current_products')
+          .select('name, category, priceKg, stock, organic')
+          .order('featured', { ascending: false })
+          .limit(6);
+        if (products && products.length > 0) {
+          productSnippet = '\n\n🛒 PRODUCTOS DESTACADOS (actuales):\n' + products.map(p => `- ${p.name} (${p.category}) — $${p.priceKg?.toLocaleString('es-CO') || 'N/A'}/kg — Stock: ${p.stock || 'Disponible'} ${p.organic ? '• Orgánico' : ''}`).join('\n');
+        }
+      } catch (e) {
+        console.log('No se pudo cargar productos para el prompt:', e?.message || e);
+      }
+
+      // 6. Build enhanced system prompt
       const systemPrompt = `Eres la Dra. Lara 👩‍⚕️, nutricionista especializada en frutas premium colombianas de Fruvi.
 
 🎯 TU IDENTIDAD:
@@ -650,14 +626,18 @@ ${forbiddenPhrases.map(phrase => `- "${phrase}"`).join('\n')}
 7. NUNCA usar frases prohibidas
 8. Mantener tono premium, marca de lujo, excelencia
 
-🎨 ESTILO DE RESPUESTA:
+${productSnippet}
+\n🎨 ESTILO DE RESPUESTA:
 - Profesional pero cercano
 - Usar emojis con moderación (🍎🥑✨💚)
 - Estructurar con listas, negritas, espacios
 - Mencionar beneficios científicos respaldados
 - Incluir llamados a acción sutiles ("¿Te gustaría que te enviemos...?")
+ - Evita usar tablas Markdown con '|' (pipes) o filas separadoras; usa listas o tarjetas para datos tabulares
+ - Usa emojis de forma moderada y relevante (ej. 🍎🥑✨)
 
-¿Entendido? Responde siempre como la Dra. Lara, experta en frutas premium colombianas.`;
+¿Entendido? Responde siempre como la Dra. Lara, experta en frutas premium colombianas.
+IMPORTANTE: Responde en **Markdown** que contenga encabezados, listas, y tarjetas de producto cuando recomiendes productos (usa formato de lista con precios). Evita html con scripts. Nosotros convertiremos Markdown a HTML para mostrarlo bonito en la UI.`;
 
       // 6. Call Groq with enhanced prompt
       const messages = [
@@ -723,6 +703,19 @@ ${forbiddenPhrases.map(phrase => `- "${phrase}"`).join('\n')}
     `;
 
     messagesEl.appendChild(item);
+    // Enhance any CTA anchors inside the message bubble to be keyboard accessible
+    const ctas = item.querySelectorAll('.ai-cta');
+    ctas.forEach(a => {
+      try {
+        if (!a.hasAttribute('role')) a.setAttribute('role', 'button');
+        if (!a.hasAttribute('tabindex')) a.setAttribute('tabindex', '0');
+        if (!a.hasAttribute('aria-label')) a.setAttribute('aria-label', a.textContent.trim());
+        // Allow Enter/Space to activate the anchor as a button
+        a.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); a.click(); }
+        });
+      } catch (e) { /* defensive, ignore */ }
+    });
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
@@ -751,11 +744,105 @@ ${forbiddenPhrases.map(phrase => `- "${phrase}"`).join('\n')}
   }
 
   function renderSafeMarkdown(text) {
-    const escaped = escapeHtml(text);
-    return escaped
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\n/g, '<br>');
+    if (!text) return '';
+    // Escape HTML special characters first
+    let s = escapeHtml(String(text));
+
+    // Convert Markdown tables (pipes) to professional bullet lists.
+    // We remove pipe characters and the separator row (e.g. |----|) and turn each data row into a bullet list using the column headers.
+    const tableLines = s.split('\n');
+    let i = 0;
+    let processed = [];
+    while (i < tableLines.length) {
+      const line = tableLines[i];
+      const trimmed = line.trim();
+      // detect header row starting and ending with |
+      if (/^\|.*\|$/.test(trimmed)) {
+        // Parse header cells
+        const headerCells = trimmed.split('|').map(h => h.trim()).filter(h => h.length);
+        // Check next line is a separator (|----| or | --- |)
+        let j = i + 1;
+        if (j < tableLines.length && /^\|[\s:-|]+\|$/.test(tableLines[j].trim())) {
+          j++; // skip separator row
+        }
+        // Collect table rows
+        const tableRows = [];
+        while (j < tableLines.length && /^\|.*\|$/.test(tableLines[j].trim())) {
+          const rowCells = tableLines[j].split('|').slice(1, -1).map(c => c.trim());
+          tableRows.push(rowCells);
+          j++;
+        }
+        // Convert each row into a bullet list item with header: value pairs
+        tableRows.forEach(cells => {
+          const pairs = headerCells.map((h, idx) => `${h}: ${cells[idx] ? cells[idx] : ''}`);
+          processed.push('- ' + pairs.join(' — '));
+        });
+        // Skip the consumed lines
+        i = j;
+        continue;
+      }
+      processed.push(line);
+      i++;
+    }
+    s = processed.join('\n');
+    // Remove any leftover table separator lines (e.g. |----|) and convert remaining pipes to em-dashes
+    s = s.replace(/^\s*\|[\s\S]*\|\s*$/gm, (m) => {
+      // If a line contains at least two pipes and only dashes/spaces, remove it
+      if (/^\s*\|[\s:-|]+\|\s*$/.test(m)) return '';
+      // Otherwise, convert simple pipes to em-dashes
+      return m.replace(/\s*\|\s*/g, ' — ');
+    });
+
+    // Links: [text](url)
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/gi, (m, t, url) => {
+      const safeUrl = escapeHtml(url);
+      return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${t}</a>`;
+    });
+
+    // Bold **text**
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Italic *text*
+    s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    // Inline code `code`
+    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Headings: ##
+    s = s.replace(/^###\s*(.+)$/gim, '<h4>$1</h4>');
+    s = s.replace(/^##\s*(.+)$/gim, '<h3>$1</h3>');
+    s = s.replace(/^#\s*(.+)$/gim, '<h2>$1</h2>');
+
+    // Lists: convert lines starting with - or * to <ul><li>
+    // First, protect existing HTML
+    const lines = s.split('\n');
+    let out = [];
+    let inList = false;
+    for (let line of lines) {
+      const trimmed = line.trim();
+      if (/^[-*]\s+/.test(trimmed)) {
+        if (!inList) { out.push('<ul class="dr-lara-list">'); inList = true; }
+        const item = trimmed.replace(/^[-*]\s+/, '');
+        // If the list item contains a dollar sign, mark it as a product item for special styling
+        const isProduct = /\$\s?[\d,.]+/.test(item) || /stock[:]?/i.test(item);
+        out.push(`<li${isProduct ? ' class="product-item"' : ''}>${item}</li>`);
+      } else {
+        if (inList) { out.push('</ul>'); inList = false; }
+        if (trimmed === '') out.push('<br>'); else out.push(`<p>${trimmed}</p>`);
+      }
+    }
+    if (inList) out.push('</ul>');
+    let html = out.join('\n');
+
+    // Post-process product-item list entries to give them structured markup
+    html = html.replace(/<li class=\"product-item\">([\s\S]*?)<\/li>/gi, (m, inner) => {
+      // Try to split by em-dash or hyphen to separate name from details
+      const parts = inner.split(/\s*[—-]\s*/);
+      const name = parts[0] ? parts[0].trim() : inner.trim();
+      const details = parts.slice(1).join(' — ').trim();
+      const detailsHtml = details ? `<div class=\"product-details\">${details}</div>` : '';
+      return `<li class=\"product-item\"><div class=\"product-name\">${name}</div>${detailsHtml}</li>`;
+    });
+
+    return html;
   }
 
   function escapeHtml(s = '') {
